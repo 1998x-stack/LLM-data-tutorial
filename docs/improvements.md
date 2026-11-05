@@ -12,5 +12,5 @@
 - Security & regression review: Restricts manifest href to local NN.html, avoids dynamic innerHTML; no secrets, production config, workflows, licenses, or deployment changes. Main branch untouched.
 - Risk & rollback: Editing courses.json requires regenerating courses-data.js; check mode detects drift. Revert this PR's commits to restore previous behavior. Physical browser compatibility remains unverified.
 - Follow-up: Run real Chromium file:// and HTTP E2E and confirm generator --check and Node test suite.
-- Commit: pending
-- PR: pending
+- Commit: 3c1812baa7017dcf93303cd1f72e04deddea3365 (initial iteration record; follow-up metadata commit follows)
+- PR: https://github.com/1998x-stack/LLM-data-tutorial/pull/1
