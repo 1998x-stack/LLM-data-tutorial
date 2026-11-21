@@ -21,4 +21,4 @@
 - Content: Parquet / Arrow / Iceberg; DVC / run manifests; DCLM / Dolma / dataset datasheets; BPE / SentencePiece / tiktoken; vocabulary matrix and multilingual token-premium analysis.
 - Assets: ten original SVGs, five evidence ledgers, five accessible interactive exercises, five dependency-free utility modules and 24 unit tests.
 - Editorial controls: no universal storage sizing, no seed-only reproducibility claim, no one-number data-quality score, no conflation of teaching BPE with production byte-level BPE, no universally optimal vocabulary size.
-- Validation and publication status will be appended after CI, PR review, merge and Pages verification.
+- **Validation / publication:** PR #5 merged; static CI passed (45 Python tests, 10 Node tests, 28 chapter paths and 34 SVGs validated); GitHub Pages deployment succeeded. Browser screenshot QA was not run in this batch.
