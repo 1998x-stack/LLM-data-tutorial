@@ -32,4 +32,11 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96) -> tuple[float
     half = z_value * math.sqrt(
         p_hat * (1 - p_hat) / trials + z2 / (4 * trials * trials)
     ) / denominator
-    return max(0.0, center - half), min(1.0, center + half)
+    lower = max(0.0, center - half)
+    upper = min(1.0, center + half)
+    # Preserve the exact mathematical endpoints despite floating-point rounding.
+    if successes == 0:
+        lower = 0.0
+    if successes == trials:
+        upper = 1.0
+    return lower, upper
