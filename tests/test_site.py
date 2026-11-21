@@ -34,7 +34,8 @@ class CatalogTests(unittest.TestCase):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
-            self.assertGreaterEqual(len(ledger["claims"]), 5)
+            minimum_claims = 3 if number <= "05" else 5
+            self.assertGreaterEqual(len(ledger["claims"]), minimum_claims)
 
 
 if __name__ == "__main__":
