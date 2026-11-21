@@ -1,0 +1,52 @@
+{
+  "chapter": "06",
+  "title": "URL 与域名过滤",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "06-C1",
+      "claim": "Under RFC 3986 generic syntax, scheme and host are case-insensitive, while other URI components are generally assumed case-sensitive unless the scheme specifies otherwise.",
+      "kind": "standard",
+      "source_url": "https://www.rfc-editor.org/rfc/rfc3986",
+      "locator": "§6.2.2.1 Case Normalization",
+      "status": "verified",
+      "notes": "This is a syntax-level normalization rule; do not lowercase path or query as a universal operation."
+    },
+    {
+      "id": "06-C2",
+      "claim": "FineWeb applies URL filtering with a blocklist to remove adult content as part of its base filtering pipeline.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.3 Base filtering",
+      "status": "verified",
+      "notes": "This is one step in a broader pipeline with language identification and quality/repetition filters; it is not a universal web-quality blacklist."
+    },
+    {
+      "id": "06-C3",
+      "claim": "DataTrove URLFilter can filter by registered domain, fully qualified subdomain, exact URL, hard-banned words, soft-banned word counts and banned substrings.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/5484e67ab81daf66c689106054d5133910d731c2/src/datatrove/pipeline/filters/url_filter.py",
+      "locator": "URLFilter class docstring and filter() implementation; repository commit 5484e67",
+      "status": "verified",
+      "notes": "Implementation-specific behavior; dependencies and integrated lists are versioned assets."
+    },
+    {
+      "id": "06-C4",
+      "claim": "A URL normalization policy should preserve the original URL and record its own version because path/query equivalence can be application-specific.",
+      "kind": "derived",
+      "source_url": "https://www.rfc-editor.org/rfc/rfc3986",
+      "locator": "§6.2 URI Comparison; §6.2.2 Syntax-Based Normalization",
+      "status": "derived",
+      "notes": "Engineering recommendation derived from the RFC's component-specific equivalence rules; exact site semantics may require additional evidence."
+    },
+    {
+      "id": "06-C5",
+      "claim": "Domain frequency percentiles are useful for anomaly review but do not by themselves establish that a high-volume domain is low quality.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb §3.3–§3.7 discusses multiple complementary filters and data ablations",
+      "status": "derived",
+      "notes": "This is a methodological recommendation, not a reported FineWeb result or a benchmark statistic."
+    }
+  ]
+}

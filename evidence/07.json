@@ -1,0 +1,52 @@
+{
+  "chapter": "07",
+  "title": "精确去重",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "07-C1",
+      "claim": "CCNet normalizes paragraphs by lowercasing, replacing numbers with a placeholder, and removing Unicode punctuation and accent marks before paragraph-level deduplication.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1911.00359",
+      "locator": "§3.2 Deduplication",
+      "status": "verified",
+      "notes": "The normalization is part of CCNet's specific paragraph deduplication pipeline; it should not be copied as a universal equivalence rule."
+    },
+    {
+      "id": "07-C2",
+      "claim": "CCNet uses the first 64 bits of SHA-1 of normalized paragraphs as the deduplication key.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1911.00359",
+      "locator": "§3.2 Deduplication",
+      "status": "verified",
+      "notes": "This is a compact fingerprinting implementation choice, not a claim that SHA-1 is collision-free."
+    },
+    {
+      "id": "07-C3",
+      "claim": "Lee et al. introduce exact substring matching and approximate full-document matching, and report reductions in memorized text generation and train-test overlap in their studied settings.",
+      "kind": "paper-result",
+      "source_url": "https://aclanthology.org/2022.acl-long.577/",
+      "locator": "Abstract; §4.1 exact substring matching; §4.2 approximate full-document matching; §6",
+      "status": "verified",
+      "notes": "Keep all reported rates scoped to the paper's datasets, models and evaluation protocol."
+    },
+    {
+      "id": "07-C4",
+      "claim": "A standard insertion-only Bloom Filter can return false positives but does not return false negatives; an all-bits-set query means possibly present rather than definitely present.",
+      "kind": "official-doc",
+      "source_url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775",
+      "locator": "§1 and classic false-positive analysis",
+      "status": "verified",
+      "notes": "Deletion, counting variants, concurrency errors or broken implementations can change these guarantees."
+    },
+    {
+      "id": "07-C5",
+      "claim": "Under the classic independent-uniform-hash approximation, Bloom Filter false-positive probability is approximately (1 - exp(-kn/m))^k, with k approximately (m/n) ln 2 at the optimum.",
+      "kind": "derived",
+      "source_url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775",
+      "locator": "Classic false-positive formula and optimal-k discussion",
+      "status": "derived",
+      "notes": "The NIST analysis distinguishes the classic approximation from more exact finite-filter analysis; actual rates should be measured."
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 首批深度重构：01–05，采用渐进式叙事、原创 SVG、交互练习、MathML 公式和论文引用。
+- 已深度重构：01–10，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、算法单元测试和论文证据账本。
 - 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
@@ -50,11 +50,11 @@
 | 03 | 网页正文提取 | DOM、boilerplate removal、Trafilatura、精确率与召回率 |
 | 04 | 语言识别与过滤 | fastText、阈值校准、多语言路由 |
 | 05 | 启发式规则过滤 | C4、FineWeb、规则消融与误杀分析 |
-| 06 | URL 与域名过滤 | blocklist、域名统计、来源策略 |
-| 07 | 精确去重 | 哈希、Bloom Filter、文档与段落粒度 |
-| 08 | MinHash 近邻去重 | Jaccard、签名、LSH |
-| 09 | 多粒度去重策略 | 行级、段落级、文档级与跨快照去重 |
-| 10 | 困惑度质量过滤 | n-gram LM、CCNet、困惑度边界 |
+| 06 | URL 与域名过滤 | RFC 3986、URL 规范化、域名画像、审计策略 |
+| 07 | 精确去重 | SHA-256、Bloom Filter、假阳性与精确索引 |
+| 08 | MinHash 近邻去重 | Shingling、Jaccard、MinHash 定理、LSH Banding |
+| 09 | 多粒度去重策略 | 行/段落/文档粒度、重复簇、跨 Crawl 消融 |
+| 10 | 困惑度质量过滤 | Cross-Entropy、5-gram Kneser–Ney、KenLM、CCNet |
 | 11 | 教育质量分类器 | FineWeb-Edu、合成标注、分类器 |
 | 12 | LLM 辅助数据标注 | 评分协议、蒸馏、偏差审计 |
 | 13 | 评测集去污染 | n-gram、MinHash、污染检测 |
@@ -80,7 +80,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；首批 01–05 深度重构
+    ├── 01.html ... 28.html       # 章节入口；01–10 已深度重构；其余章节按五篇一批迁移
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
@@ -88,7 +88,7 @@
     ├── evidence/                 # 每章 claim → source → locator 证据账本
     ├── docs/                     # 架构、标签、写作、证据和 QA 规范
     ├── scripts/                  # 元数据构建与站点验证
-    ├── tests/                    # 离线目录与内容完整性测试
+    ├── tests/                    # 离线目录、内容完整性与算法测试
     └── .github/workflows/        # 自动质量检查
 
 ## 内容生产规范
@@ -119,6 +119,14 @@
 - [FineWeb · NeurIPS 2024](https://arxiv.org/abs/2406.17557)
 - [Dolma · ACL 2024](https://aclanthology.org/2024.acl-long.840/)
 - [Common Crawl documentation](https://commoncrawl.org/get-started)
+- [RFC 3986 · URI Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
+- [Deduplicating Training Data Makes Language Models Better · ACL 2022](https://aclanthology.org/2022.acl-long.577/)
+- [Broder · On the Resemblance and Containment of Documents](https://doi.org/10.1109/SEQUEN.1997.666900)
+- [Bloom Filter false-positive analysis · NIST](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775)
+- [RFC 3986 · URI Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
+- [Deduplicating Training Data Makes Language Models Better · ACL 2022](https://aclanthology.org/2022.acl-long.577/)
+- [Broder · Syntactic Clustering of the Web / MinHash](https://doi.org/10.1109/SEQUEN.1997.666900)
+- [Bloom Filter false-positive analysis · NIST](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775)
 - [fastText language identification](https://fasttext.cc/docs/en/language-identification)
 - [Trafilatura documentation](https://trafilatura.readthedocs.io/en/stable/)
 

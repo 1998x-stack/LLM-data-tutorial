@@ -1,150 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第10章 困惑度质量过滤</title>
-    <link rel="stylesheet" href="theme.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="用语言模型估计文本与目标语域的分布距离：理解 N-gram、Kneser–Ney 平滑、Perplexity 与跨领域偏差。">
+  <title>10 · 困惑度质量过滤 | LLM 数据工程教程</title>
+  <link rel="stylesheet" href="theme.css">
 </head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html" class="active">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
+<body class="article-page">
+<a class="skip-link" href="#content">跳转到正文</a>
+<div class="article-shell">
+  <header class="site-masthead">
+    <a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a>
+    <span class="masthead-note">从网页到训练语料 · 开放课程</span>
+  </header>
+  <div class="article-layout">
+    <nav class="article-toc" aria-label="课程章节">
+      <a class="toc-home" href="index.html">← 课程总览</a>
+      <p class="toc-label">LEARNING PATH · 28 CHAPTERS</p>
+      <ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" aria-current="page" class="active"><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol>
+    </nav>
+    <main id="content" class="article-main">
+      <article>
+        <header class="article-hero">
+          <p class="eyebrow">MODULE 10 / LLM DATA ENGINEERING</p>
+          <h1>困惑度质量过滤</h1>
+          <p class="dek">用语言模型估计文本与目标语域的分布距离：理解 N-gram、Kneser–Ney 平滑、Perplexity 与跨领域偏差。</p>
+          <div class="article-meta"><span>核心概念 · 数学机制 · 工程实现</span><span>研究生进阶</span></div>
+        </header>
+        
+<div class="lead-note"><strong>本章问题</strong><p>如果一段网页文本语法通顺、没有重复，却可能是关键词堆砌或低价值内容，能否用语言模型判断它“像不像”高质量语料？困惑度可以提供一个分布相似度信号，但它不是通用质量分数。</p></div>
+<section id="language-model">
+<h2>从条件概率到平均惊讶度</h2>
+<p>自回归语言模型把一段 token 序列分解为一连串条件概率。对 token 序列 \(w_1,\ldots,w_T\)，联合概率可写成：</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="语言模型链式分解公式，可横向滚动" data-math-scroll><math display="block" aria-label="序列联合概率等于每个 token 在此前 token 条件下概率的乘积"><mrow><mi>P</mi><mo>(</mo><msub><mi>w</mi><mn>1</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>w</mi><mi>T</mi></msub><mo>)</mo><mo>=</mo><munderover><mo>∏</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>T</mi></munderover><mi>P</mi><mo>(</mo><msub><mi>w</mi><mi>t</mi></msub><mo>|</mo><msub><mi>w</mi><mrow><mn>1</mn><mo>…</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>)</mo></mrow></math></div>
+<p>平均负对数似然（cross-entropy）衡量模型对真实 token 的平均“惊讶程度”。使用自然对数时，困惑度是它的指数：</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="Cross entropy 与 Perplexity 公式，可横向滚动" data-math-scroll><math display="block" aria-label="交叉熵等于平均负对数概率，困惑度等于交叉熵的指数"><mrow><mi>H</mi><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>T</mi></munderover><mi>ln</mi><mi>P</mi><mo>(</mo><msub><mi>w</mi><mi>t</mi></msub><mo>|</mo><msub><mi>w</mi><mrow><mn>1</mn><mo>…</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>)</mo><mo>,</mo><mspace width="1em"/><mi>PPL</mi><mo>=</mo><msup><mi>e</mi><mi>H</mi></msup></mrow></math></div>
+<p>如果使用 log base 10，则 \(PPL=10^{-\frac{1}{T}\sum_t \log_{10}P(w_t|w_{&lt;t})}\)。困惑度可以理解为模型每一步面对的“等效平均候选数”：越低，说明该模型越容易预测这段文本。但“容易预测”只相对于特定模型、tokenizer、语言和目标分布而言。</p>
+</section>
+<section id="ngram">
+<h2>N-gram LM：有限上下文与平滑</h2>
+<p>N-gram 语言模型用前面最多 \(n-1\) 个 token 估计下一个 token 的概率。最简单的最大似然估计会遇到稀疏问题：训练语料里没出现过的 n-gram 会得到零概率，整段文本的 PPL 就可能变成无穷大。Kneser–Ney 平滑通过折扣高频计数，并把折扣质量分配给低阶分布；其 continuation probability 让“在多少种不同上下文中出现过”也影响词的概率，而不只看总频次。</p>
+<p>CCNet 使用每种语言自己的 SentencePiece tokenizer，以及在目标高质量语料（论文示例为 Wikipedia）上训练的 5-gram Kneser–Ney 模型，并通过 KenLM 高效计算段落困惑度。这一设计回答的是“文本与目标语域有多接近”，而不是“文本本身有没有价值”。</p>
+<figure class="diagram"><img src="assets/diagrams/ch10-perplexity.svg" alt="文本先经 SentencePiece 分词，再由目标语域 N-gram 语言模型逐 token 计算条件概率和平均负对数似然，最后转成困惑度并分层"><figcaption>图 1 · 困惑度依赖 tokenizer、语言模型训练语料和文本分段方式；跨模型直接比较数值通常没有意义。</figcaption></figure>
+</section>
+<section id="ccnet">
+<h2>CCNet：把 PPL 用作相对分层，而非一刀切</h2>
+<p>CCNet 的目标是构建多语言 Common Crawl 语料。它对每种语言训练目标域语言模型，计算每个段落的 perplexity，然后按每种语言各自的分布切成等量的 head、middle、tail 三部分。head 更接近目标域分布，tail 更远。</p>
+<p>一个非常重要的决定是：CCNet 没有直接删除 tail。作者指出，tail 中既有关键词列表等低质量文本，也可能包含口语化评论、专业论坛和与 Wikipedia 词汇分布差异较大的有效内容。论文认为困惑度是“相对不错”的质量代理，但不同语言的 PPL 分布会受到 Wikipedia 训练数据规模差异影响，因此按语言分别设定分位点。</p>
+<div class="table-wrap"><table><thead><tr><th>分层</th><th>解释</th><th>可能包含</th><th>推荐用法</th></tr></thead><tbody>
+<tr><td>Head</td><td>低 PPL，接近目标语域</td><td>新闻、百科风格、书面说明</td><td>作为目标域相似度高的候选集</td></tr>
+<tr><td>Middle</td><td>中等 PPL</td><td>一般网页、博客、混合风格</td><td>结合其他质量信号采样</td></tr>
+<tr><td>Tail</td><td>高 PPL，偏离目标语域</td><td>噪声、口语、专业术语、低资源内容</td><td>抽样审计，不要直接等同垃圾</td></tr>
+</tbody></table></div>
+</section>
+<section id="limits">
+<h2>为什么低 PPL 不等于高质量</h2>
+<ul><li><strong>目标域偏差：</strong>用 Wikipedia 训练的 LM 会偏好百科式表达；代码、论坛、数学推导、方言和新术语可能得到高 PPL。</li><li><strong>语言与 tokenizer：</strong>不同 tokenizer 的 token 数和概率空间不同，PPL 不能不加说明地跨 tokenizer 比较。</li><li><strong>长度与切分：</strong>短段落的估计方差更大；段落边界、BOS/EOS 处理会改变结果。</li><li><strong>数据泄漏：</strong>若评估 LM 的训练语料包含待评分文本，PPL 会过于乐观。</li><li><strong>重复和模板：</strong>高重复文本可能非常容易预测，因此 PPL 低，但并不意味着它有训练价值。</li></ul>
+<p>实践中应把 PPL 与语言识别、重复率、长度、来源、人工抽检和下游训练消融结合。最好保存原始 PPL、语言内分位数、LM 版本、tokenizer 版本与段落长度，而不是只保留一个布尔值。</p>
+</section>
+<section id="kenlm">
+<h2>KenLM：计算段落困惑度的最小示例</h2>
+<p>KenLM 的 Python API 中，<code>Model.score</code> 返回 log10 概率，<code>Model.perplexity</code> 会按空格分隔的 token 数（加上结束符）计算 PPL。如果模型使用 SentencePiece 子词训练，输入前必须用同一 tokenizer 编码，并将 piece 以空格连接后传给 KenLM。</p>
+<pre><code>import kenlm
+import sentencepiece as spm
 
-        <h2>困惑度（Perplexity）是什么</h2>
+sp = spm.SentencePieceProcessor(model_file="target-domain.model")
+lm = kenlm.Model("target-domain.5gram.binary")
 
-        <p>假设你拿到一本外语书，一页一页地翻，你能猜对下一页是什么——说明这本书对你来说"可预测"，你的语言模型很适应这种文本类型。反过来，如果每一页都让你完全摸不着头脑，说明这本书的文本模式对你来说是"陌生的"。</p>
+text = "A document to score with the same target-domain tokenizer."
+pieces = sp.encode(text, out_type=str)
+lm_input = " ".join(pieces)
 
-        <p>这个"可预测性"正是困惑度（Perplexity, PPL）的直观理解。<strong>困惑度的数学定义是：语言模型对下一个词预测的不确定性。</strong>模型对下一个词越确定，困惑度越低；越不确定，困惑度越高。</p>
-
-        <p>2020 年，Meta AI 的 CCNet 论文做了一个非常大胆的设想：既然 Wikipedia 的文本质量公认很高，那用 Wikipedia 训练一个语言模型，然后用这个模型去给 Web 语料打分——<strong>模型认为"可预测"的文本，不就是和 Wikipedia 风格相近的"高质量"文本吗？</strong></p>
-
-        <p>这个想法看似简单，却在 LLM 数据工程中引发了一场范式革命。CCNet 首次将困惑度引入大规模 Web 语料的质量过滤，证明了低困惑度文本训练的模型在各项目标任务上显著优于高困惑度文本训练的模型。从 CCNet 开始，"用语言模型打分"成为数据质量过滤的标准范式。</p>
-
-        <h2>KenLM 与 n-gram 语言模型</h2>
-
-        <p>要实现困惑度过滤，首先需要一个语言模型。CCNet 选择的是 n-gram 语言模型，使用的工具是 <strong>KenLM</strong>。</p>
-
-        <p>KenLM 是 Kenneth Heafield 开发的高效语言模型训练工具，专为机器翻译场景设计，但后来被广泛用于数据过滤。它支持训练数十亿 token 的 n-gram 语言模型，内存占用极低，推理速度极快——在 2020 年的硬件上就能做到每秒处理数千个句子。</p>
-
-        <p>CCNet 的具体做法是用 5-gram Kneser-Ney 平滑语言模型，以 Wikipedia 为训练语料。5-gram 的意思是模型会基于前 4 个词预测第 5 个词；Kneser-Ney 平滑是一种处理稀疏 n-gram 的经典方法，可以有效避免"没见过的 n-gram 概率为零"的问题。</p>
-
-        <pre><code># 步骤1：用 Wikipedia 训练 5-gram 语言模型
-# 使用 KenLM 的 lmplz 工具
-lmplz \
-    --order 5 \                    # 5-gram 模型
-    --text wikipedia.txt \         # 训练语料：Wikipedia
-    --arpa wikipedia.arpa \        # 输出 ARPA 格式模型
-    --discount_fallback \          # 使用 Kneser-Ney 平滑
-
-# 步骤2：将 ARPA 模型转换为二进制格式（加速推理）
-build_binary \
-    wikipedia.arpa \
-    wikipedia.klm
-
-# 步骤3：用训练好的模型给 Web 文档批量打分
-query \
-    -m wikipedia.klm \             # 加载语言模型
-    -i web_documents.txt \         # 待打分的 Web 文档
-    -l 5 \                         # 输出每行困惑度分数
-    -s 100000 \                    # 每批处理 10 万行
-    > ppl_scores.tsv</code></pre>
-
-        <div class="tip">
-            <strong>为什么选择 n-gram 而不是神经网络？</strong> 很多人会问——2018 年就有 BERT 了，为什么 CCNet 不用 Transformer？答案是速度。CCNet 需要给整个 Common Crawl（数十亿文档）打分，n-gram 模型的推理速度比 Transformer 快 3-4 个数量级，而且内存占用低得多。在数据工程中，吞吐量常常比模型精度更重要。
-        </div>
-
-        <h2>CCNet 的三分法</h2>
-
-        <p>有了困惑度分数后，CCNet 提出了一种简单但极其有效的策略：<strong>三分法</strong>。把所有文档按困惑度从低到高排序，然后平分成三份：</p>
-
-        <ul>
-            <li><strong>Head（低困惑度）</strong>：最接近 Wikipedia 的高质量文本</li>
-            <li><strong>Middle（中等困惑度）</strong>：一般质量文本</li>
-            <li><strong>Tail（高困惑度）</strong>：低质量内容，包括机器翻译、SEO 垃圾、噪音文本等</li>
-        </ul>
-
-        <p>CCNet 团队做了一个关键实验：用 Head 数据和 Tail 数据分别训练 RoBERTa 模型，然后在多个 NLP 基准上对比效果。结果非常震撼——Head 训练的模型比 Tail 好 15 到 20 个百分点。更令人惊讶的是，即使只使用 Head 数据（总数据量的 33%），训练效果也超过了使用全部数据。</p>
-
-        <table>
-            <thead>
-                <tr><th>训练数据</th><th>数据量（相对百分比）</th><th>SQuAD (F1)</th><th>MNLI (Acc)</th><th>QQP (F1)</th><th>平均提升</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>全部数据</td><td>100%</td><td>88.1</td><td>84.5</td><td>89.2</td><td>基线</td></tr>
-                <tr><td>Head (低PPL)</td><td>33%</td><td>90.3</td><td>86.1</td><td>90.5</td><td>+1.7</td></tr>
-                <tr><td>Middle (中PPL)</td><td>33%</td><td>85.7</td><td>82.3</td><td>87.6</td><td>-2.5</td></tr>
-                <tr><td>Tail (高PPL)</td><td>33%</td><td>72.4</td><td>68.9</td><td>76.1</td><td>-14.8</td></tr>
-            </tbody>
-        </table>
-
-        <p>这个结果揭示了一个关键洞察：<strong>更多的数据不一定更好，更好的数据才是关键。</strong>你甚至可以把 Tail 数据直接扔掉——它们不仅没有贡献，反而在拖后腿。</p>
-
-        <p>CCNet 的三分法在后续工作中被广泛采用和改进。比如 C4 数据集在构建时虽然没有显式使用困惑度过滤，但它的启发式规则（如去除包含"lorem ipsum"的页面、去除标点符号比例异常的页面）实际上起到了类似的效果——过滤掉那些"不像自然语言"的低困惑度文本。而 RefinedWeb 则更进一步，将困惑度过滤与规则过滤组合使用，形成了更精细的分层过滤策略。</p>
-
-        <h2>困惑度过滤的局限性</h2>
-
-        <p>听到这里你可能会想：太好了，困惑度就是万能药！别急，让我泼一盆冷水。</p>
-
-        <div class="warning">
-            <strong>困惑度过滤的偏见问题：</strong> Wikipedia 的写作风格只是"一种"高质量——它严谨、客观、结构化。但高质量文本的形态远不止于此。技术文档、代码注释、论坛讨论、创意写作——它们都有独特的文本模式，和 Wikipedia 的 n-gram 分布大不相同。你的百科语言模型可能给一篇优秀的 Reddit 技术帖子打很高的困惑度（因为它不"Wikipedia-like"），也会给一堆 Facebook 风格的流水账打低困惑度（因为"今天天气真好"这种短句的 n-gram 概率极高）。
-        </div>
-
-        <p>我举一个亲身体会的例子。有一次我们对一批中文技术博客做困惑度过滤，发现一些写得非常深入的 PyTorch 教程被打成了"高困惑度"——因为里面充满了 API 名称（torch.nn.functional），这些词在 Wikipedia 中文版里几乎没出现过。反而是那些"今天我们来学习编程，编程很有意思"这种空洞但句式标准的内容拿到了低分。</p>
-
-        <p>解决方案有两个方向：</p>
-
-        <ul>
-            <li><strong>使用领域特定的参考语料</strong>：如果主要处理代码数据，用 GitHub README 或 Stack Overflow 训练参考 LM；如果处理学术论文，用 arXiv 摘要训练。参考语料越贴近目标语料，困惑度的区分度越好。</li>
-            <li><strong>使用混合参考语料</strong>：把 Wikipedia、书籍、新闻、代码等多种高质量来源合并训练一个"通用质量"语言模型。虽然牺牲了领域特异性，但避免了单一偏见。</li>
-        </ul>
-
-        <p>我在一个实际项目中试过一个缓解方案：同时使用多个领域的参考语料各自打分，然后取加权平均。具体来说，我们训练了三个 KenLM 模型——Wikipedia（百科风格）、GitHub README（技术风格）、以及新闻语料（叙事风格），对每篇文档算出三个困惑度分数，最后按 0.5:0.3:0.2 加权合并。这样至少避免了"单一标准"的偏见，技术博客不会被 Wikipedia LM 误伤，百科类内容也不会被技术 LM 误伤。</p>
-
-        <p>CCNet 的作者们其实也意识到了这个局限——他们在论文中明确指出，困惑度方法"适用于 Wikipedia-like 的文本，对代码数据不友好"。这也直接催生了后续的改进方案：与其用 Wikipedia 做"单一参考标准"，不如训练一个专门的质量分类器。这就是下一章我们要讲的教育质量分类器——从无监督的困惑度打分到有监督的精准分类，数据质量过滤进入了一个新的时代。</p>
-
-        <p>最后补充一个关于困惑度阈值的工程经验。困惑度分数本身不是绝对的——它会受语料类型、模型大小、n-gram 阶数等因素影响。因此不要照搬 CCNet 论文中的分数阈值，而是在你自己的语料上先跑一个小样本，观察分数分布，然后根据分布选择合适的截断点。比如我们的中文语料上，困惑度低于 80 的是高质量文本，80-150 是中等，150+ 是噪音。这个分布和英文语料完全不同，因为中文的 5-gram 分布更稀疏。</p>
-
-        <div class="footer-nav">
-            <a href="09.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="11.html">下一章 →</a>
-        </div>
-    </div>
+ppl = lm.perplexity(lm_input)
+print(f"target-domain perplexity: {ppl:.3f}")</code></pre>
+<div class="callout warning"><strong>实现边界：</strong>这段代码假设模型是以相同 SentencePiece token 序列训练、KenLM 以空格 token 化读取的。不要把原始文本直接送入使用子词 token 训练的 LM；也不要把 KenLM 的 log10 score 与 natural-log cross-entropy 混用。</div>
+</section>
+<section id="ppl-demo">
+<h2>交互练习：同一个阈值如何改变保留集？</h2>
+<p>下面三个样本和分数都是合成教学数据，不代表 CCNet 实测。滑动阈值，观察“低于阈值进入候选”的变化；生产中还应按语言内分位数分层。</p>
+<div class="demo-panel"><label class="range-label" for="ppl-threshold">示例 PPL 上限：<output id="ppl-threshold-value">40</output></label><input id="ppl-threshold" type="range" min="10" max="100" step="5" value="40"><div id="ppl-samples" class="sample-list" aria-live="polite"></div></div>
+</section>
+<section id="references">
+<h2>本章参考资料</h2>
+<ol class="references">
+<li>Wenzek et al. (2020), <a href="https://arxiv.org/abs/1911.00359">CCNet: Extracting High Quality Monolingual Datasets from Web Crawl Data</a>，§3.4、§5.2。</li>
+<li><a href="https://github.com/kpu/kenlm">KenLM source</a>，Python API：<a href="https://github.com/kpu/kenlm/blob/4cb443e60b7bf2c0ddf3c745378f76cb59e254e5/python/kenlm.pyx">score / perplexity implementation</a>。</li>
+<li><a href="https://huggingface.co/docs/transformers/perplexity">Hugging Face · Perplexity of fixed-length models</a>：PPL 定义与 tokenization 依赖。</li>
+<li>Penedo et al. (2024), <a href="https://arxiv.org/abs/2406.17557">FineWeb</a>，§4 与 Appendix F：跨领域 PPL 反映数据分布覆盖，而非单一质量标尺。</li>
+</ol>
+</section>
+        <footer class="article-footer">
+          <a href="09.html">← 上一章</a>
+          <a href="index.html">返回课程总览</a>
+          <a href="11.html">下一章 →</a>
+        </footer>
+      </article>
+    </main>
+  </div>
 </div>
-</div>
+<script>
+(() => {
+  const samples = [
+    {name: "百科风格说明（合成）", ppl: 18},
+    {name: "技术论坛讨论（合成）", ppl: 54},
+    {name: "关键词堆砌页面（合成）", ppl: 86}
+  ];
+  const slider = document.getElementById("ppl-threshold");
+  const value = document.getElementById("ppl-threshold-value");
+  const list = document.getElementById("ppl-samples");
+  function render() {
+    const threshold = Number(slider.value);
+    value.textContent = String(threshold);
+    list.replaceChildren();
+    samples.forEach(sample => {
+      const row = document.createElement("div");
+      row.className = "sample-row";
+      const label = document.createElement("span");
+      label.textContent = sample.name + " · PPL " + sample.ppl;
+      const decision = document.createElement("strong");
+      decision.textContent = sample.ppl <= threshold ? "进入低 PPL 候选桶" : "进入高 PPL / 复核桶";
+      row.append(label, decision);
+      list.append(row);
+    });
+  }
+  slider.addEventListener("input", render);
+  render();
+})();
+</script>
 </body>
 </html>

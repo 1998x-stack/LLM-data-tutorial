@@ -104,3 +104,12 @@ A release report must include:
 - browser sizes/interactions verified or explicitly not verified;
 - branch, commit, PR and merge status;
 - deployment status only if independently checked.
+
+
+## Algorithmic and mathematical validation
+
+- Derive every probability and complexity formula from a primary paper, standard, or established technical source; record the exact locator in `evidence/NN.json`.
+- When a chapter includes a calculator, its UI formula and the dependency-free test helper must implement the same expression. Label theoretical estimates separately from empirical outcomes.
+- For URL normalization, preserve original URLs and do not lowercase path/query or strip arbitrary query parameters without a documented equivalence policy.
+- For deduplication, distinguish candidate generation, exact verification, clustering, and representative selection. Never describe Bloom Filter `maybe` as exact membership.
+- For perplexity, record model, tokenizer, target domain, token-count convention, and language-specific thresholding. Do not interpret lower PPL as universal quality.

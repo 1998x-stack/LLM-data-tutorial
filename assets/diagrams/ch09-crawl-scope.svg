@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+<title id="title">全局去重与逐快照去重对比</title><desc id="desc">左侧将多个 Crawl 快照合并后全局去重，较新快照可能成为代表并删除旧快照记录；右侧每个快照内部独立去重，保留时间切片覆盖。</desc>
+<rect width="1200" height="390" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<rect x="40" y="42" width="530" height="295" rx="16" fill="#fff0e9" stroke="#dfab97"/><text x="305" y="79" text-anchor="middle" font-size="17" font-weight="700" fill="#a34d35">GLOBAL DEDUP</text>
+<rect x="74" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#dfab97"/><text x="139" y="139" text-anchor="middle" font-size="14" fill="#a34d35">Crawl 1</text><text x="139" y="160" text-anchor="middle" font-size="11" fill="#a34d35">older</text>
+<rect x="239" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#dfab97"/><text x="304" y="139" text-anchor="middle" font-size="14" fill="#a34d35">Crawl 2</text><text x="304" y="160" text-anchor="middle" font-size="11" fill="#a34d35">middle</text>
+<rect x="404" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#dfab97"/><text x="469" y="139" text-anchor="middle" font-size="14" fill="#a34d35">Crawl 3</text><text x="469" y="160" text-anchor="middle" font-size="11" fill="#a34d35">newer</text>
+<path d="M139 176 V211 H304 V176 M304 211 V176 M469 176 V211 H304" stroke="#a34d35" stroke-width="2" fill="none"/>
+<rect x="203" y="226" width="204" height="52" rx="10" fill="#fff" stroke="#dfab97"/><text x="305" y="258" text-anchor="middle" font-size="14" font-weight="700" fill="#a34d35">one global representative</text><text x="305" y="307" text-anchor="middle" font-size="12" fill="#8b4a37">older time slices may disappear</text>
+<rect x="630" y="42" width="530" height="295" rx="16" fill="#e4f3f1" stroke="#86bdb5"/><text x="895" y="79" text-anchor="middle" font-size="17" font-weight="700" fill="#176d6b">PER-CRAWL DEDUP</text>
+<rect x="664" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#86bdb5"/><text x="729" y="139" text-anchor="middle" font-size="14" fill="#176d6b">Crawl 1</text><text x="729" y="160" text-anchor="middle" font-size="11" fill="#42666a">keep 1</text>
+<rect x="829" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#86bdb5"/><text x="894" y="139" text-anchor="middle" font-size="14" fill="#176d6b">Crawl 2</text><text x="894" y="160" text-anchor="middle" font-size="11" fill="#42666a">keep 1</text>
+<rect x="994" y="112" width="130" height="64" rx="10" fill="#fff" stroke="#86bdb5"/><text x="1059" y="139" text-anchor="middle" font-size="14" fill="#176d6b">Crawl 3</text><text x="1059" y="160" text-anchor="middle" font-size="11" fill="#42666a">keep 1</text>
+<path d="M729 176 V220 M894 176 V220 M1059 176 V220" stroke="#176d6b" stroke-width="2" fill="none"/>
+<rect x="664" y="226" width="460" height="52" rx="10" fill="#fff" stroke="#86bdb5"/><text x="894" y="258" text-anchor="middle" font-size="14" font-weight="700" fill="#176d6b">one representative per snapshot</text><text x="895" y="307" text-anchor="middle" font-size="12" fill="#42666a">preserve temporal coverage</text>
+<text x="600" y="370" text-anchor="middle" font-size="13" fill="#536b75">FineWeb 的逐快照选择来自具体消融结果，不是对所有数据集的普遍规则</text>
+</g></svg>

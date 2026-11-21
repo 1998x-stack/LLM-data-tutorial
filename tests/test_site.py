@@ -29,12 +29,13 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["tags"])
             self.assertTrue(chapter["level"])
 
-    def test_first_batch_has_evidence_ledgers(self):
-        for number in ("01", "02", "03", "04", "05"):
+    def test_first_ten_chapters_have_evidence_ledgers(self):
+        for number in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10"):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
-            self.assertGreaterEqual(len(ledger["claims"]), 3)
+            minimum_claims = 3 if number <= "05" else 5
+            self.assertGreaterEqual(len(ledger["claims"]), minimum_claims)
 
 
 if __name__ == "__main__":
