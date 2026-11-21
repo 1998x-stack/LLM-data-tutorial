@@ -1,0 +1,43 @@
+{
+  "chapter": "03",
+  "title": "网页正文提取",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "03-C1",
+      "claim": "Trafilatura supports main-text extraction, metadata, structural elements such as lists/code/tables and multiple output formats.",
+      "kind": "official-doc",
+      "source_url": "https://trafilatura.readthedocs.io/en/stable/index.html",
+      "locator": "Documentation, Features and Quick start",
+      "status": "verified",
+      "notes": "Exact behavior depends on version and extraction options."
+    },
+    {
+      "id": "03-C2",
+      "claim": "Trafilatura uses its own rule-based extractor with jusText and readability-lxml as fallback methods.",
+      "kind": "official-doc",
+      "source_url": "https://trafilatura.readthedocs.io/en/stable/index.html",
+      "locator": "Documentation, Features / Main text",
+      "status": "verified",
+      "notes": "Do not present this as a fixed universal sequence without checking the installed version and mode."
+    },
+    {
+      "id": "03-C3",
+      "claim": "FineWeb reports that its WARC plus Trafilatura extraction outperformed WET text in a controlled data ablation with fastText English filtering and no deduplication.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.2 and Figure 1",
+      "status": "verified",
+      "notes": "This is not a general benchmark of all extraction libraries."
+    },
+    {
+      "id": "03-C4",
+      "claim": "Extraction quality should be evaluated against a representative manually annotated set using precision and recall, with structure and metadata tracked separately.",
+      "kind": "derived",
+      "source_url": "https://trafilatura.readthedocs.io/en/stable/index.html",
+      "locator": "Documentation, Features / Evaluation",
+      "status": "derived",
+      "notes": "Recommended evaluation protocol synthesized from information-retrieval metrics and the extractor's documented output types."
+    }
+  ]
+}

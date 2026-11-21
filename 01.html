@@ -1,199 +1,136 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第1章 LLM数据工程概述</title>
-    <link rel="stylesheet" href="theme.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="从原始网页到可训练语料：理解数据采集、抽取、过滤、去重、评估与混合之间的因果关系。">
+  <title>01 · LLM 数据工程全景 | LLM 数据工程教程</title>
+  <link rel="stylesheet" href="theme.css">
 </head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html" class="active">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-
-        <h2>数据：大模型的隐形竞争力</h2>
-
-        <p>大家好，我是你们的讲师。今天我们来聊一个常常被忽视、却决定了大模型上限的话题——数据工程。</p>
-
-        <p>当大家谈论LLM时，目光往往聚焦在模型架构、训练技巧上——这个用了MoE，那个搞了GQA，这边上了RoPE，那边改了RMS Norm。但真正拉开GPT与开源模型、Llama-3与Llama-2之间差距的，往往是那些看不见的数据工程。</p>
-
-        <p>2024年Meta发布Llama-3时，一个细节值得深思：开发过程中，Meta团队最大的投入不是模型架构设计，而是数据清洗流水线。他们花了数月时间，构建了一套从Common Crawl原始网页抓取到最终训练token的完整数据处理系统。最终的训练语料规模达到了惊人的15万亿token，而为了这15T tokens，他们需要从超过300TB的原始网页数据中层层筛选。这背后是一整套精密的数据工程方法论。</p>
-
-        <p>让我们回望一下GPT系列的数据规模演进，你就会明白数据量级的重要性：</p>
-
-        <table>
-            <thead>
-                <tr><th>模型</th><th>发布时间</th><th>训练数据规模</th><th>数据来源</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>GPT-1</td><td>2018</td><td>~5 GB</td><td>BooksCorpus</td></tr>
-                <tr><td>GPT-2</td><td>2019</td><td>~40 GB</td><td>WebText（爬取的网页）</td></tr>
-                <tr><td>GPT-3</td><td>2020</td><td>~570 GB</td><td>Common Crawl + WebText2 + 书籍</td></tr>
-                <tr><td>PaLM</td><td>2022</td><td>~780 GB</td><td>过滤后的网页 + 代码 + 书籍</td></tr>
-                <tr><td>Llama-3</td><td>2024</td><td>~15 TB+</td><td>经过15道清洗工序的网页数据</td></tr>
-                <tr><td>Gemini</td><td>2024</td><td>未公开（估计数十TB）</td><td>Google自有网页索引</td></tr>
-            </tbody>
-        </table>
-
-        <p>每一次数据量级的跃升，都伴随着模型能力的质的飞跃。从GPT-1的5GB到Llama-3的15TB+，5年间数据规模增长了3000多倍。到2026年，行业早已形成高度共识——正如AI2的研究科学家在一次演讲中所说：<strong>"The architecture stopped being a differentiator. The corpus is what's left."</strong> 架构已经不是护城河了，语料才是。</p>
-
-        <p>但更大的数据量也意味着更大的挑战。原始网页数据中有大量噪声——广告、导航栏、无意义文本、重复内容——如何从海量数据中提取出高质量的纯净语料？这就引出了我们今天要讲的完整数据工程流水线。</p>
-
-        <div class="highlight">
-            <strong>核心洞察：</strong> 从原始网页到训练token，数据量会经历几个数量级的衰减。一个典型的清洗流水线从300TB原始数据出发，最终只产出5-8TB的高质量训练数据，保留率仅为2-3%。每一TB被丢弃的数据背后，都是精心的工程决策。
-        </div>
-
-        <h2>LLM数据工程全景图</h2>
-
-        <p>一个完整的LLM数据工程流水线涉及多个环节，从源头采集到最终编排，每一步都有专门的技术和工具。下面是整个流程的全景示意图：</p>
-
-        <pre><code># LLM数据工程流水线（伪代码）
-def build_training_data():
-    # 阶段1：采集与提取
-    warc_raw = download_common_crawl("2024-50")       # 原始WARC数据
-    html_content = extract_webpages(warc_raw)          # trafilatura正文提取
-
-    # 阶段2：粗过滤
-    lang_filtered = language_filter(html_content)       # fastText语言识别
-    heuristic_clean = heuristic_filter(lang_filtered)   # 规则阈值过滤
-    url_filtered = url_domain_filter(heuristic_clean)   # URL黑名单/白名单
-
-    # 阶段3：去重
-    exact_deduped = exact_dedup(url_filtered)           # 精确去重（SHA-1）
-    near_deduped = minhash_dedup(exact_deduped)         # MinHash近邻去重
-
-    # 阶段4：质量过滤
-    quality_scored = ppl_filter(near_deduped)           # 困惑度过滤
-    edu_classified = quality_classifier(quality_scored) # 教育质量分类器
-    decontaminated = bench_decon(edu_classified)        # 评测集去污染
-
-    # 阶段5：配比与Tokenization
-    mixed = blend_sources(decontaminated)               # 多源数据混合
-    tokenized = bpe_tokenize(mixed)                     # BPE tokenization
-    return build_training_batches(tokenized)</code></pre>
-
-        <p>这个流水线看似简单，但每个环节都有丰富的工程实践和理论研究。从100%的原始数据到最终的训练语料，数据量急剧衰减。不同环节的典型保留率如下：</p>
-
-        <table>
-            <thead>
-                <tr><th>流水线阶段</th><th>典型保留率</th><th>说明</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>原始WARC采集</td><td>100%</td><td>起点：约300TB原始网页数据</td></tr>
-                <tr><td>正文提取</td><td>40-60%</td><td>剔除导航、广告、模板页面</td></tr>
-                <tr><td>语言过滤</td><td>25-35%</td><td>仅保留目标语言（如英文）</td></tr>
-                <tr><td>启发式过滤</td><td>15-20%</td><td>剔除短文本、低信息密度页面</td></tr>
-                <tr><td>精确+近邻去重</td><td>8-12%</td><td>移除重复和近似重复文档</td></tr>
-                <tr><td>质量过滤</td><td>3-5%</td><td>困惑度/分类器筛选</td></tr>
-                <tr><td>去污染+配比编排</td><td>2-3%</td><td>最终5-8TB高质量训练数据</td></tr>
-            </tbody>
-        </table>
-
-        <h2>六篇里程碑论文全景</h2>
-
-        <p>LLM数据工程并非凭空而起。以下六篇论文定义了整个领域的研究范式，每一篇都在特定维度上做出了开创性贡献：</p>
-
-        <table>
-            <thead>
-                <tr><th>论文</th><th>年份</th><th>机构</th><th>核心贡献</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>C4 (T5)</strong></td><td>2020</td><td>Google</td><td>奠定"Common Crawl → 规则过滤 → 语言识别 → 低质量剔除"的经典范式。C4数据集至今仍是数据工程的基准参考。</td></tr>
-                <tr><td><strong>CCNet</strong></td><td>2020</td><td>Meta AI</td><td>率先将困惑度（perplexity）作为文本质量指标引入大规模过滤，并开源了完整的工具链。</td></tr>
-                <tr><td><strong>The Pile</strong></td><td>2020</td><td>EleutherAI</td><td>定义了多源混合（multisource blending）的规范，系统分析了不同数据源对下游任务的贡献差异。</td></tr>
-                <tr><td><strong>RefinedWeb</strong></td><td>2023</td><td>TII (Technology Innovation Institute)</td><td>证明纯网页数据经过精细清洗可以达到甚至超越多源混合的效果，挑战了"必须混入书籍/论文"的行业假设。</td></tr>
-                <tr><td><strong>FineWeb</strong></td><td>2024</td><td>HuggingFace</td><td>引入LLM辅助质量分级策略，发布了FineWeb-Edu标杆数据集，将数据质量评估推向了新高度。</td></tr>
-                <tr><td><strong>Dolma</strong></td><td>2023</td><td>AI2 (Allen Institute for AI)</td><td>全透明的3万亿token语料，同时开源了完整的Dolma流水线工具链，是工程实践的最佳参考。</td></tr>
-            </tbody>
-        </table>
-
-        <p>这六篇论文串联起来，就是一部LLM数据工程的进化史：从规则驱动 → 质量指标驱动 → 多源混合 → LLM辅助分级。在后续的章节中，我们会逐一深入解读它们的核心思想和工程实现。</p>
-
-        <h2>Quality over Quantity：范式的转变</h2>
-
-        <p>如果你认为数据工程只是"数据越多越好"，那2024年的FineWeb-Edu论文会彻底改变你的看法。</p>
-
-        <p>HuggingFace团队做了一个大胆的实验：他们用LLM对FineWeb中的每个文档进行教育质量评分，然后只保留最高质量的8.7%——从15万亿token压缩到1.3万亿token。直觉上这应该是"自废武功"，但结果令人震惊：在MMLU、HellaSwag、ARC等几乎所有基准测试上，这1.3T高质量token训练的模型都全面超过了完整15T训练的版本。</p>
-
-        <p>这不是个案。AI2的DCLM项目在2024年验证了同样的结论：在相同的token预算下，使用高质量数据的训练效率是低质量数据的3-4倍。换句话说，用200B高质量token能达到800B低质量token的效果。</p>
-
-        <p>到了2026年，FLUX研究进一步突破了"质量-数量"的传统权衡关系。它证明通过先进的过滤策略，高质量和高保留率可以兼得——我们不再需要在数据规模和清洗强度之间做非此即彼的选择。</p>
-
-        <table>
-            <thead>
-                <tr><th>数据集</th><th>原始规模</th><th>清洗后规模</th><th>保留率</th><th>MMLU提升（相对）</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>FineWeb (无过滤)</td><td>15T tokens</td><td>15T tokens</td><td>100%</td><td>基线</td></tr>
-                <tr><td>FineWeb (基本规则)</td><td>15T tokens</td><td>11T tokens</td><td>73%</td><td>+2.1%</td></tr>
-                <tr><td>FineWeb-Edu</td><td>15T tokens</td><td>1.3T tokens</td><td>8.7%</td><td>+4.8%</td></tr>
-                <tr><td>DCLM (高质量筛选)</td><td>—</td><td>960B tokens</td><td>—</td><td>+5.3%</td></tr>
-            </tbody>
-        </table>
-
-        <div class="tip">
-            <strong>关键思维转变：</strong> 数据清洗不是简单的"删垃圾"，而是用最少的token预算传递最多的知识信号。一个好的数据工程流水线，应该像一台信息蒸馏装置——它不追求保留最多的文本，而追求保留最丰富的知识密度。
-        </div>
-
-        <p>这引出了数据工程中的核心哲学问题：什么才是"高质量"数据？是一篇条理清晰的维基百科文章？还是一段充满拼写错误的Reddit讨论？答案可能取决于你的训练目标。FineWeb-Edu的实验表明，对于学术基准测试来说，教育类内容确实更优；但如果你想要模型具备对话能力，社交媒体的语料又不可或缺。这就是为什么数据混合配比成为了一门独立的学问——我们在第14章会详细展开。</p>
-
-        <h2>本课程学习路径</h2>
-
-        <p>本课程共28章，划分为6个部分，逐步深入LLM数据工程的各个维度：</p>
-
-        <ul>
-            <li><strong>第一部分（第1-7章）：</strong> 数据采集与粗过滤。从Common Crawl的数据结构讲起，覆盖正文提取、语言识别、规则过滤、URL过滤等基础环节。</li>
-            <li><strong>第二部分（第8-9章）：</strong> 去重策略。包括精确去重（SHA-1）、MinHash近邻去重、多粒度去重策略选择与权衡。</li>
-            <li><strong>第三部分（第10-13章）：</strong> 质量过滤与标注。深入困惑度过滤、教育质量分类器、LLM辅助标注、评测集去污染。</li>
-            <li><strong>第四部分（第14-18章）：</strong> 数据配比与系统架构。多源混合配比、分布式处理架构、数据存储方案、流水线可复现性、质量评估体系。</li>
-            <li><strong>第五部分（第19-22章）：</strong> Tokenization与高级策略。BPE原理、词表设计、合成数据生成、领域适配。</li>
-            <li><strong>第六部分（第23-28章）：</strong> 实战与前沿。DataTrove和Dolma工具链实战、六大清洗范式对比、自动化系统构建、动态配比，以及综合实战项目。</li>
-        </ul>
-
-        <p>预备知识方面，你需要掌握基础的Python编程能力，了解基本的NLP概念（如tokenization、n-gram），如果熟悉分布式计算（Spark、Ray）会对后几章的理解更有帮助。每章我们会穿插代码示例和伪代码，确保理论和实践紧密结合。</p>
-
-        <p>好了，理论铺垫就到这里。从下一章开始，我们将真正动手——从互联网的源头出发，深入Common Crawl这个全球最大的网页公开数据集，学习如何高效地采集和解析海量原始网页数据。数据工程的世界，从那里才刚刚开始。</p>
-
-        <div class="footer-nav">
-            <a href="javascript:void(0)">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="02.html">下一章 →</a>
-        </div>
-    </div>
+<body class="article-page">
+<a class="skip-link" href="#content">跳转到正文</a>
+<div class="article-shell">
+  <header class="site-masthead">
+    <a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a>
+    <span class="masthead-note">从网页到训练语料 · 开放课程</span>
+  </header>
+  <div class="article-layout">
+    <nav class="article-toc" aria-label="课程章节">
+      <a class="toc-home" href="index.html">← 课程总览</a>
+      <p class="toc-label">LEARNING PATH · 28 CHAPTERS</p>
+      <ol><li><a href="01.html" aria-current="page" class="active"><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>数据清洗范式比较</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>端到端综合实战</a></li></ol>
+    </nav>
+    <main id="content" class="article-main">
+      <article>
+        <header class="article-hero">
+          <p class="eyebrow">MODULE 01 / LLM DATA ENGINEERING</p>
+          <h1>LLM 数据工程全景</h1>
+          <p class="dek">从原始网页到可训练语料：理解数据采集、抽取、过滤、去重、评估与混合之间的因果关系。</p>
+          <div class="article-meta"><span>核心概念 · 工程实现 · 证据边界</span><span>建议按图示顺序阅读</span></div>
+        </header>
+        
+<div class="lead-note"><strong>本章问题</strong><p>当训练数据来自开放互联网时，我们究竟在构建什么？不是“下载一堆文本”，而是一条能够解释来源、记录变换、控制质量并可重复运行的数据生产系统。</p></div>
+<section id="mental-model">
+  <h2>先建立一个正确的心智模型</h2>
+  <p>模型参数不会直接“读取互联网”。训练前，网页、书籍、代码、论文等原始材料必须先经过采集、解析、清洗、去重、质量选择、数据混合和分词，最后才成为训练 token。每一步都在改变训练分布：有的步骤减少噪声，有的步骤改变语言或领域比例，有的步骤则可能误删稀有但有价值的内容。</p>
+  <figure class="diagram">
+    <img src="assets/diagrams/ch01-pipeline.svg" alt="LLM 数据工程流水线，从多源数据采集开始，经过正文提取、规范化、语言和规则过滤、去重、质量评估、混合与分词，形成训练样本">
+    <figcaption>图 1 · 语料构建不是单一清洗函数，而是一组有顺序、有输入输出契约的转换步骤。各阶段的顺序和实现会随数据源与训练目标变化。</figcaption>
+  </figure>
+  <p>可以把这条链路写成函数复合。这里的符号表示“数据变换”，不是一个固定的标准实现：</p>
+  <div class="math-scroll" tabindex="0" role="region" aria-label="数据工程流水线函数复合公式，可横向滚动" data-math-scroll>
+    <math display="block" aria-label="训练数据等于分词函数复合混合函数、质量筛选函数、去重函数、正文提取函数和采集函数作用于原始数据">
+      <mrow><msub><mi>D</mi><mtext>train</mtext></msub><mo>=</mo><mi>T</mi><mo>∘</mo><mi>M</mi><mo>∘</mo><mi>Q</mi><mo>∘</mo><mi>U</mi><mo>∘</mo><mi>E</mi><mo>∘</mo><mi>C</mi><mo>(</mo><mi>W</mi><mo>)</mo></mrow>
+    </math>
+  </div>
+  <p class="small-note">C：采集；E：提取；U：规范化与去重；Q：质量选择；M：数据混合；T：tokenization。真实系统会增加语言识别、URL 过滤、隐私处理、评测去污染和审计步骤。</p>
+</section>
+<section id="pipeline-contract">
+  <h2>每一步都应该有数据契约</h2>
+  <p>如果一个文档被过滤掉，工程师应该能回答：它来自哪个 crawl？原始 URL 是什么？哪条规则命中了？规则版本是什么？它是否属于一个重复簇？如果答案只能是“某个脚本删掉了”，流水线就不可审计。</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>字段</th><th>建议含义</th><th>为什么保留</th></tr></thead>
+    <tbody>
+      <tr><td><code>doc_id</code></td><td>稳定文档标识</td><td>跨步骤关联，不依赖当前文件顺序</td></tr>
+      <tr><td><code>source</code> / <code>crawl_id</code></td><td>来源与快照</td><td>追踪来源偏差、版本与时间</td></tr>
+      <tr><td><code>url</code> / <code>warc_ref</code></td><td>原始地址与归档定位</td><td>回溯原始证据与重新提取</td></tr>
+      <tr><td><code>text</code> / <code>language</code></td><td>当前文本与语言标签</td><td>下游处理的主要载荷</td></tr>
+      <tr><td><code>filter_trace</code></td><td>规则名、阈值、版本、结果</td><td>解释保留或丢弃原因</td></tr>
+      <tr><td><code>dedup_cluster</code></td><td>重复簇标识与代表文档</td><td>分析重复与代表样本选择</td></tr>
+    </tbody>
+  </table></div>
+</section>
+<section id="landmarks">
+  <h2>六个研究锚点：不是一条“谁取代谁”的直线</h2>
+  <p>下面这些工作回答的是不同问题，不能把它们压缩成一个排行榜。</p>
+  <div class="research-grid">
+    <article class="research-card"><span>2020 · Google</span><h3>C4 / T5</h3><p>将 Common Crawl 清洗为大规模英文预训练语料，公开展示启发式过滤、句子完整性与去重等处理。</p><a href="https://jmlr.org/papers/v21/20-074.html">论文 · JMLR</a></article>
+    <article class="research-card"><span>2020 · Meta AI</span><h3>CCNet</h3><p>把语言识别、去重和基于 Wikipedia n-gram 语言模型的困惑度筛选组织成多语言网页语料流水线。</p><a href="https://aclanthology.org/2020.lrec-1.494/">论文 · LREC</a></article>
+    <article class="research-card"><span>2020 / 2021 · EleutherAI</span><h3>The Pile</h3><p>强调多来源语料组合与来源多样性，适合讨论“不同来源提供什么能力”。</p><a href="https://arxiv.org/abs/2101.00027">论文 · arXiv</a></article>
+    <article class="research-card"><span>2023 · TII</span><h3>RefinedWeb</h3><p>研究如何从网页数据中通过抽取、过滤与去重得到高质量开放语料。</p><a href="https://arxiv.org/abs/2306.01116">论文 · arXiv</a></article>
+    <article class="research-card"><span>2024 · Hugging Face</span><h3>FineWeb</h3><p>对抽取、基础过滤、逐快照 MinHash、C4 过滤和自定义启发式规则做消融研究。</p><a href="https://arxiv.org/abs/2406.17557">论文 · arXiv</a></article>
+    <article class="research-card"><span>2024 · Ai2</span><h3>Dolma</h3><p>公开三万亿 token 英文语料及数据整理工具链，覆盖网页、论文、代码、书籍与百科等来源。</p><a href="https://aclanthology.org/2024.acl-long.840/">论文 · ACL</a></article>
+  </div>
+</section>
+<section id="evidence">
+  <h2>怎样判断一次数据改动真的有效？</h2>
+  <p>不能只比较清洗前后的文件大小，也不能只看一个过滤器的通过率。需要做受控的数据消融：固定模型规模、架构、tokenizer、训练 token 预算、训练步数和评测设置，只改变待研究的数据处理决策；必要时使用多个随机种子，避免把采样噪声误认为处理收益。</p>
+  <div class="callout"><strong>FineWeb 的一个重要方法论：</strong>论文对数据处理步骤逐项做 ablation，尽可能固定模型和训练预算，再观察同一组下游任务的变化。这个设计比“我们删掉了 40% 垃圾数据”更能支持因果判断。<a href="https://papers.neurips.cc/paper_files/paper/2024/file/370df50ccfdf8bde18f8f9c2d9151bda-Paper-Datasets_and_Benchmarks_Track.pdf">查看论文实验设置与流水线</a>。</div>
+  <p>尤其要区分三种结论：</p>
+  <ul><li><strong>数据集事实：</strong>论文明确发布了多少 token、使用哪些来源。</li><li><strong>实验结论：</strong>在特定模型、预算和评测集上，某个处理步骤带来怎样的变化。</li><li><strong>工程假设：</strong>你认为某条规则能改善数据，但必须在自己的样本和训练目标上验证。</li></ul>
+</section>
+<section id="failure-modes">
+  <h2>不要把“高质量”当成一个通用标签</h2>
+  <p>教育内容、代码、对话、数学证明、新闻和多语言网页的质量标准并不相同。一个针对英文百科训练的规则，可能会误删代码注释、中文标点文本、论坛对话或低资源语言。数据集还会继承网页可见性偏差、版权与许可限制、个人信息、时间偏差和评测污染风险。</p>
+  <p>因此，数据质量不是脱离目标的绝对分数，而是“给定目标、来源与约束下，数据是否能提供所需训练信号”。下一章从最常见的开放网页来源 Common Crawl 开始，建立可追溯的采集方式。</p>
+</section>
+<section id="interactive">
+  <h2>交互练习：选择一个流水线阶段</h2>
+  <p>点击阶段，观察该步骤需要回答的工程问题。即使不运行脚本，静态流程图也应完整表达核心结构。</p>
+  <div class="stage-picker" role="group" aria-label="选择数据工程阶段">
+    <button type="button" data-stage="acquire" aria-pressed="true">采集</button>
+    <button type="button" data-stage="extract" aria-pressed="false">提取</button>
+    <button type="button" data-stage="filter" aria-pressed="false">过滤</button>
+    <button type="button" data-stage="dedup" aria-pressed="false">去重</button>
+    <button type="button" data-stage="mix" aria-pressed="false">混合</button>
+  </div>
+  <p class="interactive-output" id="stage-detail" aria-live="polite">采集：确认来源许可、快照标识、文件清单和原始记录定位。输出必须保留可回溯的 source 与 crawl_id。</p>
+</section>
+<section id="references">
+  <h2>本章参考资料</h2>
+  <ol class="references">
+    <li>Raffel et al. (2020), <a href="https://jmlr.org/papers/v21/20-074.html">Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer</a>.</li>
+    <li>Wenzek et al. (2020), <a href="https://aclanthology.org/2020.lrec-1.494/">CCNet: Extracting High Quality Monolingual Datasets from Web Crawl Data</a>.</li>
+    <li>Gao et al. (2021), <a href="https://arxiv.org/abs/2101.00027">The Pile: An 800GB Dataset of Diverse Text for Language Modeling</a>.</li>
+    <li>Penedo et al. (2024), <a href="https://arxiv.org/abs/2406.17557">The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale</a>.</li>
+    <li>Soldaini et al. (2024), <a href="https://aclanthology.org/2024.acl-long.840/">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>.</li>
+  </ol>
+</section>
+        <footer class="article-footer">
+          <a href="index.html">← 返回总览</a>
+          <span class="small-note">第一章</span>
+          <a href="02.html">下一章 →</a>
+        </footer>
+      </article>
+    </main>
+  </div>
 </div>
-</div>
+<script>
+(() => {
+  const details = {
+    acquire: "采集：确认来源许可、快照标识、文件清单和原始记录定位。输出必须保留可回溯的 source 与 crawl_id。",
+    extract: "提取：从原始响应中恢复 HTML，再抽取正文、标题、列表、代码和表格。记录提取器版本，保留原始记录以便重跑。",
+    filter: "过滤：语言、URL、格式、质量与隐私规则各自回答不同问题。记录每条规则的命中原因，避免把阈值写成黑盒。",
+    dedup: "去重：先定义重复的粒度与相似度，再决定精确哈希、MinHash 或段落级策略。保留重复簇与代表样本。",
+    mix: "混合：按训练目标设置来源、语言和领域权重，并监控采样后的实际 token 分布。不要把文件数比例误当成 token 比例。"
+  };
+  document.querySelectorAll("[data-stage]").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-stage]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+      document.getElementById("stage-detail").textContent = details[button.dataset.stage];
+    });
+  });
+})();
+</script>
 </body>
 </html>

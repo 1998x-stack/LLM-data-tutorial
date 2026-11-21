@@ -1,0 +1,52 @@
+{
+  "chapter": "04",
+  "title": "语言识别与过滤",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "04-C1",
+      "claim": "The official fastText language-identification models cover 176 languages.",
+      "kind": "official-doc",
+      "source_url": "https://fasttext.cc/docs/en/language-identification",
+      "locator": "Language identification, Description and language list",
+      "status": "verified",
+      "notes": "Coverage list is model-specific and does not imply equal accuracy for every language."
+    },
+    {
+      "id": "04-C2",
+      "claim": "The official fastText page lists lid.176.bin at 126 MB and compressed lid.176.ftz at 917 kB.",
+      "kind": "official-doc",
+      "source_url": "https://fasttext.cc/docs/en/language-identification",
+      "locator": "Language identification, model downloads",
+      "status": "verified",
+      "notes": "File sizes refer to the official downloadable models."
+    },
+    {
+      "id": "04-C3",
+      "claim": "The lid.176 models were trained on Wikipedia, Tatoeba and SETimes and expect UTF-8 input.",
+      "kind": "official-doc",
+      "source_url": "https://fasttext.cc/docs/en/language-identification",
+      "locator": "Language identification, Description",
+      "status": "verified",
+      "notes": "Input normalization and mixed-language cases still require validation."
+    },
+    {
+      "id": "04-C4",
+      "claim": "FineWeb's base filtering kept English text with a fastText score of at least 0.65.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.3 Base filtering",
+      "status": "verified",
+      "notes": "This is a configuration in the FineWeb pipeline, not a universal default threshold."
+    },
+    {
+      "id": "04-C5",
+      "claim": "Classifier output scores should be calibrated before being interpreted as posterior probabilities.",
+      "kind": "derived",
+      "source_url": "https://fasttext.cc/docs/en/language-identification",
+      "locator": "Official model interface and score output",
+      "status": "derived",
+      "notes": "A model score is not automatically a calibrated probability; calibration must be measured on held-out labeled data."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "chapter": "01",
+  "title": "LLM 数据工程全景",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "01-C1",
+      "claim": "FineWeb is a 15-trillion-token dataset derived from 96 Common Crawl snapshots.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, Abstract and §3.7",
+      "status": "verified",
+      "notes": "Dataset scale and snapshot count are claims made by the paper; do not generalize to other corpora."
+    },
+    {
+      "id": "01-C2",
+      "claim": "FineWeb-Edu is a 1.3-trillion-token educational subset filtered using a custom classifier.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, Abstract and §4",
+      "status": "verified",
+      "notes": "The paper describes synthetic annotations from Llama-3-70B-Instruct and a trained linear regressor."
+    },
+    {
+      "id": "01-C3",
+      "claim": "CCNet combines language identification, deduplication and filtering toward high-quality reference corpora such as Wikipedia.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2020.lrec-1.494/",
+      "locator": "CCNet paper, Abstract",
+      "status": "verified",
+      "notes": "Do not claim that this was the first language-identification pipeline or that one filter is universally optimal."
+    },
+    {
+      "id": "01-C4",
+      "claim": "Dolma is a three-trillion-token English corpus built from web content, scientific papers, code, public-domain books, social media and encyclopedic materials.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2024.acl-long.840/",
+      "locator": "Dolma paper, Abstract",
+      "status": "verified",
+      "notes": "Keep token count distinct from storage bytes."
+    },
+    {
+      "id": "01-C5",
+      "claim": "FineWeb data ablations hold model configuration and sampled token budgets constant across compared data variants and use two seeds per variant.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.1 Experimental setup",
+      "status": "verified",
+      "notes": "This supports the lesson about controlled ablations; it is not a guarantee that all confounders are eliminated."
+    }
+  ]
+}

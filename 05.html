@@ -1,155 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第5章 启发式规则过滤</title>
-    <link rel="stylesheet" href="theme.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="从 C4 到 FineWeb：用真实论文证据理解过滤规则、阈值消融与误杀风险。">
+  <title>05 · 启发式规则过滤 | LLM 数据工程教程</title>
+  <link rel="stylesheet" href="theme.css">
 </head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html" class="active">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-
-        <h2>规则的智慧：从 C4 到 FineWeb</h2>
-
-        <p>大家好，经过前面几章的处理，我们已经拿到了"一种语言"的"正文文本"。但这距离成为 LLM 的训练语料，还差得远——这些文本中充斥着广告、模板页面、自动生成内容、代码片段、价格列表等不适合训练大模型的东西。</p>
-
-        <p>接下来的环节，是整个数据清洗流水线中最"土"但也最有效的手段——<strong>启发式规则过滤（Heuristic Filtering）</strong>。说是"土"，因为它的原理确实不复杂：就是定义一堆 if-else 条件，不符合的就丢弃。但就是这么"土"的方法，却能以极低的计算成本过滤掉 30-40% 的低质量数据。</p>
-
-        <p>启发式规则的进化史，可以看作一条从 C4 → CCNet → RefinedWeb → FineWeb 的演进路线。C4（2020年，Google）定义了第一套成体系的规则集，后续每个项目都在 C4 的基础上做增删改查。2024年的 FineWeb 是目前规则最完善的版本，HuggingFace 还开源了完整的规则实现，成为了行业的新标杆。</p>
-
-        <div class="highlight">
-            <strong>为什么规则过滤如此重要：</strong> 启发式规则是语料清洗的"第一道防线"。它的计算成本极低（通常是 O(n) 的统计量计算），远远低于后面会讲到的模型过滤。先用简单的规则过滤掉明显的垃圾，可以大幅减少后续复杂过滤步骤需要处理的数据量。在 300TB 的数据规模下，每提前一步过滤掉垃圾，都能节省大量的计算资源。
-        </div>
-
-        <h2>C4 经典规则集</h2>
-
-        <p>C4（Colossal Clean Crawled Corpus）是 Google 在 2020 年为 T5 模型准备的数据集。它的规则集定义了现代数据清洗的基本框架：</p>
-
-        <table>
-            <thead>
-                <tr><th>规则</th><th>条件</th><th>过滤掉的比例</th><th>设计意图</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>最少字符数</td><td>文档 &lt; 200 字符</td><td>~8%</td><td>过滤掉太短的、信息量不足的页面</td></tr>
-                <tr><td>最大字符数</td><td>文档 &gt; 10 万字符</td><td>~1%</td><td>过滤掉过长页面（通常是代码转储或自动生成）</td></tr>
-                <tr><td>必须包含标点符号</td><td>没有 . ! ? 等结尾</td><td>~5%</td><td>过滤掉机器生成的杂乱文本</td></tr>
-                <tr><td>单词重复率</td><td>top-3 单词占比 &gt; 20%</td><td>~3%</td><td>过滤掉 keyword stuffing 和重复性垃圾</td></tr>
-                <tr><td>包含占位词</td><td>含有 "lorem ipsum" 等</td><td>~0.5%</td><td>过滤掉模板占位文本</td></tr>
-                <tr><td>包含 JS/CSS</td><td>含有 "javascript" 等关键词</td><td>~6%</td><td>过滤掉编程代码（非自然语言）</td></tr>
-                <tr><td>句子必须包含单词</td><td>至少一句以单词开头</td><td>~2%</td><td>过滤掉纯标点和编号列表</td></tr>
-            </tbody>
-        </table>
-
-        <p>这个规则集看似简单，但在2020年是非常前瞻性的工作。它第一次系统性地定义了"什么是一个好的训练文档"。每条规则过滤掉的速度都不大（0.5-8%），但组合起来可以去掉约 25-30% 的低质量文档，而且几乎不会误伤高质量内容。</p>
-
-        <p>从工程角度看，C4 规则集最大的优点是 <strong>可审计性</strong>。每条规则都有一个明确的数学定义，你可以随时检查某条规则过滤掉了什么、有没有误杀。相比之下，后面章节会讲到的基于模型的质量过滤，就像一个黑盒——你很难说清楚模型为什么觉得一篇文档质量低。</p>
-
-        <h2>FineWeb 规则集扩展</h2>
-
-        <p>2024年，HuggingFace 的 FineWeb 团队在 C4 规则的基础上做了大量的扩展和精化。这些改进反映了过去四年间行业对"什么是高质量数据"的认知升级：</p>
-
-        <pre><code>{
-  // FineWeb filter 配置（JSON 示例）
-  "min_chars": 200,                    // 最少字符数
-  "max_chars": 100000,                 // 最多字符数
-  "min_punctuation_ratio": 0.1,        // 标点符号比例 &gt; 10%
-  "max_long_line_ratio": 0.3,          // 最长行比例 &lt; 30%（长行通常是代码或表格）
-  "max_short_line_ratio": 0.5,         // 最短行比例 &lt; 50%
-  "max_punctuation_ratio": 0.3,        // 标点比例 &lt; 30%（太多标点 = 机器生成）
-  "max_digit_ratio": 0.5,             // 数字比例 &lt; 50%（数字太多 = 价格列表）
-  "max_bullet_ratio": 0.9,            // bullet point 比例 &lt; 90%
-  "min_stop_word_density": 0.04,       // 停用词密度 &gt; 4%（无停用词 = 非自然语言）
-  "min_word_count": 50,               // 最少单词数
-  "max_word_duplicate_ratio": 0.3,     // 单词重复率上限
-  "max_top_ngram_ratio": 0.25,        // 高频 n-gram 占比上限
-  "flag_placeholder_text": true,       // 标记占位符文本
-  "flag_js_heavy": true               // 标记含大量 JS 关键词的文档
-}</code></pre>
-
-        <p>对比 C4，FineWeb 的创新点在于引入了更多的<strong>基于比例的规则</strong>。不是简单地看"是否包含标点"，而是看"标点占比是否在合理范围内"。这种细粒度的量化指标能更好地捕捉文本的统计特征——一篇正常文章的标点符号比例通常在 10-25% 之间，如果低于 5% 大概率是机器生成的噪音。</p>
-
-        <div class="tip">
-            <strong>直接可用的工程资源：</strong> FineWeb 在 GitHub 上开源了完整的 filter 配置和规则实现（<code>huggingface/datatrove</code>），你可以直接拿过来用。它支持多进程并行处理，底层使用了 Rust 加速关键统计量的计算。这是目前最成熟、文档最完善的规则过滤开源实现，强烈建议直接复用而不是自己重写。
-        </div>
-
-        <h2>规则设计的工程实践</h2>
-
-        <p>设计一套好的规则集，不仅仅是"拍脑袋想条件"。这里分享几条经过多个项目验证的工程实践：</p>
-
-        <p><strong>第一，规则评估要在采样数据上做。</strong> 不要直接在大数据集上跑完整规则集。先采样几万个文档，逐一观察每条规则过滤掉了什么。一个很好的实践是：针对每条规则，打印出被它过滤掉的 20 个"边界案例"——也就是刚好达到或刚好没达到过滤阈值的文档。这能帮你判断阈值是否合理。</p>
-
-        <p><strong>第二，规则的优先级有讲究。</strong> 先做范围最大的过滤（URL 去重、语言过滤等），再做粒度最细的过滤（重复行、高频率 n-gram）。这样做的原因是：范围大的过滤会改变数据分布，可能影响粒度细的过滤的结果。比如先做了语言过滤，再去判断标点符号比例——英语的标点符号比例自然比中文高，阈值设置就要调整。</p>
-
-        <p><strong>第三，规则迭代的策略：先松后紧。</strong> 不要一上来就设计一套完美的规则集。先用宽松的规则跑一轮，观察保留数据的分布，再看哪些维度还有改进空间。RefinedWeb 团队的做法是：先跑 C4 基准规则集，然后分析被过滤掉的文档的类型，针对性地增加新规则。他们在第一轮过滤后发现有很多"重复性广告文案"被保留，所以增加了"最长行比例"规则来处理这类问题。</p>
-
-        <div class="warning">
-            <strong>过度过滤的风险：</strong> 规则过滤最大的敌人不是"没过滤干净"，而是"误杀"。比如，"lorem ipsum"这条规则是用来过滤模板占位文本的——但医学文献中"lorem ipsum"实际上是拉丁语的一个真实短语（意为"痛苦本身"），有真实的医学文献里出现了这个短语。再比如，"最长行比例"规则会误杀包含大量代码示例的技术博客。每增加一条规则，都应该在采样数据上评估它的误伤率。一个经验法则是：每条规则的误杀率不应超过 0.5%。
-        </div>
-
-        <h2>规则过滤 vs 模型过滤</h2>
-
-        <p>讲到这里，你可能会想：既然规则过滤这么"粗糙"，为什么不用更高级的模型过滤替代它？这个问题的答案其实很简单：<strong>规则过滤和模型过滤不是替代关系，而是串联关系</strong>。</p>
-
-        <p>规则过滤的优势：</p>
-        <ul>
-            <li><strong>速度快：</strong> 每条规则只需要 O(n) 的统计量计算，不需要加载模型、不需要 GPU</li>
-            <li><strong>可解释：</strong> 你知道每条规则为什么把某条数据过滤掉，可以审计、可以调试</li>
-            <li><strong>零成本运维：</strong> 规则不会过时，不需要重新训练，一次写好永久有效</li>
-        </ul>
-
-        <p>模型过滤的优势：</p>
-        <ul>
-            <li><strong>高精度：</strong> 能捕捉到规则无法定义的"软性质量指标"，比如"这篇文章是否有教育价值"</li>
-            <li><strong>灵活性：</strong> 同一个模型可以在不同领域微调来适应不同的质量定义</li>
-            <li><strong>可以排序：</strong> 模型可以输出质量评分而不仅是二元判断，支持按质量做筛选</li>
-        </ul>
-
-        <p>实际流水线中，两者的配合方式是：<strong>先用规则过滤掉 30-50% 明显是垃圾的数据，剩下的数据再送入模型做细粒度质量分类</strong>。这样既利用了规则过滤的效率，又借用了模型过滤的精度。如果反过来先做模型过滤——模型要处理海量垃圾数据，不仅浪费 GPU 算力，还会因为噪声太多而降低分类准确率。</p>
-
-        <p>OK，关于规则过滤就讲到这里。在 C4 和 FineWeb 的规则集之间，有一个特殊类型的规则值得单独拿出来讲——那就是 URL 和域名相关的过滤。这不是普通的"内容特征"，而是基于数据源的策略判断。下一章我们重点聊聊 URL 级别的清洗策略。</p>
-
-        <div class="footer-nav">
-            <a href="04.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="06.html">下一章 →</a>
-        </div>
-    </div>
+<body class="article-page">
+<a class="skip-link" href="#content">跳转到正文</a>
+<div class="article-shell">
+  <header class="site-masthead">
+    <a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a>
+    <span class="masthead-note">从网页到训练语料 · 开放课程</span>
+  </header>
+  <div class="article-layout">
+    <nav class="article-toc" aria-label="课程章节">
+      <a class="toc-home" href="index.html">← 课程总览</a>
+      <p class="toc-label">LEARNING PATH · 28 CHAPTERS</p>
+      <ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" aria-current="page" class="active"><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>数据清洗范式比较</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>端到端综合实战</a></li></ol>
+    </nav>
+    <main id="content" class="article-main">
+      <article>
+        <header class="article-hero">
+          <p class="eyebrow">MODULE 05 / LLM DATA ENGINEERING</p>
+          <h1>启发式规则过滤</h1>
+          <p class="dek">从 C4 到 FineWeb：用真实论文证据理解过滤规则、阈值消融与误杀风险。</p>
+          <div class="article-meta"><span>核心概念 · 工程实现 · 证据边界</span><span>建议按图示顺序阅读</span></div>
+        </header>
+        
+<div class="lead-note"><strong>本章问题</strong><p>当语料规模达到数十亿网页时，如何用便宜、可解释的规则清除明显噪声，同时避免把代码、列表、低资源语言和专业内容误删？</p></div>
+<section id="why">
+  <h2>启发式规则的价值：便宜、透明、可审计</h2>
+  <p>启发式过滤使用可计算的文档统计量和显式条件，例如文本长度、句子结构、行重复比例、URL 类别和占位符模式。它适合拦截明显异常数据，但不能单独定义“知识价值”。一条规则可以解释为什么删除了文档，却不能自动证明删除决策对目标模型有益。</p>
+  <figure class="diagram">
+    <img src="assets/diagrams/ch05-filtering.svg" alt="从原始文本进入基础过滤、去重、C4 过滤和 FineWeb 自定义启发式规则的流程，并标注不同步骤的决策依据">
+    <figcaption>图 1 · FineWeb 的公开处理顺序：WARC 正文抽取 → 基础过滤 → 每个 crawl 独立 MinHash → 选择性 C4 过滤 → 自定义启发式过滤；公开发布版本还进行 PII 处理。</figcaption>
+  </figure>
+</section>
+<section id="c4">
+  <h2>C4：把“网页噪声”写成明确条件</h2>
+  <p>T5 论文介绍的 C4 基于 2019 年 Common Crawl 数据构建。其公开描述包括：保留以终止标点结尾的行、丢弃过短页面和过短行、移除包含 <code>lorem ipsum</code>、花括号、特定不当词表或 JavaScript 提示的页面/行，并使用英语语言识别；此外还进行三句窗口级去重。</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>规则族</th><th>目标噪声</th><th>潜在误伤</th></tr></thead>
+    <tbody>
+      <tr><td>句子终止标点</td><td>菜单片段、断裂文本和无句子结构内容</td><td>标题、列表、代码、某些语言的标点差异</td></tr>
+      <tr><td>最小句子数 / 行词数</td><td>过短页面、稀疏片段</td><td>短问答、定义、标题、简洁代码注释</td></tr>
+      <tr><td>占位符 / JS 提示</td><td>模板占位文本、脚本提示页面</td><td>技术文章在正文中讨论这些字符串</td></tr>
+      <tr><td>花括号</td><td>部分代码、模板或结构化残留</td><td>数学、代码教程、JSON 示例和技术文档</td></tr>
+      <tr><td>三句窗口去重</td><td>跨页面重复片段与模板</td><td>常见定义、法律声明和标准文本</td></tr>
+    </tbody>
+  </table></div>
+  <p>重要的是：这些规则来自特定数据集和目标任务。它们不是“网页质量”的普适真理，也不应该未经审计就迁移到代码、论坛或多语言语料。</p>
+</section>
+<section id="fineweb">
+  <h2>FineWeb：先做消融，再选规则</h2>
+  <p>FineWeb 论文没有简单地把五十多条候选规则全部叠加。作者先在高、低质量数据子集上比较统计量分布，再提出候选阈值，随后通过数据消融评估其效果。论文的最终 FineWeb 管线处理了 96 个 Common Crawl 快照，形成 15T-token 数据集。</p>
+  <div class="step-list">
+    <div><span>01</span><section><h3>WARC + Trafilatura 抽取</h3><p>从原始归档抽取网页正文，而不是直接把 WET 当作高质量主内容。</p></section></div>
+    <div><span>02</span><section><h3>基础过滤</h3><p>URL blocklist、fastText 英语得分阈值，以及来自 MassiveText 的质量与重复规则。</p></section></div>
+    <div><span>03</span><section><h3>逐 crawl MinHash 去重</h3><p>对每个快照独立去重，避免全局去重把旧快照中相对高质量的内容过度删掉。</p></section></div>
+    <div><span>04</span><section><h3>选择性采用 C4 过滤</h3><p>作者保留了部分 C4 规则，但没有采用终止标点规则，因为该规则在实验中移除了过多 token。</p></section></div>
+    <div><span>05</span><section><h3>新增三条启发式规则</h3><p>根据行标点、重复行字符比例和短行比例筛选低质量文档。</p></section></div>
+  </div>
+  <p>FineWeb §3.6 报告的三条自定义规则及其消融统计如下。这里的百分比是论文实验中被移除的 token 比例，不是任意数据集的默认参数：</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>统计量</th><th>过滤条件</th><th>该规则在消融中移除的 token</th></tr></thead>
+    <tbody>
+      <tr><td>以标点结尾的行占比</td><td>不高于 0.12</td><td>10.14%</td></tr>
+      <tr><td>重复行字符占比</td><td>不低于 0.10</td><td>12.47%</td></tr>
+      <tr><td>短于 30 字符的行占比</td><td>不低于 0.67</td><td>3.73%</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>如何正确解读：</strong>论文报告这三条规则联合使用时，在其 28B-token 消融实验中约移除了 22% token，aggregate score 提升约 1%。这是特定快照、模型规模、token 预算和评测集下的结果，不应被写成“所有语料过滤后必然提升 1%”。</div>
+</section>
+<section id="thresholds">
+  <h2>把阈值变成可审计的实验</h2>
+  <p>一个更稳妥的规则开发流程是：</p>
+  <ol>
+    <li>定义目标语料和明确的负例类型，不要把“看起来不专业”当成标签。</li>
+    <li>从不同语言、来源、网页类型和文档长度分层抽样。</li>
+    <li>计算候选统计量，查看高质量与低质量样本的分布重叠。</li>
+    <li>提出候选阈值，人工检查边界样本和误杀样本。</li>
+    <li>做逐条与组合消融，记录过滤量、保留分布和下游影响。</li>
+    <li>将规则版本、阈值、统计口径、命中原因写入 filter_trace。</li>
+  </ol>
+  <p>规则可以返回 <code>keep</code>、<code>drop</code> 或 <code>review</code>，不必每次都做二元删除。对不确定样本进入复核桶，通常比不断提高阈值更安全。</p>
+</section>
+<section id="tradeoff">
+  <h2>规则过滤与模型过滤是互补关系</h2>
+  <p>规则擅长发现可明确表达的模式；模型分类器擅长从多个弱信号中估计更抽象的质量维度。两者都可能偏差：规则可能误删专业内容，分类器可能偏好与标注者相似的表达风格。DCLM 的研究表明，模型化过滤在其受控基准中很重要，但不能据此推断所有项目都应完全替换启发式规则。</p>
+  <p>工程上可以先用低成本规则排除明显异常，再对剩余样本做更昂贵的分类或人工抽检；也可以保留多个质量分数供后续采样，而不是一次性删除所有低分样本。</p>
+</section>
+<section id="rule-demo">
+  <h2>交互练习：阈值会怎样改变文档决策？</h2>
+  <p>下面是教学用的合成样本。横轴分数仅用于演示“阈值—保留率”的关系，不代表 FineWeb 论文中的质量分数。</p>
+  <label class="range-label" for="rule-threshold">示例阈值：<output id="rule-threshold-value">0.50</output></label>
+  <input id="rule-threshold" type="range" min="0.10" max="0.90" step="0.05" value="0.50">
+  <div id="rule-samples" class="sample-list" aria-live="polite"></div>
+</section>
+<section id="references">
+  <h2>本章参考资料</h2>
+  <ol class="references">
+    <li>Raffel et al. (2020), <a href="https://jmlr.org/papers/v21/20-074.html">T5 / C4</a>.</li>
+    <li>Penedo et al. (2024), <a href="https://arxiv.org/abs/2406.17557">The FineWeb Datasets</a>，尤其是 §3.3–§3.7。</li>
+    <li>Li et al. (2024), <a href="https://arxiv.org/abs/2406.11794">DataComp-LM</a>：数据过滤策略的受控比较。</li>
+    <li><a href="https://github.com/huggingface/datatrove">Hugging Face DataTrove</a>：FineWeb 数据整理工具链的开源实现。</li>
+  </ol>
+</section>
+        <footer class="article-footer">
+          <a href="04.html">← 上一章</a>
+          <a href="index.html">返回课程总览</a>
+          <a href="06.html">下一章 →</a>
+        </footer>
+      </article>
+    </main>
+  </div>
 </div>
-</div>
+<script>
+(() => {
+  const samples=[
+    {name:"连贯长文档",score:0.88},
+    {name:"含少量模板噪声的文章",score:0.63},
+    {name:"重复导航和短行聚合页",score:0.31},
+    {name:"结构化代码教程",score:0.57},
+    {name:"极短占位页面",score:0.18}
+  ];
+  const slider=document.getElementById("rule-threshold");
+  const output=document.getElementById("rule-threshold-value");
+  const list=document.getElementById("rule-samples");
+  function render(){
+    const threshold=Number(slider.value);
+    output.textContent=threshold.toFixed(2);
+    list.replaceChildren();
+    samples.forEach(sample=>{
+      const row=document.createElement("div");
+      row.className="sample-row";
+      const label=document.createElement("span");
+      label.textContent=sample.name+" · 教学分数 "+sample.score.toFixed(2);
+      const result=document.createElement("strong");
+      result.textContent=sample.score>=threshold?"暂时保留":"进入过滤 / 复核";
+      row.append(label,result);
+      list.append(row);
+    });
+  }
+  slider.addEventListener("input",render);
+  render();
+})();
+</script>
 </body>
 </html>
