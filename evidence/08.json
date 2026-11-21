@@ -1,0 +1,52 @@
+{
+  "chapter": "08",
+  "title": "MinHash 近邻去重",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "08-C1",
+      "claim": "For a uniformly random permutation of the shingle universe, the probability that two sets have the same minimum element equals their Jaccard resemblance.",
+      "kind": "paper-method",
+      "source_url": "https://doi.org/10.1109/SEQUEN.1997.666900",
+      "locator": "Broder (1997), §3 Estimating resemblance and containment; theorem on random permutation sketches",
+      "status": "verified",
+      "notes": "This is the ideal MinHash property; finite hash implementations approximate random permutations."
+    },
+    {
+      "id": "08-C2",
+      "claim": "FineWeb uses word 5-grams, 112 MinHash functions and 14 bands of 8 hashes; two documents become a candidate pair when one band matches all 8 values.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4 and Appendix E.1",
+      "status": "verified",
+      "notes": "Parameters are FineWeb's experimental choice, not a universal deduplication configuration."
+    },
+    {
+      "id": "08-C3",
+      "claim": "For FineWeb's 14-by-8 banding, candidate probabilities at Jaccard similarities 0.70, 0.75, 0.80 and 0.85 are approximately 56%, 77%, 92% and 98.8%.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, Appendix E.1, candidate probability calculation and Figure 13",
+      "status": "verified",
+      "notes": "Values follow 1 - (1 - s^8)^14 under the paper's independent-band probability model."
+    },
+    {
+      "id": "08-C4",
+      "claim": "FineWeb groups documents transitively: if A-B and B-C are duplicate pairs, they can belong to the same cluster even when A-B is not a direct matching pair.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4 Deduplication",
+      "status": "verified",
+      "notes": "Connected-component clustering can create chaining; it does not imply every pair inside a cluster exceeds the pairwise threshold."
+    },
+    {
+      "id": "08-C5",
+      "claim": "DataTrove's MinhashConfig exposes n_grams, num_buckets and hashes_per_bucket, and its pipeline computes signatures before bucket matching and clustering.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/5484e67ab81daf66c689106054d5133910d731c2/src/datatrove/pipeline/dedup/minhash.py",
+      "locator": "MinhashConfig; MinhashDedupSignature; MinhashDedupBuckets; MinhashDedupCluster",
+      "status": "verified",
+      "notes": "Implementation snapshot pinned to repository commit 5484e67."
+    }
+  ]
+}

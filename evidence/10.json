@@ -1,0 +1,52 @@
+{
+  "chapter": "10",
+  "title": "困惑度质量过滤",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "10-C1",
+      "claim": "CCNet trains a per-language 5-gram Kneser-Ney language model on a target high-quality domain such as Wikipedia and uses KenLM to compute paragraph perplexity.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1911.00359",
+      "locator": "§3.4 LM filtering",
+      "status": "verified",
+      "notes": "The language model and target domain are language-specific; the score is relative to that reference distribution."
+    },
+    {
+      "id": "10-C2",
+      "claim": "CCNet divides each language's documents into equally sized head, middle and tail groups by perplexity rather than deleting all high-perplexity content.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1911.00359",
+      "locator": "§3.4 LM filtering and §5.2 Statistics from the language model",
+      "status": "verified",
+      "notes": "The paper explicitly retains tail data because some valid comments and specialized-domain text differ from Wikipedia."
+    },
+    {
+      "id": "10-C3",
+      "claim": "CCNet reports that lower perplexity indicates closer fit to the target domain, but valid specialized forums and spoken-style comments can appear in the high-perplexity tail.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/1911.00359",
+      "locator": "§5.2 Statistics from the language model",
+      "status": "verified",
+      "notes": "This is the central caveat against interpreting PPL as universal quality."
+    },
+    {
+      "id": "10-C4",
+      "claim": "KenLM's Python Model.score returns a log10 sentence probability and Model.perplexity exponentiates the negative average log10 score using the predicted token count including EOS.",
+      "kind": "implementation",
+      "source_url": "https://github.com/kpu/kenlm/blob/4cb443e60b7bf2c0ddf3c745378f76cb59e254e5/python/kenlm.pyx",
+      "locator": "Model.score() and Model.perplexity() implementation; commit 4cb443e",
+      "status": "verified",
+      "notes": "For subword models, pass the same whitespace-separated subword sequence used to train the model."
+    },
+    {
+      "id": "10-C5",
+      "claim": "Perplexity is the exponentiated average negative log-likelihood and depends directly on tokenization, so comparisons require a consistent tokenizer and scoring protocol.",
+      "kind": "official-doc",
+      "source_url": "https://huggingface.co/docs/transformers/perplexity",
+      "locator": "Perplexity definition and tokenization caveat",
+      "status": "verified",
+      "notes": "Perplexity is not directly comparable across different tokenizers or incompatible model contexts."
+    }
+  ]
+}

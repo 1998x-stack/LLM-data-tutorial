@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 350" role="img" aria-labelledby="title desc">
+<title id="title">精确去重的内容指纹流水线</title><desc id="desc">原始文档按显式规范化策略得到规范文本，再计算 SHA-256 指纹；相同指纹进入候选核验，比较规范化内容后决定保留或标记重复。</desc>
+<rect width="1200" height="350" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<rect x="45" y="94" width="185" height="125" rx="14" fill="#e8f0f7" stroke="#91abc0"/><text x="137" y="132" text-anchor="middle" font-size="15" font-weight="700" fill="#284b61">RAW DOCUMENT</text><text x="137" y="165" text-anchor="middle" font-size="17" fill="#203b43">原始文档</text><text x="137" y="191" text-anchor="middle" font-size="12" fill="#536b75">HTML / extracted text</text>
+<rect x="285" y="94" width="185" height="125" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="377" y="132" text-anchor="middle" font-size="15" font-weight="700" fill="#93641c">NORMALIZE</text><text x="377" y="165" text-anchor="middle" font-size="17" fill="#203b43">规范化</text><text x="377" y="191" text-anchor="middle" font-size="12" fill="#536b75">policy / unicode / whitespace</text>
+<rect x="525" y="94" width="185" height="125" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="617" y="132" text-anchor="middle" font-size="15" font-weight="700" fill="#665b9a">SHA-256</text><text x="617" y="165" text-anchor="middle" font-size="17" fill="#203b43">内容指纹</text><text x="617" y="191" text-anchor="middle" font-size="12" fill="#536b75">fixed-length digest</text>
+<rect x="765" y="94" width="185" height="125" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="857" y="132" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">EXACT INDEX</text><text x="857" y="165" text-anchor="middle" font-size="17" fill="#203b43">候选核验</text><text x="857" y="191" text-anchor="middle" font-size="12" fill="#536b75">digest + content compare</text>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M230 156 H277"/><path d="M470 156 H517"/><path d="M710 156 H757"/></g><g fill="#6d8790"><path d="M269 148 L285 156 L269 164Z"/><path d="M509 148 L525 156 L509 164Z"/><path d="M749 148 L765 156 L749 164Z"/></g>
+<path d="M950 156 H1000 V88 H1030" stroke="#6d8790" stroke-width="2" fill="none"/><path d="M950 156 H1000 V245 H1030" stroke="#6d8790" stroke-width="2" fill="none"/>
+<rect x="1032" y="55" width="132" height="66" rx="12" fill="#e4f3f1" stroke="#86bdb5"/><text x="1098" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">KEEP</text>
+<rect x="1032" y="212" width="132" height="66" rx="12" fill="#fff0e9" stroke="#dfab97"/><text x="1098" y="251" text-anchor="middle" font-size="15" font-weight="700" fill="#a34d35">DUPLICATE</text>
+<text x="600" y="302" text-anchor="middle" font-size="13" fill="#536b75">哈希用于缩短比较键；规范化定义“相同”，最终核验决定是否删除</text>
+</g></svg>

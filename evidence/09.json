@@ -1,0 +1,52 @@
+{
+  "chapter": "09",
+  "title": "多粒度去重策略",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "09-C1",
+      "claim": "FineWeb's global MinHash deduplication across all 96 snapshots removed as much as 90% of the original base-filtered data from the oldest snapshots in its iterative ordering.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4 Deduplication, global MinHash experiment",
+      "status": "verified",
+      "notes": "Specific to the snapshot ordering and filtering setup in the FineWeb experiments."
+    },
+    {
+      "id": "09-C2",
+      "claim": "The FineWeb paper reports approximately 4T tokens after global MinHash deduplication versus approximately 20T after independently deduplicating each snapshot.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4 Deduplication, global and individual MinHash experiments",
+      "status": "verified",
+      "notes": "Token counts refer to the paper's data variants and GPT-2 tokenization context."
+    },
+    {
+      "id": "09-C3",
+      "claim": "For an older crawl studied in FineWeb, the retained slice after global deduplication was judged lower quality than the removed slice, with more ads, incoherent keyword lists and poorly formatted text.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4, analysis of the 2013-48 snapshot and Figure 4",
+      "status": "verified",
+      "notes": "This is an empirical finding for the examined crawl and pipeline, not a universal claim about old web data."
+    },
+    {
+      "id": "09-C4",
+      "claim": "FineWeb selected independent per-snapshot MinHash deduplication after its ablations, and the resulting sampled dataset matched RefinedWeb performance in the reported comparison.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "v2, §3.4 and Figure 5",
+      "status": "verified",
+      "notes": "Performance is tied to the paper's sampled training setup and aggregate task suite."
+    },
+    {
+      "id": "09-C5",
+      "claim": "DataTrove builds duplicate clusters with union-find and its MinhashDedupFilter keeps the cluster root; this default is not a quality-ranked representative selection.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/5484e67ab81daf66c689106054d5133910d731c2/src/datatrove/pipeline/dedup/minhash.py",
+      "locator": "MinhashDedupCluster class docstring and union()/parent() implementation",
+      "status": "verified",
+      "notes": "Pinned to the inspected DataTrove commit; representative behavior may change in later versions."
+    }
+  ]
+}

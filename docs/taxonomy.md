@@ -29,8 +29,11 @@ Each chapter has exactly one primary category and may have multiple tags and too
 Prefer stable, reusable lowercase tags. Do not create a new spelling for the same concept.
 
 - Process: acquisition, extraction, normalization, language-id, filtering, deduplication, quality-scoring, decontamination, data-mixing, tokenization, reproducibility.
-- Method: heuristics, exact-match, minhash, lsh, perplexity, classifier, sampling, ablation.
+- Method: heuristics, exact-match, minhash, lsh, jaccard, shingling, bloom-filter, perplexity, cross-entropy, classifier, sampling, ablation.
 - Format / data: common-crawl, warc, wat, wet, html, parquet, arrow, jsonl, multilingual, code-data, web-text.
+- URL / source governance: url-filtering, url-canonicalization, domain-filtering, blocklist, source-provenance, rfc3986.
+- Dedup engineering: sha256, false-positive, paragraph-level, document-level, cross-crawl, dedup-granularity, duplicate-clustering, representative-selection.
+- Language-model scoring: ngram, kneser-ney, kenlm, quality-scoring, domain-adaptation.
 - Tool: fasttext, trafilatura, warcio, datatrove, dolma, spark, ray, sentencepiece.
 - Research anchors: c4, ccnet, the-pile, refinedweb, fineweb, fineweb-edu, dclm.
 - Concern: privacy, pii, license, bias, benchmark-contamination, low-resource-languages.
@@ -41,5 +44,7 @@ Prefer stable, reusable lowercase tags. Do not create a new spelling for the sam
 2. Avoid one-off tags unless a named paper, tool or standard is central.
 3. Keep names canonical (fasttext, not FastText, fast-text and fastText as separate tags).
 4. Add tool tags only when the chapter contains substantive implementation or comparison.
-5. Do not infer a paper's conclusion from a tag.
-6. Update this taxonomy and courses.json together when introducing a new category or namespace.
+5. Use URL and source-governance tags only when the chapter defines a concrete normalization or filtering policy.
+6. Keep method parameters in article text and evidence ledgers; do not encode experimental thresholds as generic tags.
+7. Do not infer a paper's conclusion from a tag.
+8. Update this taxonomy and courses.json together when introducing a new category or namespace.

@@ -5,9 +5,11 @@
 - courses.json parses and contains unique chapter numbers and valid category IDs.
 - courses-data.js is reproducibly generated from courses.json.
 - Every chapter file exists and every local chapter link resolves.
-- New articles have one H1, semantic main/article/nav, figure captions and primary references.
+- New articles 01–10 have one H1, semantic main/article/nav, figure captions, accessible MathML and primary references.
+- Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability and perplexity score conversion.
 - SVG files parse as XML, have viewBox/title/desc and unique IDs.
 - MathML is not nested inside SVG; fractions/scripts have correct child arity; display formulas have accessible scroll regions.
+- Interactive algorithm calculators use the stated paper parameters and distinguish theoretical probabilities from empirical accuracy.
 - Evidence ledger JSON parses and every verified claim has a source and locator.
 - No external CDN is required for page rendering.
 

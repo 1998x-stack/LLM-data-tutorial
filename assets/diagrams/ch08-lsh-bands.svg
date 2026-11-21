@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 350" role="img" aria-labelledby="title desc">
+<title id="title">LSH Banding 候选生成</title><desc id="desc">112 个 MinHash 值拆成 14 个 band，每个 band 有 8 行；两个文档在任意一个 band 内 8 个值全部相同，就成为候选对。</desc>
+<rect width="1200" height="350" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<text x="44" y="48" font-size="16" font-weight="700" fill="#203b43">ONE DOCUMENT SIGNATURE · 112 HASH VALUES</text>
+<g transform="translate(44 80)"><rect x="0" y="0" width="610" height="188" rx="12" fill="#fff" stroke="#cbd8d5"/>
+<g fill="#e8f0f7" stroke="#91abc0"><rect x="18" y="18" width="72" height="152" rx="7"/><rect x="100" y="18" width="72" height="152" rx="7"/><rect x="182" y="18" width="72" height="152" rx="7"/><rect x="264" y="18" width="72" height="152" rx="7"/><rect x="346" y="18" width="72" height="152" rx="7"/><rect x="428" y="18" width="72" height="152" rx="7"/><rect x="510" y="18" width="82" height="152" rx="7"/></g>
+<g fill="#284b61" font-size="12" text-anchor="middle"><text x="54" y="42">Band 1</text><text x="136" y="42">Band 2</text><text x="218" y="42">Band 3</text><text x="300" y="42">Band 4</text><text x="382" y="42">Band 5</text><text x="464" y="42">…</text><text x="551" y="42">Band 14</text></g>
+<g stroke="#91abc0" stroke-width="1"><path d="M27 58 H81 M27 72 H81 M27 86 H81 M27 100 H81 M27 114 H81 M27 128 H81 M27 142 H81 M27 156 H81"/><path d="M109 58 H163 M109 72 H163 M109 86 H163 M109 100 H163 M109 114 H163 M109 128 H163 M109 142 H163 M109 156 H163"/></g>
+<text x="300" y="208" text-anchor="middle" font-size="12" fill="#536b75">each band = 8 rows</text></g>
+<path d="M680 174 H760" stroke="#6d8790" stroke-width="3"/><path d="M752 166 L768 174 L752 182Z" fill="#6d8790"/>
+<rect x="780" y="86" width="170" height="172" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="865" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#93641c">BAND MATCH</text><text x="865" y="160" text-anchor="middle" font-size="14" fill="#76551d">8 / 8 equal</text><text x="865" y="192" text-anchor="middle" font-size="13" fill="#76551d">in any band</text><text x="865" y="225" text-anchor="middle" font-size="12" fill="#536b75">candidate pair</text>
+<path d="M950 174 H1000" stroke="#6d8790" stroke-width="3"/><path d="M992 166 L1008 174 L992 182Z" fill="#6d8790"/>
+<rect x="1018" y="86" width="144" height="172" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="1090" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">VERIFY</text><text x="1090" y="160" text-anchor="middle" font-size="13" fill="#42666a">exact Jaccard</text><text x="1090" y="192" text-anchor="middle" font-size="13" fill="#42666a">cluster / filter</text><text x="1090" y="225" text-anchor="middle" font-size="12" fill="#536b75">not auto-delete</text>
+<text x="600" y="315" text-anchor="middle" font-size="13" fill="#536b75">Banding reduces candidate comparisons; it trades recall against candidate volume</text>
+</g></svg>

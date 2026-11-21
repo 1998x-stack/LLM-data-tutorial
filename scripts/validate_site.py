@@ -82,7 +82,7 @@ def validate():
             if target and not (path.parent / target).exists():
                 errors.append(f"{chapter['file']}: missing local asset/link {target}")
         errors.extend(f"{chapter['file']}: {error}" for error in parser.errors)
-        if chapter["num"] in {"01", "02", "03", "04", "05"}:
+        if chapter["num"] in {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10"}:
             if parser.h1 != 1: errors.append(f"{chapter['file']}: expected one H1, got {parser.h1}")
             if parser.main != 1: errors.append(f"{chapter['file']}: expected one main, got {parser.main}")
             if parser.nav < 1: errors.append(f"{chapter['file']}: missing nav")

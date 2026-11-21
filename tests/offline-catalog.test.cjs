@@ -44,14 +44,30 @@ test('homepage renders chapter metadata with textContent rather than innerHTML',
   assert.doesNotMatch(html, /\.innerHTML\s*=/);
 });
 
-test('first five chapters are deeply revised and have evidence ledgers', () => {
-  for (let index = 1; index <= 5; index++) {
+test('first ten chapters are deeply revised and have evidence ledgers', () => {
+  for (let index = 1; index <= 10; index++) {
     const number = String(index).padStart(2, '0');
     const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
     const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
     assert.match(article, /<h1>/);
     assert.match(article, /<main/);
     assert.match(article, /<figure/);
-    assert.ok(evidence.claims.length >= 3);
+    assert.ok(evidence.claims.length >= 5);
+  }
+});
+
+test('second batch chapters expose accessible interactive exercises and verified evidence', () => {
+  for (let index = 6; index <= 10; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
+    assert.match(article, /aria-live="polite"/);
+    assert.match(article, /<figure class="diagram">/);
+    assert.match(article, /<footer class="article-footer">/);
+    assert.ok(evidence.claims.length >= 5);
+    for (const claim of evidence.claims) {
+      assert.ok(claim.source_url, number + ': ' + claim.id + ' missing source_url');
+      assert.ok(claim.locator, number + ': ' + claim.id + ' missing locator');
+    }
   }
 });
