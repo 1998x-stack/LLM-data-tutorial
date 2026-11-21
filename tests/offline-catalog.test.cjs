@@ -87,3 +87,12 @@ test('third batch chapters 11-15 expose interactive exercises and evidence ledge
     }
   }
 });
+
+test('batch 03 mathematical expressions use semantic MathML, not unrendered TeX', () => {
+  for (let index = 11; index <= 14; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    assert.match(article, /<math/);
+    assert.equal(article.includes(String.fromCharCode(92) + '('), false);
+  }
+});
