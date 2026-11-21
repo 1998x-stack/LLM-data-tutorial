@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" role="img" aria-labelledby="title desc">
+<title id="title">fastText 语言识别与阈值路由</title><desc id="desc">输入文本经过字符 n-gram 特征化和监督分类，输出多个候选语言及分数，再通过阈值进入目标语言桶、低置信度复核或其他语言桶。</desc>
+<rect width="1200" height="380" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<rect x="38" y="90" width="200" height="150" rx="14" fill="#e8f0f7" stroke="#91abc0"/><text x="138" y="127" text-anchor="middle" font-size="16" font-weight="700" fill="#284b61">INPUT TEXT</text><text x="138" y="163" text-anchor="middle" font-size="14" fill="#304c5d">自然语言 / 混合语</text><text x="138" y="193" text-anchor="middle" font-size="12" fill="#536b75">UTF-8 · 文档片段</text>
+<rect x="300" y="90" width="200" height="150" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="400" y="127" text-anchor="middle" font-size="16" font-weight="700" fill="#665b9a">CHAR N-GRAMS</text><text x="400" y="163" text-anchor="middle" font-size="14" fill="#514780">字符子串特征</text><text x="400" y="193" text-anchor="middle" font-size="12" fill="#536b75">局部拼写模式</text>
+<rect x="562" y="90" width="200" height="150" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="662" y="127" text-anchor="middle" font-size="16" font-weight="700" fill="#93641c">CLASSIFIER</text><text x="662" y="163" text-anchor="middle" font-size="14" fill="#76551d">监督分类模型</text><text x="662" y="193" text-anchor="middle" font-size="12" fill="#536b75">scores over labels</text>
+<rect x="824" y="90" width="170" height="150" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="909" y="127" text-anchor="middle" font-size="16" font-weight="700" fill="#176d6b">THRESHOLD</text><text x="909" y="163" text-anchor="middle" font-size="14" fill="#176d6b">target score ≥ τ</text><text x="909" y="193" text-anchor="middle" font-size="12" fill="#536b75">validated on sample</text>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M238 165 H288"/><path d="M500 165 H550"/><path d="M762 165 H812"/></g><g fill="#6d8790"><path d="M281 157 L297 165 L281 173Z"/><path d="M543 157 L559 165 L543 173Z"/><path d="M805 157 L821 165 L805 173Z"/></g>
+<path d="M909 240 V282 H720" fill="none" stroke="#087e80" stroke-width="2"/><path d="M909 240 V282 H1020" fill="none" stroke="#c65e42" stroke-width="2"/>
+<rect x="540" y="290" width="180" height="54" rx="10" fill="#e4f3f1" stroke="#86bdb5"/><text x="630" y="323" text-anchor="middle" font-size="14" font-weight="700" fill="#176d6b">目标语言桶</text>
+<rect x="790" y="290" width="180" height="54" rx="10" fill="#fff0e9" stroke="#dfab97"/><text x="880" y="323" text-anchor="middle" font-size="14" font-weight="700" fill="#a34d35">复核 / 其他语言</text>
+<text x="600" y="48" text-anchor="middle" font-size="14" fill="#536b75">分类分数用于排序和路由；未经校准，不等于真实后验概率</text>
+</g></svg>

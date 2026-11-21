@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 410" role="img" aria-labelledby="title desc">
+<title id="title">网页正文抽取：主内容与 boilerplate 分离</title><desc id="desc">HTML 页面中包含导航、广告、标题、正文、推荐内容和页脚，正文抽取器需要识别主体并保留结构。</desc>
+<rect width="1200" height="410" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<rect x="42" y="46" width="475" height="316" rx="14" fill="#fff" stroke="#cbd8d5"/><text x="68" y="82" font-size="16" font-weight="700" fill="#203b43">RAW HTML / DOM TREE</text>
+<rect x="68" y="105" width="423" height="38" rx="7" fill="#f8e9e3" stroke="#e5b8a8"/><text x="88" y="130" font-size="14" fill="#8b4a37">导航 / 菜单 / 登录</text>
+<rect x="68" y="153" width="423" height="38" rx="7" fill="#e4f3f1" stroke="#a6d0ca"/><text x="88" y="178" font-size="14" font-weight="700" fill="#176d6b">文章标题 / 作者 / 日期</text>
+<rect x="68" y="201" width="423" height="105" rx="7" fill="#e4f3f1" stroke="#86bdb5" stroke-width="2"/><text x="88" y="229" font-size="14" font-weight="700" fill="#176d6b">主要正文</text><text x="88" y="255" font-size="12" fill="#42666a">段落 · 列表 · 引用 · 代码 · 表格</text><text x="88" y="280" font-size="12" fill="#42666a">有序结构与语义关系需要尽量保留</text>
+<rect x="68" y="316" width="200" height="28" rx="6" fill="#f8e9e3" stroke="#e5b8a8"/><text x="168" y="335" text-anchor="middle" font-size="12" fill="#8b4a37">推荐阅读</text><rect x="280" y="316" width="211" height="28" rx="6" fill="#f8e9e3" stroke="#e5b8a8"/><text x="385" y="335" text-anchor="middle" font-size="12" fill="#8b4a37">页脚 / 隐私声明</text>
+<path d="M535 204 H652" stroke="#6d8790" stroke-width="3"/><path d="M644 196 L660 204 L644 212" fill="none" stroke="#6d8790" stroke-width="3"/>
+<rect x="672" y="98" width="190" height="210" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="767" y="135" text-anchor="middle" font-size="15" font-weight="700" fill="#93641c">EXTRACTOR</text><text x="767" y="172" text-anchor="middle" font-size="13" fill="#76551d">DOM signals</text><text x="767" y="198" text-anchor="middle" font-size="13" fill="#76551d">text density</text><text x="767" y="224" text-anchor="middle" font-size="13" fill="#76551d">link / repetition</text><text x="767" y="250" text-anchor="middle" font-size="13" fill="#76551d">fallback cascade</text>
+<path d="M862 204 H963" stroke="#6d8790" stroke-width="3"/><path d="M955 196 L971 204 L955 212" fill="none" stroke="#6d8790" stroke-width="3"/>
+<rect x="982" y="120" width="176" height="170" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="1070" y="157" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">STRUCTURED TEXT</text><text x="1070" y="194" text-anchor="middle" font-size="13" fill="#42666a">title + body</text><text x="1070" y="220" text-anchor="middle" font-size="13" fill="#42666a">lists / code / tables</text><text x="1070" y="246" text-anchor="middle" font-size="13" fill="#42666a">metadata + provenance</text>
+</g></svg>

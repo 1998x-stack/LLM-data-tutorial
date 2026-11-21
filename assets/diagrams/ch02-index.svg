@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+<title id="title">使用 Common Crawl URL 索引定位 WARC 字节范围</title><desc id="desc">查询 crawl 的 URL 索引，获取文件名、偏移和长度，再通过 HTTP Range 读取目标归档记录。</desc>
+<rect width="1200" height="300" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<rect x="40" y="74" width="260" height="142" rx="14" fill="#e8f0f7" stroke="#91abc0"/><text x="170" y="111" text-anchor="middle" font-size="16" font-weight="700" fill="#284b61">1 · URL + crawl ID</text><text x="170" y="145" text-anchor="middle" font-size="14" fill="#304c5d">example.org/article</text><text x="170" y="177" text-anchor="middle" font-size="12" fill="#536b75">CC-MAIN-2026-43</text>
+<rect x="470" y="74" width="260" height="142" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="600" y="111" text-anchor="middle" font-size="16" font-weight="700" fill="#665b9a">2 · CDX URL Index</text><text x="600" y="145" text-anchor="middle" font-size="14" fill="#514780">filename</text><text x="600" y="169" text-anchor="middle" font-size="14" fill="#514780">offset · length</text><text x="600" y="193" text-anchor="middle" font-size="12" fill="#536b75">record location</text>
+<rect x="900" y="74" width="260" height="142" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="1030" y="111" text-anchor="middle" font-size="16" font-weight="700" fill="#176d6b">3 · HTTP Range</text><text x="1030" y="145" text-anchor="middle" font-size="14" fill="#176d6b">bytes = offset …</text><text x="1030" y="177" text-anchor="middle" font-size="12" fill="#536b75">read target WARC record</text>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M300 145 H458"/><path d="M730 145 H888"/></g><g fill="#6d8790"><path d="M450 137 L466 145 L450 153Z"/><path d="M880 137 L896 145 L880 153Z"/></g>
+<text x="600" y="263" text-anchor="middle" font-size="13" fill="#536b75">先定位，再下载；不要为查询单个 URL 而扫描整个压缩归档</text>
+</g></svg>

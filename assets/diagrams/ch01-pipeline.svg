@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+<title id="title">LLM 预训练数据工程流水线</title><desc id="desc">从多源数据采集开始，经过正文提取、规范化和过滤、去重、质量评估与数据混合、分词，形成训练样本。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6 Z" fill="#6d8790"/></marker></defs>
+<rect x="1" y="1" width="1198" height="428" rx="24" fill="#fbfdfb" stroke="#dce5e3"/>
+<text x="42" y="48" font-size="18" font-weight="700" fill="#203b43">RAW SOURCES → TRAINING SIGNAL</text>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<g><rect x="40" y="105" width="160" height="110" rx="14" fill="#e8f0f7" stroke="#8ca9bf"/><text x="120" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#284b61">01 · ACQUIRE</text><text x="120" y="171" text-anchor="middle" font-size="18" fill="#203b43">数据采集</text><text x="120" y="195" text-anchor="middle" font-size="12" fill="#536b75">source / crawl / WARC</text></g>
+<g><rect x="240" y="105" width="160" height="110" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="320" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">02 · EXTRACT</text><text x="320" y="171" text-anchor="middle" font-size="18" fill="#203b43">正文抽取</text><text x="320" y="195" text-anchor="middle" font-size="12" fill="#536b75">HTML → structured text</text></g>
+<g><rect x="440" y="105" width="160" height="110" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="520" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#93641c">03 · CLEAN</text><text x="520" y="171" text-anchor="middle" font-size="18" fill="#203b43">规范化 / 过滤</text><text x="520" y="195" text-anchor="middle" font-size="12" fill="#536b75">language / URL / rules</text></g>
+<g><rect x="640" y="105" width="160" height="110" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="720" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#665b9a">04 · DEDUP</text><text x="720" y="171" text-anchor="middle" font-size="18" fill="#203b43">去重</text><text x="720" y="195" text-anchor="middle" font-size="12" fill="#536b75">exact / fuzzy / cluster</text></g>
+<g><rect x="840" y="105" width="160" height="110" rx="14" fill="#fff0e9" stroke="#dfab97"/><text x="920" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#a34d35">05 · SELECT</text><text x="920" y="171" text-anchor="middle" font-size="18" fill="#203b43">质量 / 混合</text><text x="920" y="195" text-anchor="middle" font-size="12" fill="#536b75">score / sample / audit</text></g>
+<g><rect x="1040" y="105" width="120" height="110" rx="14" fill="#e9f2ed" stroke="#9bb9a7"/><text x="1100" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="#416d50">06 · TOKEN</text><text x="1100" y="171" text-anchor="middle" font-size="18" fill="#203b43">分词</text><text x="1100" y="195" text-anchor="middle" font-size="12" fill="#536b75">token stream</text></g>
+<g fill="none" stroke="#6d8790" stroke-width="3" marker-end="url(#arrow)"><path d="M200 160 H232"/><path d="M400 160 H432"/><path d="M600 160 H632"/><path d="M800 160 H832"/><path d="M1000 160 H1032"/></g>
+<rect x="240" y="285" width="720" height="88" rx="14" fill="#fff" stroke="#dce5e3"/>
+<text x="600" y="317" text-anchor="middle" font-size="15" font-weight="700" fill="#203b43">每个阶段都需要保留可追溯的变换记录</text>
+<text x="600" y="346" text-anchor="middle" font-size="13" fill="#536b75">doc_id · source · crawl_id · tool_version · config · decision_reason · output_hash</text>
+<path d="M520 215 V270 H600 V277" stroke="#b67b19" stroke-width="2" fill="none" stroke-dasharray="6 5"/>
+</g></svg>

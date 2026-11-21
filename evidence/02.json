@@ -1,0 +1,52 @@
+{
+  "chapter": "02",
+  "title": "Common Crawl 数据采集",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "02-C1",
+      "claim": "Common Crawl WARC records preserve raw crawl records including HTTP responses, requests and crawl metadata.",
+      "kind": "official-doc",
+      "source_url": "https://commoncrawl.org/get-started",
+      "locator": "Get Started, Data Types / The WARC Format",
+      "status": "verified",
+      "notes": "WARC files contain multiple records; do not equate one file with one page."
+    },
+    {
+      "id": "02-C2",
+      "claim": "WAT contains JSON metadata derived from WARC records, including HTTP headers and HTML link metadata.",
+      "kind": "official-doc",
+      "source_url": "https://commoncrawl.org/get-started",
+      "locator": "Get Started, The WAT Format",
+      "status": "verified",
+      "notes": "WAT is metadata, not the complete HTML payload."
+    },
+    {
+      "id": "02-C3",
+      "claim": "WET is a WARC Encapsulated Text view that stores extracted plaintext for text-oriented use cases.",
+      "kind": "official-doc",
+      "source_url": "https://commoncrawl.org/get-started",
+      "locator": "Get Started, The WET Format",
+      "status": "verified",
+      "notes": "Plaintext extraction does not imply main-content or boilerplate quality."
+    },
+    {
+      "id": "02-C4",
+      "claim": "The Common Crawl URL Index Server supports CDX URL-index queries for crawl archives.",
+      "kind": "official-doc",
+      "source_url": "https://index.commoncrawl.org/",
+      "locator": "Index Server landing page and API guidance",
+      "status": "verified",
+      "notes": "Bulk domain-scale work should use the appropriate columnar/offline index rather than overloading the URL query service."
+    },
+    {
+      "id": "02-C5",
+      "claim": "In FineWeb's ablation, WET retained too much boilerplate and menu text compared with Trafilatura extraction from WARC; the WARC-based extraction performed better in that experimental setup.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.2 Text extraction and Figure 1",
+      "status": "verified",
+      "notes": "Specific to the paper's extraction pipeline, model, token budget and evaluation setup; not a universal extractor ranking."
+    }
+  ]
+}

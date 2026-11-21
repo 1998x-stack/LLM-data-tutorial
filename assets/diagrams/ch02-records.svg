@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+<title id="title">Common Crawl 的 WARC、WAT、WET 格式对比</title><desc id="desc">WARC 保存原始抓取记录，WAT 保存结构化元数据与链接，WET 保存从网页抽取的纯文本。</desc>
+<rect width="1200" height="430" rx="24" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<g><rect x="42" y="48" width="350" height="325" rx="18" fill="#e8f0f7" stroke="#91abc0"/><text x="72" y="91" font-size="25" font-weight="800" fill="#284b61">WARC</text><text x="72" y="119" font-size="13" fill="#536b75">Web ARChive · 原始归档</text>
+<rect x="72" y="151" width="290" height="48" rx="8" fill="#fff" stroke="#b8cad6"/><text x="88" y="181" font-size="15" fill="#284b61">WARC headers · URL / date / type</text>
+<rect x="72" y="211" width="290" height="48" rx="8" fill="#fff" stroke="#b8cad6"/><text x="88" y="241" font-size="15" fill="#284b61">HTTP response · headers</text>
+<rect x="72" y="271" width="290" height="70" rx="8" fill="#fff" stroke="#b8cad6"/><text x="88" y="300" font-size="15" fill="#284b61">Payload · HTML / bytes</text><text x="88" y="323" font-size="12" fill="#6c7e85">可重新解析与抽取</text></g>
+<g><rect x="425" y="48" width="350" height="325" rx="18" fill="#f0eef9" stroke="#b0a7d3"/><text x="455" y="91" font-size="25" font-weight="800" fill="#665b9a">WAT</text><text x="455" y="119" font-size="13" fill="#536b75">Web Archive Transformation · 元数据</text>
+<rect x="455" y="151" width="290" height="48" rx="8" fill="#fff" stroke="#c8c0df"/><text x="471" y="181" font-size="15" fill="#514780">HTTP headers · status / type</text>
+<rect x="455" y="211" width="290" height="48" rx="8" fill="#fff" stroke="#c8c0df"/><text x="471" y="241" font-size="15" fill="#514780">HTML metadata · title / links</text>
+<rect x="455" y="271" width="290" height="70" rx="8" fill="#fff" stroke="#c8c0df"/><text x="471" y="300" font-size="15" fill="#514780">JSON metadata envelope</text><text x="471" y="323" font-size="12" fill="#6c7e85">适合索引与元数据分析</text></g>
+<g><rect x="808" y="48" width="350" height="325" rx="18" fill="#e4f3f1" stroke="#86bdb5"/><text x="838" y="91" font-size="25" font-weight="800" fill="#176d6b">WET</text><text x="838" y="119" font-size="13" fill="#536b75">WARC Encapsulated Text · 纯文本</text>
+<rect x="838" y="151" width="290" height="48" rx="8" fill="#fff" stroke="#a6d0ca"/><text x="854" y="181" font-size="15" fill="#176d6b">WARC record headers</text>
+<rect x="838" y="211" width="290" height="48" rx="8" fill="#fff" stroke="#a6d0ca"/><text x="854" y="241" font-size="15" fill="#176d6b">Extracted plaintext</text>
+<rect x="838" y="271" width="290" height="70" rx="8" fill="#fff" stroke="#a6d0ca"/><text x="854" y="300" font-size="15" fill="#176d6b">Text payload</text><text x="854" y="323" font-size="12" fill="#6c7e85">可能仍含导航 / 页脚噪声</text></g>
+<text x="600" y="405" text-anchor="middle" font-size="14" fill="#536b75">格式描述的是数据视图，不代表抽取质量或训练价值</text>
+</g></svg>

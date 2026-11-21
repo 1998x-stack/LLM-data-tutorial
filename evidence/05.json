@@ -1,0 +1,52 @@
+{
+  "chapter": "05",
+  "title": "启发式规则过滤",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "05-C1",
+      "claim": "FineWeb describes C4 as using English language identification, heuristic filters such as terminal punctuation and short-line removal, and three-line-window deduplication.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §2 Background; T5 paper, C4 dataset section",
+      "status": "verified",
+      "notes": "The article describes rule families rather than presenting them as universal defaults."
+    },
+    {
+      "id": "05-C2",
+      "claim": "FineWeb selected three additional filters: terminal-punctuation line fraction <= 0.12, duplicated-line character fraction >= 0.1, and short-line fraction >= 0.67 for lines shorter than 30 characters.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.6 Developing additional heuristic filters",
+      "status": "verified",
+      "notes": "Thresholds were selected using distribution inspection and ablations on the authors' data."
+    },
+    {
+      "id": "05-C3",
+      "claim": "In FineWeb's 28B-token ablations, the three custom filters jointly removed about 22% of tokens and increased the aggregate score by about 1%.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.6",
+      "status": "verified",
+      "notes": "Experimental result is tied to the authors' ablation setup; not a universal performance promise."
+    },
+    {
+      "id": "05-C4",
+      "claim": "The final FineWeb pipeline combines WARC extraction, base filtering, per-crawl MinHash deduplication, selected C4 filters and custom filters to produce a 15T-token dataset from 96 snapshots.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.7 The final FineWeb dataset",
+      "status": "verified",
+      "notes": "Public release additionally applies PII removal to anonymize email addresses and public IP addresses."
+    },
+    {
+      "id": "05-C5",
+      "claim": "FineWeb omitted the C4 terminal-punctuation filter from its final pipeline because the paper's ablation found that it removed around 30% of tokens.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "FineWeb paper, §3.5 Adding C4's filters",
+      "status": "verified",
+      "notes": "The 30% removal figure is specific to the tested 2019-18 crawl and ablation."
+    }
+  ]
+}
