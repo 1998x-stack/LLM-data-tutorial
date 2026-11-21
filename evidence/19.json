@@ -65,6 +65,15 @@
       "locator": "Encoding definitions and public tokenizer implementation; engineering synthesis",
       "status": "derived",
       "notes": "The exact components differ by tokenizer family; do not assume GPT-2, SentencePiece and Unigram share one pipeline."
+    },
+    {
+      "id": "19-C8",
+      "claim": "Cross-language bytes-per-token is not a suitable standalone compression comparison because equivalent content in different languages can have different byte premiums; the NeurIPS 2025 study instead measures corpus token counts on parallel texts.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf",
+      "locator": "§2.2 Measuring Compression, lines 106–123",
+      "status": "verified",
+      "notes": "The study uses parallel FLORES text and corpus token count (CTC), optionally normalized by a reference language. Bytes/token remains useful for within-language engineering measurements."
     }
   ]
 }

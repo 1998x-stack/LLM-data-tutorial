@@ -74,6 +74,15 @@
       "locator": "Tokenizer compression metrics; dimensional derivation",
       "status": "derived",
       "notes": "The average depends on language, corpus slice, normalization, tokenizer revision and sample selection."
+    },
+    {
+      "id": "20-C9",
+      "claim": "The NeurIPS 2025 crosslingual tokenizer study argues that bytes-per-token is unsuitable as a direct cross-language compression metric because byte premiums differ; it uses corpus token count over parallel text and normalizes against a reference language.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf",
+      "locator": "§2.2 Measuring Compression, lines 106–123",
+      "status": "verified",
+      "notes": "This caveat is about cross-language comparison; bytes/token remains useful for within-language storage and throughput estimates."
     }
   ]
 }

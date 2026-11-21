@@ -67,5 +67,5 @@ This guide adapts the workflow in Olah-style-posts/skills/olah-style-paper-posts
 - Reproducibility: identify source snapshot, input checksums, code commit, canonical config, environment lock, model/tokenizer revision, randomness and output manifest. State whether the target is bitwise, semantic or statistical reproduction.
 - Quality evaluation: separate integrity, coverage, redundancy, governance and downstream utility. Define the sample frame, strata, weights, rubric, uncertainty and fixed training recipe.
 - BPE: distinguish pre-tokenization from merge training, character symbols from UTF-8 bytes, and BPE from Unigram. Label simplified code as a teaching implementation.
-- Vocabulary: calculate embedding and optional untied output-head costs explicitly; state what memory terms are excluded. Compare languages with parallel or content-matched samples and pinned tokenizer revisions.
+- Vocabulary: calculate embedding and optional untied output-head costs explicitly; state what memory terms are excluded. Compare languages with parallel texts using CTC / reference-normalized token premium and pinned tokenizer revisions; bytes-per-token alone is confounded by byte premium.
 - MathML: use explicit multiplication operators in matrix-size formulas and keep raw TeX delimiters out of pages without a TeX renderer.

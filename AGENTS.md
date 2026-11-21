@@ -163,6 +163,6 @@ A release report must include:
 ### Tokenization and vocabulary
 - Distinguish normalizer, pre-tokenizer, byte/character alphabet, merge ranks, special tokens and token-ID mapping.
 - Character-BPE teaching code is not a drop-in GPT-2/tiktoken implementation; label all omitted stages.
-- Pin tokenizer revisions when reporting token counts. Compare parallel or content-matched texts across languages.
+- Pin tokenizer revisions when reporting token counts. Compare parallel texts using corpus token count (CTC) / reference-normalized token premium; bytes-per-token alone is not a fair cross-language compression metric because byte premiums differ.
 - Vocabulary costs include embedding and possibly untied LM-head weights, logits width and token-frequency allocation; report tied/untied assumptions and excluded memory terms.
 - Do not infer language complexity from token fertility or claim a single vocabulary size is universally optimal.
