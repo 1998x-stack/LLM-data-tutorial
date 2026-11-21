@@ -8,8 +8,8 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 已深度重构：01–10，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、算法单元测试和论文证据账本。
-- 每篇重构文章维护独立 evidence/NN.json 证据清单。
+- 已深度重构：01–15，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、算法单元测试和论文证据账本。
+- 01–15 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
 
@@ -33,9 +33,9 @@
 | 数据采集与提取 | 02–03 | Common Crawl 归档定位、WARC/WAT/WET、正文抽取 |
 | 规范化与过滤 | 04–06 | 语言识别、URL 策略、启发式过滤 |
 | 去重与相似性 | 07–09 | 精确去重、MinHash、LSH、多粒度重复 |
-| 质量、安全与评估 | 10–13、18 | 困惑度、教育质量、LLM 标注、去污染、质量评估 |
-| 数据组成与表示 | 14、19–20、22 | 数据混合、Tokenization、词表、领域数据 |
-| 系统与工具链 | 15–17、23–24 | 分布式处理、存储、可复现性、DataTrove、Dolma |
+| 质量、安全与评估 | 10–13、18 | 困惑度、教育质量分类器、LLM 标注、评测去污染、质量评估 |
+| 数据组成与表示 | 14、19–20、22 | 文档/Token 配比、DoReMi/RegMix、Tokenization、词表、领域数据 |
+| 系统与工具链 | 15–17、23–24 | Spark/Ray 分布式处理、存储、可复现性、DataTrove、Dolma |
 | 前沿与自动化 | 21、25–27 | 合成数据、数据范式、自动化编排、在线选择 |
 | 综合实战 | 28 | 从原始数据到可复现训练语料的端到端工程 |
 
@@ -55,11 +55,11 @@
 | 08 | MinHash 近邻去重 | Shingling、Jaccard、MinHash 定理、LSH Banding |
 | 09 | 多粒度去重策略 | 行/段落/文档粒度、重复簇、跨 Crawl 消融 |
 | 10 | 困惑度质量过滤 | Cross-Entropy、5-gram Kneser–Ney、KenLM、CCNet |
-| 11 | 教育质量分类器 | FineWeb-Edu、合成标注、分类器 |
-| 12 | LLM 辅助数据标注 | 评分协议、蒸馏、偏差审计 |
-| 13 | 评测集去污染 | n-gram、MinHash、污染检测 |
-| 14 | 多源数据混合配比 | 来源权重、采样与 token 分布 |
-| 15 | 分布式数据处理架构 | Spark、Ray、分区与容错 |
+| 11 | 教育质量分类器 | FineWeb-Edu、Llama 3 合成标注、Snowflake Arctic Embed 回归器、阈值消融 |
+| 12 | LLM 辅助数据标注 | Rubric、IAA、LLM-as-a-Judge 偏差、不确定性路由、蒸馏 |
+| 13 | 评测集去污染 | GPT-3 word n-gram、Llama 2 token skipgram、T1–T4 污染 taxonomy |
+| 14 | 多源数据混合配比 | 文档到 token 权重换算、DoReMi、RegMix、RegMix-D |
+| 15 | 分布式数据处理架构 | Spark AQE、Ray Data streaming、Shuffle、Backpressure、幂等恢复 |
 | 16 | 大规模数据存储 | Parquet、Arrow、压缩与冷热分层 |
 | 17 | 流水线可复现性 | 数据版本、配置哈希、血缘与审计 |
 | 18 | 数据质量评估体系 | 质量指标、人工抽检、下游消融 |
@@ -80,7 +80,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；01–10 已深度重构；其余章节按五篇一批迁移
+    ├── 01.html ... 28.html       # 章节入口；01–15 已深度重构；其余章节按五篇一批迁移
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
@@ -117,15 +117,24 @@
 - [The Pile · arXiv](https://arxiv.org/abs/2101.00027)
 - [RefinedWeb · arXiv](https://arxiv.org/abs/2306.01116)
 - [FineWeb · NeurIPS 2024](https://arxiv.org/abs/2406.17557)
+- [FineWeb-Edu Dataset Card](https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu)
+- [FineWeb-Edu Classifier](https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier)
+- [LLM-as-a-Judge · MT-Bench](https://arxiv.org/abs/2306.05685)
+- [Inter-Annotator Agreement in NLP · AACL 2026](https://aclanthology.org/2026.aacl-long.27/)
+- [GPT-3 · Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)
+- [Llama 2 · Dataset Contamination](https://arxiv.org/abs/2307.09288)
+- [Benchmark Contamination Review · GEM 2026](https://aclanthology.org/2026.gem-main.50/)
+- [DoReMi · NeurIPS 2023](https://proceedings.neurips.cc/paper_files/paper/2023/hash/dcba6be91359358c2355cd920da3fcbd-Abstract-Conference.html)
+- [Data Mixing Laws · ICLR 2025](https://arxiv.org/abs/2403.16952)
+- [RegMix · ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/5f67d864aae6115374fed7beddd119e0-Abstract-Conference.html)
+- [RegMix-D · Findings AACL 2026](https://aclanthology.org/2026.findings-aacl.84/)
+- [Apache Spark documentation](https://spark.apache.org/docs/latest/)
+- [Ray Data documentation](https://docs.ray.io/en/latest/data/)
 - [Dolma · ACL 2024](https://aclanthology.org/2024.acl-long.840/)
 - [Common Crawl documentation](https://commoncrawl.org/get-started)
 - [RFC 3986 · URI Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
 - [Deduplicating Training Data Makes Language Models Better · ACL 2022](https://aclanthology.org/2022.acl-long.577/)
 - [Broder · On the Resemblance and Containment of Documents](https://doi.org/10.1109/SEQUEN.1997.666900)
-- [Bloom Filter false-positive analysis · NIST](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775)
-- [RFC 3986 · URI Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
-- [Deduplicating Training Data Makes Language Models Better · ACL 2022](https://aclanthology.org/2022.acl-long.577/)
-- [Broder · Syntactic Clustering of the Web / MinHash](https://doi.org/10.1109/SEQUEN.1997.666900)
 - [Bloom Filter false-positive analysis · NIST](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=903775)
 - [fastText language identification](https://fasttext.cc/docs/en/language-identification)
 - [Trafilatura documentation](https://trafilatura.readthedocs.io/en/stable/)

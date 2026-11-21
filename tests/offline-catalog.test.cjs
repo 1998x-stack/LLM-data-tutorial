@@ -71,3 +71,28 @@ test('second batch chapters expose accessible interactive exercises and verified
     }
   }
 });
+
+test('third batch chapters 11-15 expose interactive exercises and evidence ledgers', () => {
+  for (let index = 11; index <= 15; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
+    assert.match(article, /aria-live="polite"/);
+    assert.match(article, /<figure class="diagram">/);
+    assert.match(article, /<footer class="article-footer">/);
+    assert.ok(evidence.claims.length >= 5);
+    for (const claim of evidence.claims) {
+      assert.ok(claim.source_url, number + ': ' + claim.id + ' missing source_url');
+      assert.ok(claim.locator, number + ': ' + claim.id + ' missing locator');
+    }
+  }
+});
+
+test('batch 03 mathematical expressions use semantic MathML, not unrendered TeX', () => {
+  for (let index = 11; index <= 14; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    assert.match(article, /<math/);
+    assert.equal(article.includes(String.fromCharCode(92) + '('), false);
+  }
+});

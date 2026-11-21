@@ -48,3 +48,14 @@ This guide adapts the workflow in Olah-style-posts/skills/olah-style-paper-posts
 - Sources cited close to claims and listed at the end.
 - Avoid a fixed sidebar that covers the reading area on mobile.
 - Keep production notes out of article prose.
+
+
+## Batch 03 topic-specific authoring checks
+
+- Educational scoring: state the construct being measured, the teacher-label protocol, the student model architecture, the hold-out population and the downstream threshold policy separately.
+- LLM annotation: version the rubric, prompt and judge model; require schema validation and evidence spans; select agreement statistics for the label scale; audit position, verbosity and source-identity bias.
+- Benchmark decontamination: distinguish exact, syntactic, semantic and task-level contamination; record tokenizer, verbalized prompt, match spans and corpus versions; never treat a candidate match as proof of answer leakage.
+- Data mixture: derive document sampling weights separately from token exposure; include mean-length assumptions and validate actual post-tokenization/post-packing proportions.
+- Distributed processing: identify map vs shuffle boundaries, hot-key skew, memory pools and checkpoint semantics; make retried shard outputs idempotent.
+- MathML: use semantic MathML for formulas unless a documented local renderer is part of the page. Do not leave raw TeX delimiters such as \\( ... \\) in a page that has no TeX renderer.
+- Interactive examples: label synthetic data as synthetic, keep static explanations complete, and unit-test the same mathematical expression used by the calculator.

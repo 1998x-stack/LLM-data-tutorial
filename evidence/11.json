@@ -1,0 +1,70 @@
+{
+  "chapter": "11",
+  "title": "教育质量分类器",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "11-C1",
+      "claim": "FineWeb-Edu used Llama3-70B-Instruct to score 500,000 FineWeb samples for educational value on a 0–5 scale, with a rubric focused on grade-school and middle-school knowledge.",
+      "kind": "paper-method",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Annotation",
+      "status": "verified",
+      "notes": "This is the dataset card's stated annotation pool and rubric scope, not a universal educational-quality scale."
+    },
+    {
+      "id": "11-C2",
+      "claim": "The released FineWeb-Edu classifier is a BERT-like regression model based on Snowflake Arctic Embed, trained on 450,000 Llama3-annotated samples with a single regression output.",
+      "kind": "implementation",
+      "source_url": "https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier",
+      "locator": "Model card → Training; lines 124–138",
+      "status": "verified",
+      "notes": "Do not describe this model as fastText; the output is a continuous regression score subsequently rounded/clipped for an integer score."
+    },
+    {
+      "id": "11-C3",
+      "claim": "The model card reports 20 training epochs, learning rate 3e-4, frozen embedding/encoder layers, and 82% F1 after thresholding the regression score at 3 for binary keep/drop.",
+      "kind": "implementation",
+      "source_url": "https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier",
+      "locator": "Model card → Training, lines 126–138",
+      "status": "verified",
+      "notes": "The 82% F1 is a thresholded binary metric, not a claim of exact 0–5 score recovery."
+    },
+    {
+      "id": "11-C4",
+      "claim": "The model card's 46,867-sample hold-out report shows class-3 F1 of 0.53 and class-5 F1 of 0.02, illustrating weaker performance at the threshold boundary and on rare high-score examples.",
+      "kind": "implementation",
+      "source_url": "https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier",
+      "locator": "Model card → Classification report, lines 140–150",
+      "status": "verified",
+      "notes": "These are label agreement metrics against Llama3 annotations, not human ground-truth validity metrics."
+    },
+    {
+      "id": "11-C5",
+      "claim": "FineWeb-Edu's dataset card reports threshold 3 as best overall in its ablation; higher thresholds improve some knowledge/reasoning benchmarks while degrading HellaSwag and PIQA.",
+      "kind": "paper-result",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Filtering and results",
+      "status": "verified",
+      "notes": "Threshold performance is task-suite and training-setup specific."
+    },
+    {
+      "id": "11-C6",
+      "claim": "FineWeb-Edu's score-3 dataset card reports removing 92% of FineWeb and retaining 1.3T educational tokens; a score-2 variant retains 5.4T tokens.",
+      "kind": "paper-result",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Filtering and results",
+      "status": "verified",
+      "notes": "Token counts refer to released FineWeb-Edu variants; do not turn them into a general expected retention rate."
+    },
+    {
+      "id": "11-C7",
+      "claim": "A regression score threshold is a downstream selection policy and should be evaluated against the intended benchmark mix rather than treated as an intrinsic universal quality boundary.",
+      "kind": "derived",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Filtering and results; threshold trade-offs across benchmarks",
+      "status": "derived",
+      "notes": "Engineering conclusion derived from the reported task-dependent threshold ablation."
+    }
+  ]
+}

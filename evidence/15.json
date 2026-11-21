@@ -1,0 +1,79 @@
+{
+  "chapter": "15",
+  "title": "分布式数据处理架构",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "15-C1",
+      "claim": "Spark RDDs are immutable partitioned datasets with lineage-based recomputation; transformations are lazy and actions trigger execution.",
+      "kind": "official-doc",
+      "source_url": "https://spark.apache.org/docs/latest/rdd-programming-guide.html",
+      "locator": "Overview; RDD Operations; Basics",
+      "status": "verified",
+      "notes": "RDD and DataFrame APIs have different execution details, but both expose distributed execution concepts."
+    },
+    {
+      "id": "15-C2",
+      "claim": "Spark shuffle redistributes records across partitions so values with the same key can be co-located; it can incur network, serialization and disk I/O costs.",
+      "kind": "official-doc",
+      "source_url": "https://spark.apache.org/docs/latest/rdd-programming-guide.html",
+      "locator": "Shuffle Operations",
+      "status": "verified",
+      "notes": "The cost depends on data volume, partitioning, storage and the query plan."
+    },
+    {
+      "id": "15-C3",
+      "claim": "Spark SQL Adaptive Query Execution can coalesce post-shuffle partitions and optimize skewed shuffle joins using runtime statistics.",
+      "kind": "official-doc",
+      "source_url": "https://spark.apache.org/docs/latest/sql-performance-tuning.html",
+      "locator": "Adaptive Query Execution; Coalescing Post Shuffle Partitions; Optimizing Skew Join",
+      "status": "verified",
+      "notes": "AQE behavior and configuration are Spark-version dependent."
+    },
+    {
+      "id": "15-C4",
+      "claim": "Reliable Spark RDD checkpointing writes to the configured checkpoint directory and removes references to parent RDDs; localCheckpoint uses executor-local storage and sacrifices fault tolerance.",
+      "kind": "official-doc",
+      "source_url": "https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.RDD.checkpoint.html",
+      "locator": "RDD.checkpoint API; related localCheckpoint documentation",
+      "status": "verified",
+      "notes": "Do not confuse checkpoint with cache/persist or localCheckpoint."
+    },
+    {
+      "id": "15-C5",
+      "claim": "Ray Data streaming execution lets downstream operators start before upstream operators complete, processes streams of blocks, and uses backpressure to avoid scheduling into backpressured operators.",
+      "kind": "official-doc",
+      "source_url": "https://docs.ray.io/en/latest/data/internals.html",
+      "locator": "Execution → Streaming execution and Scheduling loop",
+      "status": "verified",
+      "notes": "Execution details and memory behavior are version-specific; current docs consulted are Ray Data 2.60."
+    },
+    {
+      "id": "15-C6",
+      "claim": "Ray Data map_batches uses stateless Ray tasks for functions and stateful Ray actors for callable classes, supporting persistent model workers for batch inference.",
+      "kind": "official-doc",
+      "source_url": "https://docs.ray.io/en/latest/data/api/doc/ray.data.Dataset.map_batches.html",
+      "locator": "map_batches description and stateful transform example",
+      "status": "verified",
+      "notes": "Actor pool size, batch size and resource requests must match model memory and cluster capacity."
+    },
+    {
+      "id": "15-C7",
+      "claim": "Ray Data offline batch inference supports job-level checkpointing so reruns can skip records already processed under the same checkpoint configuration.",
+      "kind": "official-doc",
+      "source_url": "https://docs.ray.io/en/latest/data/batch-inference.html",
+      "locator": "Configuration and troubleshooting → Job-level Checkpointing",
+      "status": "verified",
+      "notes": "Checkpoint support is workflow/API-specific and does not make arbitrary external side effects exactly-once."
+    },
+    {
+      "id": "15-C8",
+      "claim": "Stable partition identifiers, immutable shard outputs and a validated final manifest are a practical way to make retried data-processing tasks idempotent.",
+      "kind": "derived",
+      "source_url": "https://spark.apache.org/docs/latest/rdd-programming-guide.html",
+      "locator": "RDD lineage and recomputation semantics; engineering recommendation",
+      "status": "derived",
+      "notes": "Exactly-once external writes still require a sink-specific commit protocol or idempotency key."
+    }
+  ]
+}

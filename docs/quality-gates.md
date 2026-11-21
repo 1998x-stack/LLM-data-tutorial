@@ -5,8 +5,11 @@
 - courses.json parses and contains unique chapter numbers and valid category IDs.
 - courses-data.js is reproducibly generated from courses.json.
 - Every chapter file exists and every local chapter link resolves.
-- New articles 01–10 have one H1, semantic main/article/nav, figure captions, accessible MathML and primary references.
-- Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability and perplexity score conversion.
+- New articles 01–15 have one H1, semantic main/article/nav, figure captions, accessible MathML and primary references.
+- Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability, perplexity score conversion and document-to-token mixture math.
+- Articles 11–15 distinguish synthetic teaching values from empirical paper results and include source locators for verified quantitative claims.
+- Annotation exercises state that LLM labels are noisy measurements; contamination detection separates overlap from task leakage; data-mixture examples distinguish document shares from token shares.
+- Distributed-processing examples distinguish task retry from exactly-once side effects and cache/persist from reliable checkpointing.
 - SVG files parse as XML, have viewBox/title/desc and unique IDs.
 - MathML is not nested inside SVG; fractions/scripts have correct child arity; display formulas have accessible scroll regions.
 - Interactive algorithm calculators use the stated paper parameters and distinguish theoretical probabilities from empirical accuracy.

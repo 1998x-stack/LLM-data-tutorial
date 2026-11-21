@@ -6,7 +6,7 @@
 - Separate content, catalog metadata, visual assets, evidence and validation tooling.
 - Keep the site static and offline-first.
 - Make category/tag discovery a first-class part of the homepage.
-- Permit gradual migration: chapters 01–05 use the new article system; chapters 06–28 retain legacy markup until each is reviewed.
+- Permit gradual migration: chapters 01–15 use the new article system; chapters 16–28 retain legacy markup until each is reviewed.
 
 ## Source-of-truth boundaries
 
@@ -38,7 +38,7 @@ The homepage never fetches JSON at runtime, so file:// browsing works. Search an
 
 ## Chapter rendering
 
-New chapters use theme.css classes:
+Deeply revised chapters 01–15 use theme.css classes:
 - article-shell, article-layout, article-toc, article-main;
 - article-hero, lead-note, diagram, callout;
 - math-scroll, stage-picker, interactive-output;
