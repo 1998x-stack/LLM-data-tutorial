@@ -366,16 +366,22 @@
       "file": "11.html",
       "category": "quality",
       "categoryLabel": "质量、安全与评估",
-      "summary": "理解 FineWeb-Edu 的合成标注、嵌入表示与教育质量预测。",
+      "summary": "从 FineWeb-Edu 的 Llama 3 教师标注、Snowflake Arctic Embed 回归器到阈值决策，理解标签噪声和教育质量偏差。",
       "tags": [
         "educational-quality",
         "classifier",
         "synthetic-labels",
-        "fineweb-edu"
+        "fineweb-edu",
+        "regression",
+        "thresholding",
+        "label-noise",
+        "distribution-shift"
       ],
       "tools": [
         "FineWeb-Edu",
-        "Llama 3"
+        "Llama 3 70B",
+        "Snowflake Arctic Embed",
+        "Transformers"
       ],
       "level": "研究",
       "prerequisites": [
@@ -383,11 +389,11 @@
         "10"
       ],
       "learningOutcomes": [
-        "区分教育质量与通用质量",
-        "理解合成标注到分类器的训练流程",
-        "审计分类器偏差"
+        "区分教育价值、通用质量和下游筛选决策",
+        "复现 teacher labels → student regressor → threshold pipeline",
+        "审计标签噪声、阈值边界和领域分布偏差"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "12",
@@ -395,26 +401,32 @@
       "file": "12.html",
       "category": "quality",
       "categoryLabel": "质量、安全与评估",
-      "summary": "设计结构化评分协议、标注一致性与知识蒸馏流程。",
+      "summary": "设计可复现的 LLM 标注协议：Rubric、结构化输出、人机一致性、裁判偏差、不确定性路由与学生模型蒸馏。",
       "tags": [
+        "llm-annotation",
+        "rubric",
+        "inter-annotator-agreement",
         "llm-as-judge",
-        "annotation",
-        "distillation",
-        "rubric"
+        "label-noise",
+        "soft-labels",
+        "uncertainty",
+        "distillation"
       ],
       "tools": [
-        "LLM"
+        "Llama 3",
+        "Mixtral",
+        "LLM-as-a-Judge"
       ],
       "level": "研究",
       "prerequisites": [
         "11"
       ],
       "learningOutcomes": [
-        "设计可复现的标注 rubric",
-        "评估标注者一致性",
-        "分析模型标注偏差"
+        "设计可操作且版本化的评分 Rubric",
+        "选择适合名义、有序和连续标签的一致性指标",
+        "构建偏差审计、人工复核和标签蒸馏闭环"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "13",
@@ -422,15 +434,21 @@
       "file": "13.html",
       "category": "quality",
       "categoryLabel": "质量、安全与评估",
-      "summary": "检测训练语料与评测集的 n-gram 重叠、近似重复与数据泄漏。",
+      "summary": "从 GPT-3 的 word n-gram 到 Llama 2 的 token-level skipgram，建立精确、语法、语义和任务级污染审计。",
       "tags": [
         "decontamination",
         "benchmark-contamination",
         "ngram",
-        "privacy"
+        "exact-match",
+        "minhash",
+        "token-level-overlap",
+        "suffix-array",
+        "train-test-leakage"
       ],
       "tools": [
-        "MinHash"
+        "Apache Spark",
+        "MinHash",
+        "Suffix Array"
       ],
       "level": "进阶",
       "prerequisites": [
@@ -438,11 +456,11 @@
         "08"
       ],
       "learningOutcomes": [
-        "区分精确与近似污染",
-        "构建污染检测流程",
-        "解释去污染对评测的影响"
+        "区分文本重叠、任务泄漏和评测收益归因",
+        "复现 GPT-3 与 Llama 2 的污染检测口径",
+        "输出带来源、偏移和分层评测的污染透明报告"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "14",
@@ -450,16 +468,22 @@
       "file": "14.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "设计来源、领域与语言的采样权重，理解 token 分布与训练目标。",
+      "summary": "从文档抽样推导 token mixture，理解 The Pile、DoReMi、Data Mixing Laws、RegMix 与动态混合优化。",
       "tags": [
         "data-mixing",
-        "sampling",
+        "token-weighted-sampling",
         "mixture",
-        "multilingual"
+        "sampling",
+        "doremi",
+        "regmix",
+        "scaling-laws",
+        "dynamic-mixing"
       ],
       "tools": [
         "The Pile",
-        "Dolma"
+        "DoReMi",
+        "RegMix",
+        "RegMix-D"
       ],
       "level": "进阶",
       "prerequisites": [
@@ -467,11 +491,11 @@
         "11"
       ],
       "learningOutcomes": [
-        "从文档数换算 token 比例",
-        "设计多源采样配方",
-        "监控混合分布变化"
+        "推导文档采样概率与 token exposure 的换算",
+        "比较启发式、Group DRO、proxy regression 和动态配比",
+        "设计可审计的来源权重、重复曝光和 token 统计"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "15",
@@ -479,16 +503,23 @@
       "file": "15.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "比较 Spark、Ray 与分片流水线的并行、容错和调度策略。",
+      "summary": "从分区与 Shuffle 到 AQE、Ray Data streaming、Backpressure、Checkpoint 和幂等提交，设计可恢复的语料生产系统。",
       "tags": [
         "distributed-processing",
         "partitioning",
+        "shuffle",
+        "data-skew",
         "fault-tolerance",
-        "throughput"
+        "checkpointing",
+        "backpressure",
+        "idempotency",
+        "spark",
+        "ray-data"
       ],
       "tools": [
-        "Spark",
-        "Ray"
+        "Apache Spark",
+        "Ray Data",
+        "PySpark"
       ],
       "level": "进阶",
       "prerequisites": [
@@ -496,11 +527,11 @@
         "05"
       ],
       "learningOutcomes": [
-        "设计可重试的数据分区",
-        "分析数据倾斜与背压",
-        "比较批处理框架"
+        "设计稳定分片和可重试的分布式数据任务",
+        "定位 Shuffle、数据倾斜、内存与背压瓶颈",
+        "实现不可变 shard 输出、幂等提交和质量 manifest"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "16",

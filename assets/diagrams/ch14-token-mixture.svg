@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="t d">
+<title id="t">文档采样比例不等于 Token 混合比例</title><desc id="d">若两个数据源的文档抽样概率相同，但平均文档长度不同，长文档源会贡献更多训练 token。目标 token 比例需要结合平均 token 长度反推文档抽样概率。</desc>
+<rect width="1200" height="360" rx="22" fill="#fbfdfb" stroke="#dce5e3"/><g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<text x="300" y="54" text-anchor="middle" font-size="16" font-weight="700" fill="#203b43">DOCUMENT SAMPLING</text><text x="900" y="54" text-anchor="middle" font-size="16" font-weight="700" fill="#203b43">TOKEN CONTRIBUTION</text>
+<rect x="80" y="95" width="440" height="74" rx="12" fill="#e8f0f7" stroke="#91abc0"/><text x="110" y="124" font-size="14" font-weight="700" fill="#284b61">Source A</text><rect x="260" y="113" width="110" height="28" rx="7" fill="#91abc0"/><text x="315" y="132" text-anchor="middle" font-size="12" fill="#fff">50% docs</text><text x="405" y="132" font-size="12" fill="#536b75">μA = 100 tokens</text>
+<rect x="80" y="190" width="440" height="74" rx="12" fill="#f0eef9" stroke="#b0a7d3"/><text x="110" y="219" font-size="14" font-weight="700" fill="#665b9a">Source B</text><rect x="260" y="208" width="110" height="28" rx="7" fill="#b0a7d3"/><text x="315" y="227" text-anchor="middle" font-size="12" fill="#fff">50% docs</text><text x="405" y="227" font-size="12" fill="#536b75">μB = 1,000 tokens</text>
+<path d="M540 178 H645" stroke="#6d8790" stroke-width="3"/><path d="M637 170 L653 178 L637 186Z" fill="#6d8790"/>
+<rect x="670" y="95" width="440" height="74" rx="12" fill="#e8f0f7" stroke="#91abc0"/><text x="700" y="124" font-size="14" font-weight="700" fill="#284b61">Source A</text><rect x="850" y="113" width="44" height="28" rx="7" fill="#91abc0"/><text x="916" y="132" font-size="12" fill="#536b75">≈ 9.1% tokens</text>
+<rect x="670" y="190" width="440" height="74" rx="12" fill="#f0eef9" stroke="#b0a7d3"/><text x="700" y="219" font-size="14" font-weight="700" fill="#665b9a">Source B</text><rect x="850" y="208" width="220" height="28" rx="7" fill="#b0a7d3"/><text x="1080" y="227" font-size="12" fill="#536b75">≈ 90.9%</text>
+<text x="600" y="315" text-anchor="middle" font-size="13" fill="#536b75">示例：文档抽样各 50%，但平均长度 100 : 1,000；最终 token 贡献约 1 : 10</text>
+</g></svg>

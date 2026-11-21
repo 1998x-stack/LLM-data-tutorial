@@ -1,0 +1,70 @@
+{
+  "chapter": "12",
+  "title": "LLM 辅助数据标注",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "12-C1",
+      "claim": "FineWeb-Edu used Llama3-70B-Instruct to generate 0–5 educational-value labels for 500,000 FineWeb samples, explicitly defining the target around grade-school and middle-school knowledge.",
+      "kind": "paper-method",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Annotation",
+      "status": "verified",
+      "notes": "This is a concrete annotation protocol, not a universal rubric for all domains."
+    },
+    {
+      "id": "12-C2",
+      "claim": "FineWeb-Edu observed that Mixtral-8x-7B tended to give more generous scores than Llama3-70B and Mixtral-8x22B; averaging the three model scores shifted the score distribution to the right.",
+      "kind": "paper-result",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Annotation, model comparison and jury experiment",
+      "status": "verified",
+      "notes": "The dataset authors report their own experiment and hypothesize why jury-based annotations performed worse; do not generalize to every model jury."
+    },
+    {
+      "id": "12-C3",
+      "claim": "FineWeb-Edu reports that a classifier trained on jury annotations performed worse in its filtering ablation than one trained on Llama3-only annotations.",
+      "kind": "paper-result",
+      "source_url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/blob/05c1931294b0d1379055d1f802d369f2c3bb2f4b/README.md",
+      "locator": "Dataset curation → Annotation",
+      "status": "verified",
+      "notes": "The authors hypothesize the jury retained more low-quality samples; this explanation is not established as a universal causal mechanism."
+    },
+    {
+      "id": "12-C4",
+      "claim": "MT-Bench / Chatbot Arena research documents position, verbosity and self-enhancement biases as limitations of LLM-as-a-judge.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2306.05685",
+      "locator": "Abstract; discussion of LLM-as-a-judge limitations",
+      "status": "verified",
+      "notes": "Bias severity depends on task, judge, prompt and evaluation protocol."
+    },
+    {
+      "id": "12-C5",
+      "claim": "A 2026 AACL survey of 665 NLP papers finds Cohen's kappa is frequently used regardless of whether its assumptions fit the task, while ICC is rarely reported for continuous-scale tasks; fewer than 5% of surveyed papers report confidence intervals.",
+      "kind": "paper-result",
+      "source_url": "https://aclanthology.org/2026.aacl-long.27/",
+      "locator": "Abstract; survey of 665 ACL Anthology papers and full-text analysis of 549 papers",
+      "status": "verified",
+      "notes": "These are descriptive statistics about the surveyed ACL Anthology corpus, not a claim about all NLP publications."
+    },
+    {
+      "id": "12-C6",
+      "claim": "Cohen's kappa adjusts observed agreement by the agreement expected by chance: κ=(p_o−p_e)/(1−p_e).",
+      "kind": "official-doc",
+      "source_url": "https://doi.org/10.1177/001316446002000104",
+      "locator": "Cohen (1960), A coefficient of agreement for nominal scales, definition of kappa",
+      "status": "verified",
+      "notes": "For ordinal labels use an appropriate weighted variant; multi-rater or continuous settings may require different statistics."
+    },
+    {
+      "id": "12-C7",
+      "claim": "A reproducible LLM annotation protocol should version the rubric, prompt, judge model, sampling strategy and adjudication rules, then compare LLM-human agreement against a human-human baseline.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2026.aacl-long.27/",
+      "locator": "Twenty-Five Years of Inter-Annotator Agreement in NLP, abstract and reporting-practice findings",
+      "status": "derived",
+      "notes": "This is a process recommendation based on the paper's emphasis on agreement metric choice and reporting comparability."
+    }
+  ]
+}

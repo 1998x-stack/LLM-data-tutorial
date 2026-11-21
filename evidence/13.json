@@ -1,0 +1,70 @@
+{
+  "chapter": "13",
+  "title": "评测集去污染",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "13-C1",
+      "claim": "GPT-3's benchmark overlap analysis used variable word n-gram lengths based on the fifth-percentile example length, with a minimum of 8 and maximum of 13 for non-synthetic tasks.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2005.14165",
+      "locator": "Appendix C → Overlap methodology",
+      "status": "verified",
+      "notes": "This describes GPT-3's analysis setup; it is not a default threshold for modern tokenizers or every benchmark."
+    },
+    {
+      "id": "13-C2",
+      "claim": "GPT-3 ignored 13-grams appearing in more than 10 training documents because manual inspection found many were common phrases or legal boilerplate.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2005.14165",
+      "locator": "Appendix C → Initial training set filtering",
+      "status": "verified",
+      "notes": "The frequency cutoff is paper-specific and was used to reduce false positives from common text."
+    },
+    {
+      "id": "13-C3",
+      "claim": "GPT-3's authors warn that n-gram overlap can flag background passages without the benchmark question-answer pair, and they compare performance on cleaned subsets rather than equating every match with memorized answers.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2005.14165",
+      "locator": "§4 Measuring and Preventing Memorization of Benchmarks; Appendix C",
+      "status": "verified",
+      "notes": "The paper also notes that clean subsets may differ in difficulty and distribution from the full benchmark."
+    },
+    {
+      "id": "13-C4",
+      "claim": "Llama 2 matches fully verbalized evaluation inputs in the model tokenizer space and marks a token contaminated when it occurs in a shared token n-gram longer than 10 tokens.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2307.09288",
+      "locator": "Appendix A.6 Dataset Contamination",
+      "status": "verified",
+      "notes": "This is a token-level methodology, not the same as GPT-3's lowercase whitespace-delimited word n-grams."
+    },
+    {
+      "id": "13-C5",
+      "claim": "Llama 2 allows a skipgram budget of four positions and uses below-20% and above-80% token contamination to define high-confidence clean and dirty subsets for its analysis.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2307.09288",
+      "locator": "Appendix A.6 Dataset Contamination",
+      "status": "verified",
+      "notes": "These subset boundaries are study-specific and should not be adopted as universal pass/fail thresholds."
+    },
+    {
+      "id": "13-C6",
+      "claim": "Lee et al. propose exact substring matching and approximate full-document matching to detect verbatim spans and high n-gram-overlap document pairs.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2022.acl-long.577/",
+      "locator": "§4.1 Exact substring matching; §4.2 Approximate full-document matching",
+      "status": "verified",
+      "notes": "The paper concerns training-data deduplication and train-test overlap; applying it to benchmark decontamination requires benchmark-aware field handling."
+    },
+    {
+      "id": "13-C7",
+      "claim": "A benchmark contamination review published for GEM 2026 proposes a four-tier taxonomy: exact, syntactic, semantic and task-level contamination, and compares string, likelihood, membership-inference, LLM-prompted and benchmark-audit methods.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2026.gem-main.50/",
+      "locator": "Abstract; Four-Tier Contamination Taxonomy; Detection Families",
+      "status": "verified",
+      "notes": "This is a systematic review taxonomy; individual methods still have distinct access assumptions and false-positive risks."
+    }
+  ]
+}

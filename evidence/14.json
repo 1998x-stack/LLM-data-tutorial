@@ -1,0 +1,70 @@
+{
+  "chapter": "14",
+  "title": "多源数据混合配比",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "14-C1",
+      "claim": "The Pile is an 825 GiB English text corpus assembled from 22 diverse subsets.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2101.00027",
+      "locator": "Abstract and dataset construction overview",
+      "status": "verified",
+      "notes": "The Pile is a concrete historical corpus design, not a universal mixture recipe."
+    },
+    {
+      "id": "14-C2",
+      "claim": "DoReMi trains a small proxy model with Group DRO to produce domain mixture weights and resamples data for a larger target model.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/dcba6be91359358c2355cd920da3fcbd-Abstract-Conference.html",
+      "locator": "Abstract; method summary",
+      "status": "verified",
+      "notes": "The method is not simply a heuristic preference for domains perceived as high quality."
+    },
+    {
+      "id": "14-C3",
+      "claim": "In its reported The Pile experiments, DoReMi used a 280M proxy to set weights for an 8B model and improved average few-shot accuracy by 6.5 points while reaching baseline accuracy with 2.6x fewer steps.",
+      "kind": "paper-result",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/dcba6be91359358c2355cd920da3fcbd-Abstract-Conference.html",
+      "locator": "Abstract, experimental results on The Pile",
+      "status": "verified",
+      "notes": "Numbers belong to the paper's model/data/training/evaluation setup."
+    },
+    {
+      "id": "14-C4",
+      "claim": "RegMix formulates mixture search as regression over proxy-model experiments; its ICLR 2025 paper reports 512 1M-parameter proxy models trained for 1B tokens and a 1B target trained for 25B tokens.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/5f67d864aae6115374fed7beddd119e0-Abstract-Conference.html",
+      "locator": "Abstract; proxy experiment and target-model setup",
+      "status": "verified",
+      "notes": "The paper reports additional transfer experiments; do not interpret its proxy-to-target transfer as guaranteed for every scale."
+    },
+    {
+      "id": "14-C5",
+      "claim": "Data Mixing Laws fits functions relating mixture proportions to language-model performance and uses fitted functions to predict unseen mixtures.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2403.16952",
+      "locator": "Abstract and method overview",
+      "status": "verified",
+      "notes": "The fitted relationship is empirical and must be calibrated for the target setup."
+    },
+    {
+      "id": "14-C6",
+      "claim": "RegMix-D uses full proxy loss trajectories to predict mixture schedules at multiple training stages, supporting offline and online deployment modes.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2026.findings-aacl.84/",
+      "locator": "Abstract; Findings of IJCNLP-AACL 2026",
+      "status": "verified",
+      "notes": "Published November 2026; experimental results are scoped to the paper's Pile and model settings."
+    },
+    {
+      "id": "14-C7",
+      "claim": "If documents are sampled with probabilities p_i and source i has mean token length μ_i, expected token share is proportional to p_i μ_i; to target token shares q_i, document probabilities should be proportional to q_i/μ_i under the stated independent-document approximation.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/2101.00027",
+      "locator": "Derived sampling expectation; assumptions stated in chapter",
+      "status": "derived",
+      "notes": "Real packing, truncation, filtering, repeated exposure and nonstationary length distributions require measurement on the final token stream."
+    }
+  ]
+}

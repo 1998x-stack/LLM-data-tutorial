@@ -28,15 +28,16 @@ Each chapter has exactly one primary category and may have multiple tags and too
 
 Prefer stable, reusable lowercase tags. Do not create a new spelling for the same concept.
 
-- Process: acquisition, extraction, normalization, language-id, filtering, deduplication, quality-scoring, decontamination, data-mixing, tokenization, reproducibility.
-- Method: heuristics, exact-match, minhash, lsh, jaccard, shingling, bloom-filter, perplexity, cross-entropy, classifier, sampling, ablation.
+- Process: acquisition, extraction, normalization, language-id, filtering, deduplication, quality-scoring, decontamination, benchmark-contamination, data-mixing, tokenization, reproducibility, llm-annotation.
+- Method: heuristics, exact-match, minhash, lsh, jaccard, shingling, bloom-filter, perplexity, cross-entropy, classifier, sampling, ablation, regression, thresholding, rubric, llm-as-judge, inter-annotator-agreement, soft-labels, uncertainty, exact-match, token-level-overlap, suffix-array, token-weighted-sampling, doremi, regmix, dynamic-mixing, partitioning, shuffle, data-skew, checkpointing, backpressure, idempotency.
 - Format / data: common-crawl, warc, wat, wet, html, parquet, arrow, jsonl, multilingual, code-data, web-text.
 - URL / source governance: url-filtering, url-canonicalization, domain-filtering, blocklist, source-provenance, rfc3986.
 - Dedup engineering: sha256, false-positive, paragraph-level, document-level, cross-crawl, dedup-granularity, duplicate-clustering, representative-selection.
 - Language-model scoring: ngram, kneser-ney, kenlm, quality-scoring, domain-adaptation.
-- Tool: fasttext, trafilatura, warcio, datatrove, dolma, spark, ray, sentencepiece.
+- Tool: fasttext, trafilatura, warcio, datatrove, dolma, apache-spark, ray-data, pyspark, sentencepiece, snowflake-arctic-embed.
+- Research anchors: fineweb-edu, doremi, regmix, regmix-d, mt-bench, llama2, gpt3.
 - Research anchors: c4, ccnet, the-pile, refinedweb, fineweb, fineweb-edu, dclm.
-- Concern: privacy, pii, license, bias, benchmark-contamination, low-resource-languages.
+- Concern: privacy, pii, license, bias, label-noise, distribution-shift, train-test-leakage, low-resource-languages.
 
 ## Tag quality rules
 

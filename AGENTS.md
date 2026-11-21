@@ -113,3 +113,29 @@ A release report must include:
 - For URL normalization, preserve original URLs and do not lowercase path/query or strip arbitrary query parameters without a documented equivalence policy.
 - For deduplication, distinguish candidate generation, exact verification, clustering, and representative selection. Never describe Bloom Filter `maybe` as exact membership.
 - For perplexity, record model, tokenizer, target domain, token-count convention, and language-specific thresholding. Do not interpret lower PPL as universal quality.
+
+
+### Educational classifiers and LLM-assisted annotation
+- Distinguish the target construct (e.g. educational value) from the teacher label and the downstream keep/drop policy.
+- Preserve continuous regression scores and thresholded decisions separately; report per-class and slice metrics, not only a single F1.
+- LLM-generated labels are noisy measurements. Version the rubric, prompt, model, sampling design and adjudication protocol.
+- Select agreement statistics for the measurement scale (nominal, ordinal, continuous); report human-human baselines and uncertainty intervals where appropriate.
+- Audit position, verbosity, source-identity and model-family biases. Model ensembles can shift score distributions rather than remove bias.
+
+### Benchmark decontamination
+- Separate exact text overlap, syntactic transformation, semantic equivalence, task-level exposure and demonstrated evaluation inflation.
+- Reproduce paper-specific tokenization, prompt verbalization, n-gram/skipgram thresholds and common-phrase handling exactly; never present them as universal defaults.
+- Store matched spans, offsets, train document IDs, benchmark version and reviewer decisions. A retrieval hit is a candidate, not a verdict.
+- Compare clean and contaminated subsets while checking for difficulty and distribution shifts; disclose the audit protocol.
+
+### Data mixtures
+- Distinguish document sampling probabilities from token exposure proportions. Record post-tokenization and post-packing token shares.
+- State the assumptions behind any document-length conversion; account for truncation, filtering, packing and repeated exposure in production metrics.
+- Treat DoReMi, Data Mixing Laws, RegMix and RegMix-D as experimental methods with proxy-to-target transfer assumptions, not universal mixture recipes.
+- Report the model scale, tokenizer, token budget, source snapshot and downstream suite for every claimed optimal mix.
+
+### Distributed data processing
+- Make the partition key, input manifest, code/config version and output commit protocol explicit.
+- Explain where shuffle, global aggregation and hot-key skew occur; profile task duration and memory instead of assuming a universal partition size.
+- Distinguish Spark cache/persist, reliable checkpoint and localCheckpoint; distinguish Ray Data blocks, object store, UDF heap and backpressure.
+- Task retries may repeat side effects. Use stable idempotency keys, immutable shard outputs and sink-specific commit semantics; do not claim exactly-once without proof.
