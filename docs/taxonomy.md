@@ -20,7 +20,7 @@ Each chapter has exactly one primary category and may have multiple tags and too
 | dedup | 去重与相似性 | exact, fuzzy, MinHash, LSH, multi-granularity | 07–09 |
 | quality | 质量、安全与评估 | perplexity, educational scoring, labeling, decontamination, evaluation | 10–13, 18 |
 | composition | 数据组成与表示 | mixture, tokenization, vocabulary, domain adaptation | 14, 19–20, 22 |
-| systems | 系统与工具链 | distributed compute, storage, reproducibility, DataTrove, Dolma | 15–17, 23–24 |
+| systems | 系统与工具链 | distributed compute, data lake storage, reproducibility, DataTrove, Dolma | 15–17, 23–24 |
 | frontier | 前沿与自动化 | synthetic data, curation paradigms, automation, online selection | 21, 25–27 |
 | capstone | 综合实战 | end-to-end project | 28 |
 
@@ -28,16 +28,16 @@ Each chapter has exactly one primary category and may have multiple tags and too
 
 Prefer stable, reusable lowercase tags. Do not create a new spelling for the same concept.
 
-- Process: acquisition, extraction, normalization, language-id, filtering, deduplication, quality-scoring, decontamination, benchmark-contamination, data-mixing, tokenization, reproducibility, llm-annotation.
-- Method: heuristics, exact-match, minhash, lsh, jaccard, shingling, bloom-filter, perplexity, cross-entropy, classifier, sampling, ablation, regression, thresholding, rubric, llm-as-judge, inter-annotator-agreement, soft-labels, uncertainty, exact-match, token-level-overlap, suffix-array, token-weighted-sampling, doremi, regmix, dynamic-mixing, partitioning, shuffle, data-skew, checkpointing, backpressure, idempotency.
-- Format / data: common-crawl, warc, wat, wet, html, parquet, arrow, jsonl, multilingual, code-data, web-text.
+- Process: acquisition, extraction, normalization, language-id, filtering, deduplication, quality-scoring, decontamination, benchmark-contamination, data-mixing, tokenization, reproducibility, llm-annotation, storage, data-lineage.
+- Method: heuristics, exact-match, minhash, lsh, jaccard, shingling, bloom-filter, perplexity, cross-entropy, classifier, sampling, ablation, regression, thresholding, rubric, llm-as-judge, inter-annotator-agreement, soft-labels, uncertainty, exact-match, token-level-overlap, suffix-array, token-weighted-sampling, doremi, regmix, dynamic-mixing, partitioning, shuffle, data-skew, checkpointing, backpressure, idempotency, row-group, snapshot, content-hash, stratified-sampling, confidence-interval, wilson-interval, bpe, byte-level-bpe, pre-tokenization, merge-ranks, fertility, bytes-per-token, token-premium, vocabulary-size, parameter-budget.
+- Format / data: common-crawl, warc, wat, wet, html, parquet, arrow, jsonl, iceberg, object-storage, data-lake, multilingual, code-data, web-text.
 - URL / source governance: url-filtering, url-canonicalization, domain-filtering, blocklist, source-provenance, rfc3986.
 - Dedup engineering: sha256, false-positive, paragraph-level, document-level, cross-crawl, dedup-granularity, duplicate-clustering, representative-selection.
 - Language-model scoring: ngram, kneser-ney, kenlm, quality-scoring, domain-adaptation.
-- Tool: fasttext, trafilatura, warcio, datatrove, dolma, apache-spark, ray-data, pyspark, sentencepiece, snowflake-arctic-embed.
+- Tool: fasttext, trafilatura, warcio, datatrove, dolma, apache-spark, ray-data, pyspark, pyarrow, apache-iceberg, dvc, sentencepiece, tiktoken, huggingface-tokenizers, snowflake-arctic-embed.
 - Research anchors: fineweb-edu, doremi, regmix, regmix-d, mt-bench, llama2, gpt3.
-- Research anchors: c4, ccnet, the-pile, refinedweb, fineweb, fineweb-edu, dclm.
-- Concern: privacy, pii, license, bias, label-noise, distribution-shift, train-test-leakage, low-resource-languages.
+- Research anchors: c4, ccnet, the-pile, refinedweb, fineweb, fineweb-edu, dclm, datasheets-for-datasets, dolma, sentencepiece, toklens, byt5, superbpe.
+- Concern: privacy, pii, license, bias, label-noise, distribution-shift, train-test-leakage, low-resource-languages, token-premium, data-loss.
 
 ## Tag quality rules
 

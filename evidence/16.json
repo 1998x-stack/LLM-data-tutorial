@@ -1,0 +1,70 @@
+{
+  "chapter": "16",
+  "title": "大规模数据存储",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "16-C1",
+      "claim": "A Parquet file is organized into row groups; each row group contains a column chunk for each column, and each column chunk contains one or more pages.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/apache/parquet-format",
+      "locator": "Format specification → Glossary; File format; Column chunks",
+      "status": "verified",
+      "notes": "This describes the logical format hierarchy; physical layout and page types are specified separately."
+    },
+    {
+      "id": "16-C2",
+      "claim": "Parquet file metadata is written after the data, and readers use the metadata to locate the column chunks they need.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/apache/parquet-format",
+      "locator": "File format → File metadata; Column chunks",
+      "status": "verified",
+      "notes": "Column/page pruning depends on available metadata and reader implementation; Parquet is not a row-oriented random-access database."
+    },
+    {
+      "id": "16-C3",
+      "claim": "Apache Arrow defines a language-independent in-memory columnar format, while Parquet is a compressed and encoded storage format; the projects are commonly used together.",
+      "kind": "official-doc",
+      "source_url": "https://arrow.apache.org/faq/",
+      "locator": "FAQ → What is the difference between Apache Arrow and Apache Parquet?",
+      "status": "verified",
+      "notes": "Arrow IPC can serialize Arrow record batches; do not conflate IPC with Parquet."
+    },
+    {
+      "id": "16-C4",
+      "claim": "Iceberg table metadata tracks schema, partition configuration and snapshots; manifests enumerate data files, and committing a new metadata version provides the basis for optimistic concurrency.",
+      "kind": "official-doc",
+      "source_url": "https://iceberg.apache.org/spec/",
+      "locator": "Table metadata; Manifests; Optimistic Concurrency",
+      "status": "verified",
+      "notes": "The exact commit implementation depends on catalog and table version; object-store consistency alone is not a general multi-object transaction."
+    },
+    {
+      "id": "16-C5",
+      "claim": "Amazon S3 provides strong consistency for GET, PUT and LIST operations after successful object writes, overwrites and deletes.",
+      "kind": "official-doc",
+      "source_url": "https://aws.amazon.com/s3/consistency/",
+      "locator": "Data consistency; How strong consistency for Amazon S3 works?",
+      "status": "verified",
+      "notes": "This is object-level consistency, not an assertion that arbitrary multi-object writes are transactional."
+    },
+    {
+      "id": "16-C6",
+      "claim": "Dolma is a released three-trillion-token English corpus built from web content, scientific papers, code, public-domain books, social media and encyclopedic materials.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2024.acl-long.840/",
+      "locator": "Abstract; ACL 2024 paper metadata",
+      "status": "verified",
+      "notes": "The scale and source categories describe the published Dolma corpus, not a general storage-size recommendation."
+    },
+    {
+      "id": "16-C7",
+      "claim": "Given a measured compressed fraction r and target file size F, a first-order file-count estimate is ceil(raw_bytes × r / F).",
+      "kind": "derived",
+      "source_url": "https://github.com/apache/parquet-format",
+      "locator": "Derived capacity-planning arithmetic; Parquet file and row-group hierarchy",
+      "status": "derived",
+      "notes": "This estimate ignores metadata, skew, empty files, replication, object-store billing granularity and actual compression variation."
+    }
+  ]
+}

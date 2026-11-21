@@ -139,3 +139,30 @@ A release report must include:
 - Explain where shuffle, global aggregation and hot-key skew occur; profile task duration and memory instead of assuming a universal partition size.
 - Distinguish Spark cache/persist, reliable checkpoint and localCheckpoint; distinguish Ray Data blocks, object store, UDF heap and backpressure.
 - Task retries may repeat side effects. Use stable idempotency keys, immutable shard outputs and sink-specific commit semantics; do not claim exactly-once without proof.
+
+
+### Storage and data lake layout
+- Distinguish raw archives, normalized columnar datasets, curated table snapshots, training shards and tokenizer-bound token blocks.
+- Explain Parquet File → Row Group → Column Chunk → Page accurately. A row group is not a file; row-group sizing is workload-dependent.
+- Distinguish Arrow's in-memory columnar representation from Parquet's compressed storage representation.
+- Treat Iceberg manifests and snapshots as table-level metadata/commit abstractions; do not equate object-store consistency with multi-object transactions.
+- Measure compression, file sizes, scan throughput, metadata cost and small-file compaction on the actual corpus.
+
+### Reproducibility and provenance
+- A seed alone is not a reproducibility contract. Include source snapshot, input checksums, code commit, canonical config, environment/dependency lock, model/tokenizer revision, randomness and output checksums.
+- Declare whether the requirement is bitwise, semantic or statistical reproducibility.
+- Hash canonicalized manifest bytes and sort shard entries before computing dataset digests; validate relative paths, duplicate paths and checksum syntax.
+- Distinguish content identity from data correctness, quality, legal provenance and permission to redistribute.
+
+### Corpus quality evaluation
+- Do not collapse integrity, coverage, content reliability, redundancy, safety/governance and downstream utility into an opaque universal score.
+- Report sampling frame, strata, inclusion probabilities, weights, rubric, inter-annotator process and confidence intervals.
+- Compare curation strategies under a fixed model, tokenizer, token budget, training recipe and multi-task evaluation suite.
+- Treat DCLM / Dolma results as paper-specific evidence, not universal data-quality guarantees.
+
+### Tokenization and vocabulary
+- Distinguish normalizer, pre-tokenizer, byte/character alphabet, merge ranks, special tokens and token-ID mapping.
+- Character-BPE teaching code is not a drop-in GPT-2/tiktoken implementation; label all omitted stages.
+- Pin tokenizer revisions when reporting token counts. Compare parallel or content-matched texts across languages.
+- Vocabulary costs include embedding and possibly untied LM-head weights, logits width and token-frequency allocation; report tied/untied assumptions and excluded memory terms.
+- Do not infer language complexity from token fertility or claim a single vocabulary size is universally optimal.

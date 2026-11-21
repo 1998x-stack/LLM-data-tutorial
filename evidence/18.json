@@ -1,0 +1,79 @@
+{
+  "chapter": "18",
+  "title": "数据质量评估体系",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "18-C1",
+      "claim": "DCLM provides a standardized 240-trillion-token Common Crawl corpus and 53 downstream evaluations for controlled data-curation experiments.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.11794",
+      "locator": "Abstract; Figure 2 DCLM workflow",
+      "status": "verified",
+      "notes": "The corpus and evaluation suite define the benchmark's experimental setting, not an exhaustive measure of all language-model capabilities."
+    },
+    {
+      "id": "18-C2",
+      "claim": "DCLM supports experiments at model scales ranging from 412M to 7B parameters.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.11794",
+      "locator": "Abstract; DCLM benchmark scales",
+      "status": "verified",
+      "notes": "Scale options are those defined by the paper's benchmark."
+    },
+    {
+      "id": "18-C3",
+      "claim": "The DCLM paper reports a 7B baseline reaching 64% 5-shot MMLU accuracy with 2.6T training tokens, with a reported 6.6-point improvement over MAP-Neo using 40% less compute.",
+      "kind": "paper-result",
+      "source_url": "https://papers.nips.cc/paper_files/paper/2024/file/19e4ea30dded58259665db375885e412-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "locator": "Abstract; NeurIPS 2024 Datasets and Benchmarks Track",
+      "status": "verified",
+      "notes": "These numbers belong to the paper's model, training recipe, token budget and evaluation setup; they are not a universal quality score."
+    },
+    {
+      "id": "18-C4",
+      "claim": "In DCLM's tested model-based filtering comparison, fastText-based filtering outperformed the other evaluated approaches, including PageRank, semantic deduplication, embedding classifiers, AskLLM, perplexity and top-k logits.",
+      "kind": "paper-result",
+      "source_url": "https://papers.nips.cc/paper_files/paper/2024/file/19e4ea30dded58259665db375885e412-Paper-Datasets_and_Benchmarks_Track.pdf",
+      "locator": "§4.4 Model-based quality filtering, lines 313–320",
+      "status": "verified",
+      "notes": "This is a result within the authors' experiment and does not establish fastText as universally optimal."
+    },
+    {
+      "id": "18-C5",
+      "claim": "Dolma is a three-trillion-token English corpus spanning web content, scientific papers, code, public-domain books, social media and encyclopedic materials.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2024.acl-long.840/",
+      "locator": "Abstract; ACL 2024 paper",
+      "status": "verified",
+      "notes": "The source categories illustrate corpus documentation and mixture, not a recommended universal source distribution."
+    },
+    {
+      "id": "18-C6",
+      "claim": "Datasheets for Datasets recommend documenting a dataset's motivation, composition, collection process, recommended uses, distribution and maintenance.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1803.09010",
+      "locator": "Abstract; §4 Datasheet questions",
+      "status": "verified",
+      "notes": "Documentation improves transparency but does not replace privacy, license or quality review."
+    },
+    {
+      "id": "18-C7",
+      "claim": "For a large population, the normal-approximation sample size for estimating a proportion with margin e is n0 = z²p(1−p)/e²; p=0.5 maximizes p(1−p) and gives a conservative planning value.",
+      "kind": "derived",
+      "source_url": "https://online.stat.psu.edu/stat506/Lesson02",
+      "locator": "§2.3 Sample Size Needed for Estimating Proportion",
+      "status": "derived",
+      "notes": "The chapter's calculator uses the large-population approximation and simple random sampling; finite-population correction, clustering, stratification, nonresponse and design effects are not included."
+    },
+    {
+      "id": "18-C8",
+      "claim": "A quality evaluation should distinguish low-cost structural and statistical proxies from human audits and controlled downstream training experiments.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/2406.11794",
+      "locator": "DCLM controlled curation workflow and 53 downstream evaluations; engineering synthesis",
+      "status": "derived",
+      "notes": "This is an evaluation-design recommendation based on the benchmark's controlled comparison approach."
+    }
+  ]
+}

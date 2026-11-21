@@ -14,3 +14,11 @@
 - Follow-up: Run real Chromium file:// and HTTP E2E and confirm generator --check and Node test suite.
 - Commit: 3c1812baa7017dcf93303cd1f72e04deddea3365 (initial iteration record; follow-up metadata commit follows)
 - PR: https://github.com/1998x-stack/LLM-data-tutorial/pull/1
+
+
+### 2026-11-21 — Batch 04: storage, reproducibility, quality, tokenization and vocabulary
+- Scope: migrate chapters 16–20 to the evidence-backed Olah-style article system while preserving stable URLs.
+- Content: Parquet / Arrow / Iceberg; DVC / run manifests; DCLM / Dolma / dataset datasheets; BPE / SentencePiece / tiktoken; vocabulary matrix and multilingual token-premium analysis.
+- Assets: ten original SVGs, five evidence ledgers, five accessible interactive exercises, five dependency-free utility modules and 24 unit tests.
+- Editorial controls: no universal storage sizing, no seed-only reproducibility claim, no one-number data-quality score, no conflation of teaching BPE with production byte-level BPE, no universally optimal vocabulary size.
+- Validation and publication status will be appended after CI, PR review, merge and Pages verification.

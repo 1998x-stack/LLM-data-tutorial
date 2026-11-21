@@ -1,0 +1,70 @@
+{
+  "chapter": "19",
+  "title": "Tokenization 与 BPE",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "19-C1",
+      "claim": "BPE subword training starts from smaller symbols, repeatedly counts adjacent symbol pairs and merges the most frequent pair to form longer subword units.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/P16-1162/",
+      "locator": "§3.2 Byte Pair Encoding (BPE)",
+      "status": "verified",
+      "notes": "Sennrich et al. adapt BPE to character sequences and word boundaries for neural machine translation."
+    },
+    {
+      "id": "19-C2",
+      "claim": "Sennrich et al. use subword units to address rare and unseen words while balancing neural vocabulary size and sequence length.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/P16-1162/",
+      "locator": "Abstract; §1 Introduction; §3 Subword models",
+      "status": "verified",
+      "notes": "The paper's original task is neural machine translation; later LLM tokenizers use related but not identical pipelines."
+    },
+    {
+      "id": "19-C3",
+      "claim": "SentencePiece can train subword models directly from raw sentences without requiring external pre-tokenization and supports language-independent subword segmentation.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1808.06226",
+      "locator": "Abstract; Introduction; model algorithms",
+      "status": "verified",
+      "notes": "SentencePiece supports BPE and Unigram model types; its normalization and boundary behavior must still be configured."
+    },
+    {
+      "id": "19-C4",
+      "claim": "The open-source tiktoken project describes itself as a fast BPE tokenizer for OpenAI models and exposes named encodings through get_encoding and encoding_for_model.",
+      "kind": "implementation",
+      "source_url": "https://github.com/openai/tiktoken",
+      "locator": "README → Usage and API examples",
+      "status": "verified",
+      "notes": "A tokenizer encoding name and special-token configuration must be pinned to reproduce exact token IDs."
+    },
+    {
+      "id": "19-C5",
+      "claim": "The Hugging Face GPT-2 tokenizer implementation is byte-level BPE and treats spaces as part of tokens, so a word can tokenize differently at the beginning of a string and after a space.",
+      "kind": "official-doc",
+      "source_url": "https://huggingface.co/docs/transformers/model_doc/gpt2",
+      "locator": "GPT2Tokenizer description and examples",
+      "status": "verified",
+      "notes": "The add_prefix_space option changes behavior and can differ from the tokenizer's pretraining convention."
+    },
+    {
+      "id": "19-C6",
+      "claim": "The GPT-2 tokenizer configuration in tiktoken defines an explicit vocabulary size of 50,257 including the end-of-text special token ID.",
+      "kind": "implementation",
+      "source_url": "https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py",
+      "locator": "gpt2() encoding definition; explicit_n_vocab and special_tokens",
+      "status": "verified",
+      "notes": "This is a specific encoding configuration, not a universal vocabulary-size recommendation."
+    },
+    {
+      "id": "19-C7",
+      "claim": "A reproducible tokenizer requires more than a vocabulary list: pre-tokenization, normalization, byte mapping, merge ranks, special tokens and serialization behavior affect output IDs.",
+      "kind": "derived",
+      "source_url": "https://github.com/openai/tiktoken",
+      "locator": "Encoding definitions and public tokenizer implementation; engineering synthesis",
+      "status": "derived",
+      "notes": "The exact components differ by tokenizer family; do not assume GPT-2, SentencePiece and Unigram share one pipeline."
+    }
+  ]
+}

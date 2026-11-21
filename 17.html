@@ -1,258 +1,91 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第17章 流水线可复现性</title>
-    <link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html" class="active">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-
-        <h2>不可复现的数据管线 = 不可复现的研究</h2>
-
-        <p>2023年，AI2的研究团队在构建Dolma数据集时遇到了一个尴尬的局面：他们的论文声称使用了3万亿token的混合语料训练模型，但当同行想复现结果时，却发现了一个根本性的问题——即使拿到完全相同的清洗代码，也很难产出完全相同的训练数据。</p>
-
-        <p>这不是Dolma团队的错，而是整个数据工程领域普遍面临的困境。Common Crawl的快照在不断更新：2024年10月你看到的CC-MAIN-2024-50快照，和2025年3月从同一路径下载的内容可能已经不同（因为Common Crawl偶尔会修复损坏的文件重新上传）。开源模型如雨后春笋般涌现，但绝大多数模型的清洗代码和数据版本并未公开——即使公开了代码，也缺少生成数据的完整"配方"。这意味着论文中的实验结果在理论上是不可复现的。</p>
-
-        <p>Dolma团队把"全透明"作为核心使命。他们不仅开源了Dolma的清洗工具链，还公开发布了每一步处理的配置、参数和中间产物格式。这使得任何人都能用自己的算力，复现出与论文中描述的一致的3万亿token语料。这种对可复现性的极致追求，让Dolma成为了数据工程实践的标杆。</p>
-
-        <p>可复现性不是锦上添花——它是科学研究的基本要求。如果你的数据管线不可复现，那么基于这些数据训练出来的模型结果，在严格意义上就不能被称为"可验证的"。在本章中，我们将讨论如何系统性地确保数据管线的可复现性。</p>
-
-        <div class="highlight">
-            <strong>数据管线的"依赖地狱"：</strong> Common Crawl快照的版本问题只是冰山一角。你的清洗流水线还依赖于trafilatura版本（即使小版本号变化可能改变提取逻辑）、fastText模型的版本（不同语言分类模型版本差异巨大）、甚至JDK版本（Spark在不同JDK下的sort行为可能不同）。锁定所有依赖的版本，是通向可复现性的第一步。
-        </div>
-
-        <h2>数据版本控制</h2>
-
-        <p>代码有Git来管理版本，但Git不是为GB级以上的文件设计的。数据版本控制需要专门的工具。在数据工程领域，<strong>DVC（Data Version Control）</strong>是最广泛采用的方案。</p>
-
-        <p>DVC的核心思想很巧妙：它不直接存储数据文件到Git仓库，而是存储数据文件的<strong>校验和指针</strong>，真正的数据内容存放在远程存储（S3、GCS、本地磁盘）上。Git跟踪的是hash文件，而不是数据本身。效果上，你可以像操作代码一样操作数据版本——<code>git checkout</code>切换分支时，DVC会自动将对应的数据文件同步到工作目录。</p>
-
-        <p>典型的DVC工作流是这样的：</p>
-
-        <pre><code># 1. 初始化DVC
-$ dvc init
-
-# 2. 配置远程存储（以S3为例）
-$ dvc remote add -d myremote s3://dolma-data/dvc-store
-
-# 3. 追踪数据目录
-$ dvc add data/curated/v2.0/
-# 这会生成 data/curated/v2.0.dvc 文件（一个哈希指针文件）
-# 真正的数据被上传到 S3
-
-# 4. 将生成的.dvc文件提交到Git
-$ git add data/curated/v2.0.dvc
-$ git commit -m "Add curated dataset v2.0"
-
-# 5. 后续切换到旧版本
-$ git checkout &lt;old-commit&gt;    # 恢复.dvc文件
-$ dvc checkout                  # 同步对应的数据版本
-
-# 6. 查看数据版本历史
-$ dvc log data/curated/v2.0.dvc
-# 输出每次提交中该数据的版本变更</code></pre>
-
-        <p>除了DVC，社区中还有Git LFS（适合小团队、但需要付费）和LakeFS（在对象存储之上提供类Git的版本控制语义）。选择哪个工具取决于你的团队规模和数据量级——对于个人开发者，DVC + S3的组合是最低成本、最高性价比的选择。</p>
-
-        <p>值得注意的是，数据版本控制不仅仅是"记住文件长什么样"。更重要的目标是：给定一个数据版本号，你能追溯到它是由哪段代码、哪个输入快照、什么配置参数生成的。数据文件的校验和只是这个链条的终点——我们真正想要的是整条链路的可追溯性。</p>
-
-        <h2>确定性清洗</h2>
-
-        <p>可复现性的核心约束是一句数学般严格的等式：<strong>相同的输入 + 相同的代码 + 相同的配置 = 完全相同的输出</strong>。这听起来是理所应当的，但在分布式环境中，实现这个等式的难度远超想象。</p>
-
-        <p>非确定性的来源无处不在。最常见的是<strong>随机种子</strong>——如果你的清洗流程中任何一步调用了随机函数（比如随机采样做质量评分、随机打乱顺序），每次运行都会产生不同的结果。解决方案是明确设置随机种子，并且在代码中<strong>全局禁用不依赖种子的随机性</strong>。</p>
-
-        <p>更隐蔽的非确定性来源是<strong>并行排序的不稳定性</strong>。在分布式系统中，当多个分区的数据被合并排序时，如果两个文档的排序键相等，Spark可能会按不可预测的顺序排列它们（取决于哪个task先完成）。这会导致每次运行输出的文件顺序不同——如果你的后续流程依赖于行号或文件内排列顺序，这就会产生不同的结果。</p>
-
-        <pre><code>from pyspark.sql import SparkSession
-import hashlib
-
-spark = SparkSession.builder \
-    .appName("Deterministic-Pipeline") \
-    .config("spark.sql.adaptive.enabled", "true") \
-    .getOrCreate()
-
-# 非确定性排序的修正方案：
-# 在排序键中加入文档内容的hash作为二级键，确保并行排序结果稳定
-
-df = spark.read.parquet("s3://data/documents/")
-
-# 为每条文档计算内容hash作为确定性排序的二级键
-from pyspark.sql.functions import sha2, col, concat_ws
-
-df_with_hash = df.withColumn(
-    "_content_hash",
-    sha2(concat_ws("||", "url", "text"), 256)
-)
-
-# 排序时使用内容hash打破平局
-df_sorted = df_with_hash.orderBy(
-    col("language").asc(),
-    col("length").desc(),
-    col("_content_hash").asc()   # 确定性打破平局
-)
-
-# 确定性去重：基于hash而非基于顺序
-# 正确做法：对每条文档计算去重hash，group之后选择hash最小的那条
-df_deduped = df_sorted.groupBy("dedup_hash") \
-    .agg(functions.min(struct("_content_hash", "text", "url"))) \
-    .select("url", "text")</code></pre>
-
-        <div class="warning">
-            <strong>多进程/多节点处理中的排序不稳定：</strong> 这是分布式数据工程中最常见的隐形非确定性来源。当你用Spark的<code>orderBy</code>做全局排序，且排序键存在重复值时，不同运行之间相同键的文档相对顺序可能不同。解决方案很简单——在排序键中加入文档的哈希值作为二次排序字段。这会确保即使并行度不同，同一批数据的排序结果始终一致。这条规则适用于所有分布式计算框架，不仅仅是Spark。
-        </div>
-
-        <h2>流水线配置管理</h2>
-
-        <p>可复现的第三个支柱是<strong>配置管理</strong>。数据管线的每个运行参数都必须被记录和版本化——不是写在某个人的便签上，而是在代码仓库中以结构化文件的形式存在。</p>
-
-        <p>Dolma团队在这方面做了很出色地示范。他们将整个数据管线的配置写成YAML文件，随代码一起提交到Git仓库。每次生成新版本的数据集，对应的配置文件也被打上标签。这意味着任何人都可以从Git历史中找出"v2.1数据集使用的精确配置是什么"。</p>
-
-        <pre><code># Dolma管线配置示例 (dolma/config/v2.1.yaml)
-dataset:
-  name: dolma-v2.1
-  version: "2.1"
-  created_at: "2024-08-15"
-
-input:
-  sources:
-    - name: common-crawl
-      snapshots:
-        - CC-MAIN-2024-10
-        - CC-MAIN-2024-18
-        - CC-MAIN-2024-50
-      extraction:
-        tool: trafilatura
-        version: "1.2.3"
-    - name: wikipedia
-      dump_date: "2024-07-01"
-      language: en
-
-filters:
-  heuristic:
-    min_length: 200
-    max_length: 100000
-    min_word_count: 50
-    max_na_ratio: 0.4
-    max_bullet_ratio: 0.9
-  language:
-    model: fasttext-lid.176.bin
-    min_probability: 0.5
-    keep_languages: [en, zh, de, fr, es, ja, ko, ru, ar, pt, hi]
-
-dedup:
-  exact:
-    enabled: true
-    hash_algorithm: sha256
-  minhash:
-    enabled: true
-    num_permutations: 128
-    threshold: 0.85
-    bands: 20
-    rows_per_band: 6
-
-blending:
-  strategy: heuristic-v1
-  distributions:
-    common-crawl: 0.70
-    wikipedia: 0.15
-    books: 0.10
-    code: 0.05</code></pre>
-
-        <p>这个配置示例涵盖了数据管线的关键可复现要素：输入来源的具体版本、每个过滤步骤的参数、去重算法的参数、混合配比策略。</p>
-
-        <table>
-            <thead>
-                <tr><th>配置类别</th><th>典型参数</th><th>对可复现性的影响</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>输入源</td><td>快照版本、WARC路径、dump日期</td><td>最关键——不同版本的CC快照内容不同</td></tr>
-                <tr><td>正文提取</td><td>trafilatura版本、提取策略参数</td><td>版本差异可导致5-15%的提取结果差异</td></tr>
-                <tr><td>规则过滤</td><td>长度阈值、符号比例、停用词列表</td><td>直接影响50%以上的数据保留/丢弃决策</td></tr>
-                <tr><td>去重算法</td><td>MinHash参数、相似度阈值</td><td>阈值变化0.01可影响数百万文档的去重结果</td></tr>
-                <tr><td>混合配比</td><td>各源比例、采样策略、随机种子</td><td>比例变化直接改变数据分布</td></tr>
-            </tbody>
-        </table>
-
-        <p>配置管理的黄金法则是：<strong>永远不要在生产环境中手动修改参数</strong>。任何参数变更都应该走代码审查流程，提交到git，然后通过CI/CD触发数据管线重新运行。如果你在集群上手动改了一个阈值参数然后运行，这个改动就永远丢失了——没有任何人能追溯当时的精确配置。</p>
-
-        <h2>元数据追踪</h2>
-
-        <p>可复现性的最后一个维度是<strong>元数据追踪</strong>。配置管理记录了"怎么做"，元数据追踪记录了"从哪来"。当你在最终的训练数据中看到一条可疑的文本时，你应该能回答三个问题：这条文本来自哪个Common Crawl快照？经过了哪些清洗步骤？每个步骤使用的参数是什么？</p>
-
-        <p>最实践的追溯方式是为每条文档记录一个元数据字段，其中包含完整的来源信息：</p>
-
-        <pre><code>{
-  "text": "本文的实际内容...",
-  "url": "https://example.com/article/123",
-  "metadata": {
-    "warc_path": "crawl-data/CC-MAIN-2024-50/segments/.../warc/CC-00001.warc.gz",
-    "warc_offset": 12345678,
-    "warc_length": 4567,
-    "extraction_timestamp": "2024-12-15T10:30:00Z",
-    "extraction_tool": "trafilatura v1.2.3",
-    "pipeline_version": "v2.1",
-    "processing_steps": [
-      {"step": "language_filter", "model": "fasttext-lid.176.bin", "score": 0.97},
-      {"step": "heuristic_filter", "min_length": 200, "max_length": 100000, "passed": true},
-      {"step": "exact_dedup", "hash": "sha256:abcd...", "duplicate_of": null},
-      {"step": "quality_classifier", "model": "edu-classifier-v3", "score": 0.82}
-    ]
-  }
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="用内容指纹、数据血缘、配置锁定与 run manifest，把一次语料构建变成可检查、可重建的工程对象。"><title>17 · 流水线可复现性 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
+<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
+<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
+<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" aria-current="page" class="active"><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
+<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 17 / LLM DATA ENGINEERING</p><h1>流水线可复现性</h1><p class="dek">用内容指纹、数据血缘、配置锁定与 run manifest，把一次语料构建变成可检查、可重建的工程对象。</p><div class="article-meta"><span>系统机制 · 数学模型 · 工程实现</span><span>研究生进阶</span></div></header>
+<div class="lead-note"><strong>本章问题</strong><p>一个月前构建的训练语料今天还能不能重建？如果只能拿到最终的 Parquet 文件，却不知道输入 crawl snapshot、清洗规则、依赖版本、tokenizer revision 和随机种子，那么“同一个数据集”就只是一个名字，而不是一个可验证的对象。</p></div>
+<section id="levels"><h2>先区分三种“可复现”</h2><p>可复现不是一个二元开关。不同工程场景需要不同强度的保证，且要把“完全相同的字节”与“统计上等价的结果”区分开。</p>
+<figure class="diagram"><img src="assets/diagrams/ch17-repro-levels.svg" alt="三层可复现等级：字节级一致、语义级一致和统计级一致，逐层放宽结果相等的要求"><figcaption>图 1 · 先声明你承诺的是哪种复现，再决定要固定哪些输入、环境与随机性。</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>等级</th><th>判定方式</th><th>典型用途</th><th>常见障碍</th></tr></thead><tbody><tr><td>Bitwise</td><td>输出文件逐字节相同，checksum 相同</td><td>归档、缓存复用、审计和确定性预处理</td><td>并行写入顺序、浮点归约、硬件 kernel、非确定性排序</td></tr><tr><td>Semantic</td><td>样本集合、字段含义和规范化后内容一致</td><td>语料重建、跨版本格式迁移</td><td>顺序变化、等价文本规范化、schema 演进</td></tr><tr><td>Statistical</td><td>关键分布与下游指标在预设容差内</td><td>训练实验、非确定性模型推理</td><td>采样噪声、训练随机性、评测方差和数据漂移</td></tr></tbody></table></div>
+</section>
+<section id="identity"><h2>把一次语料构建定义成可检查的身份元组</h2><p>只记录 Git commit 不够。相同代码如果读取了不同 crawl snapshot、配置、模型权重或 tokenizer，产出的语料就可能不同。建议至少把以下字段纳入 run manifest：</p>
+<figure class="diagram"><img src="assets/diagrams/ch17-lineage-manifest.svg" alt="一个构建身份由输入快照、代码版本、配置哈希、环境锁、工具模型 tokenizer 版本和输出 checksum 共同组成"><figcaption>图 2 · Manifest 不是日志堆积，而是从输入身份到输出产物的可验证连接。</figcaption></figure>
+<ul><li><strong>Input identity：</strong>源数据 snapshot ID、文件清单、每个输入对象的 checksum。</li><li><strong>Code identity：</strong>Git commit、工作区是否 dirty、脚本版本、容器镜像 digest。</li><li><strong>Configuration identity：</strong>规范化后的配置内容及 hash；不能只记配置文件路径。</li><li><strong>Dependency identity：</strong>锁文件、Python / CUDA / 系统库版本，外部模型的不可变 revision。</li><li><strong>Randomness：</strong>随机种子、采样算法、分片顺序；声明哪些步骤可能非确定。</li><li><strong>Output identity：</strong>shard 路径、字节数、行数、checksum、schema、汇总 manifest digest。</li></ul>
+</section>
+<section id="dvc"><h2>DVC 与数据湖 snapshot：分别解决什么问题？</h2><p>DVC 把数据文件 / 目录、参数、命令和输出定义为 DAG stage。它对依赖内容计算 hash；依赖或参数变化时使相关 stage 失效；<code>dvc.lock</code> 记录某次 pipeline 的命令、依赖和输出状态。<code>dvc repro</code> 根据 DAG 只重跑需要更新的阶段。它不是调度器，也不会替你保证外部 API 或 GPU 计算天然确定。</p><p>Iceberg snapshot 管理的是表的文件集合和元数据版本；DVC 更适合把代码、配置、数据依赖和阶段产物放进工程版本控制工作流。两者可组合：DVC 追踪数据生产 DAG，Iceberg 管理共享数据湖中的可查询快照。</p>
+<div class="callout"><strong>一个重要边界：</strong>hash 只能证明“这份内容和记录的内容相同”，不能证明来源合法、标注正确或模型质量足够。Provenance 是证据链，不是质量背书。</div>
+</section>
+<section id="manifest"><h2>Manifest 最小数据契约</h2><pre><code>{
+  "schema_version": "1.0",
+  "run_id": "corpus-2026-11-21-r03",
+  "inputs": {
+    "source_snapshot": "cc-main-2026-11",
+    "manifest_sha256": "…",
+    "document_count": 1200000
+  },
+  "code": {
+    "git_commit": "a1b2c3d",
+    "container_digest": "sha256:…",
+    "dirty": false
+  },
+  "config": {
+    "canonical_sha256": "…",
+    "uri": "configs/cleaning-v7.json"
+  },
+  "runtime": {
+    "python": "3.x",
+    "dependencies_lock_sha256": "…"
+  },
+  "tokenizer": {
+    "name": "tokenizer-family",
+    "revision": "immutable-revision"
+  },
+  "outputs": [
+    {"path": "shards/00000.parquet", "sha256": "…", "rows": 50000}
+  ]
 }</code></pre>
+<p>示例中的 ID 和 checksum 均为占位符。实际 manifest 应由程序在构建完成后生成，不能把省略号当作可校验值。输入和输出清单最好采用稳定排序与规范化序列化，避免 JSON key 顺序、空格或本地路径导致不必要的身份变化。</p>
+</section>
+<section id="code"><h2>工程实现：稳定序列化与数据集指纹</h2><p>下面只使用 Python 标准库。它演示配置 JSON 的规范化 hash，以及对按路径排序的 shard checksum 清单计算根 digest。生产系统还应校验文件内容本身、schema、行数和 manifest 签名；不能仅信任传入的 checksum 字符串。</p>
+<pre><code>import hashlib
+import json
+from pathlib import PurePosixPath
 
-        <p>这个元数据结构的设计不是随意的。注意<code>warc_path</code>字段记录了原始WARC文件在Common Crawl S3中的路径和偏移量。Common Crawl的<strong>WARC路径和偏移量是追踪单条数据来源的最可靠方式</strong>——即使原始WARC文件被重新分发或移动，只要路径和偏移量还在，任何人都能在Common Crawl的存档中定位到原始HTTP响应数据。这为审计和数据溯源提供了坚实的技术基础。</p>
+def sha256_bytes(payload: bytes) -> str:
+    return hashlib.sha256(payload).hexdigest()
 
-        <div class="tip">
-            <strong>Common Crawl的WARC路径和偏移量是追踪单条数据来源的最可靠方式。</strong> 在处理过程中保留这个信息不需要额外的计算开销——每条WARC记录的头部已经包含了路径和偏移量。只需要在你的流水线中增加一个字段将这条信息从输入传递到输出。很多团队在第一版管线中忽略了这一点，然后在需要debug时追悔莫及。Dolma管线明确在schema中包含了<code>warc_path</code>和<code>warc_offset</code>字段，并在所有清洗步骤中原样传递。
-        </div>
+def canonical_json_digest(value: dict) -> str:
+    encoded = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256_bytes(encoded)
 
-        <p>有了可复现的数据管线，我们就可以放心地说：无论过多久、无论谁来运行，同一个配置必然产出同一个数据集。但还有一个关键问题没有回答：我们怎么知道这个数据集是"好"的？这就引出了下一章的主题——数据质量评估体系。</p>
-
-        <div class="footer-nav">
-            <a href="16.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="18.html">下一章 →</a>
-        </div>
-    </div>
-</div>
-</div>
-</body>
-</html>
+def dataset_root_digest(shards: list[dict]) -> str:
+    normalized = []
+    for shard in shards:
+        path = str(PurePosixPath(shard["path"]))
+        digest = shard["sha256"].lower()
+        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+            raise ValueError("sha256 must be 64 lowercase hexadecimal characters")
+        normalized.append({"path": path, "sha256": digest, "rows": int(shard["rows"])})
+    normalized.sort(key=lambda item: item["path"])
+    return canonical_json_digest({"shards": normalized})</code></pre>
+</section>
+<section id="exercise"><h2>交互实验：只改一个依赖，缓存还能复用吗？</h2><p>一个 stage 的缓存键至少要覆盖所有会影响输出的输入。下面比较两次运行的关键身份字段；只要其中一个不同，就不能把旧输出当作“同一组输入”的结果直接复用。</p>
+<div class="demo-panel"><div class="table-wrap"><table><thead><tr><th>身份字段</th><th>Run A</th><th>Run B（可编辑）</th></tr></thead><tbody><tr><td>Source snapshot</td><td>cc-2026-11</td><td><input id="run-source" value="cc-2026-11" aria-label="Run B source snapshot"></td></tr><tr><td>Code commit</td><td>a1b2c3d</td><td><input id="run-code" value="a1b2c3d" aria-label="Run B code commit"></td></tr><tr><td>Config hash</td><td>cfg-7f31</td><td><input id="run-config" value="cfg-7f31" aria-label="Run B config hash"></td></tr><tr><td>Tokenizer revision</td><td>tok-r12</td><td><input id="run-tokenizer" value="tok-r12" aria-label="Run B tokenizer revision"></td></tr></tbody></table></div><div id="repro-result" class="interactive-output" aria-live="polite">四个身份字段完全一致：缓存身份匹配。仍需确认运行环境与外部依赖也被纳入记录。</div></div>
+</section>
+<section id="failure"><h2>可复现性失败模式</h2><ul><li><strong>只保存 seed：</strong>seed 不能固定输入顺序、硬件 kernel、并发调度、外部模型 revision 和第三方服务响应。</li><li><strong>记录可变 tag：</strong><code>latest</code>、<code>main</code>、<code>stable</code> 不是不可变版本标识。</li><li><strong>manifest 只记路径：</strong>同一路径的对象可以被覆盖；要记录对象版本或内容 checksum。</li><li><strong>hash 规范不统一：</strong>JSON key 顺序、浮点表示、Unicode normalization 和路径分隔符可能改变 digest。</li><li><strong>清理历史快照：</strong>retention policy 若短于研究审计周期，就可能删掉仍被论文或模型引用的输入。</li><li><strong>把可复现等同于正确：</strong>一个有 bug 的 pipeline 也可以被完美复现；还要做质量验收和独立抽样审计。</li></ul>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li><a href="https://doc.dvc.org/user-guide/pipelines/defining-pipelines">DVC · Defining Pipelines</a>：内容 hash、参数依赖、DAG 与输出追踪。</li><li><a href="https://doc.dvc.org/command-reference/repro">DVC · dvc repro</a>：按 pipeline 状态重建阶段和 run cache。</li><li><a href="https://doc.dvc.org/user-guide/project-structure/dvcyaml-files">DVC · dvc.yaml / dvc.lock</a>：锁文件记录的 stage、依赖、参数和输出元数据。</li><li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Specification</a>：snapshot、manifest 与并发提交。</li><li>Gebru et al. (2021), <a href="https://arxiv.org/abs/1803.09010">Datasheets for Datasets</a>：数据集动机、组成、采集、用途、分发与维护。</li><li>Bender &amp; Friedman (2018), <a href="https://aclanthology.org/Q18-1041/">Data Statements for Natural Language Processing</a>：语言数据来源与适用人群的记录。</li></ol></section>
+<footer class="article-footer"><a href="16.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="18.html">下一章 →</a></footer>
+</article></main></div></div><script>(() => {
+ const fields=[["run-source","cc-2026-11"],["run-code","a1b2c3d"],["run-config","cfg-7f31"],["run-tokenizer","tok-r12"]];
+ const out=document.getElementById("repro-result");
+ function render(){const changed=fields.filter(([id,expected])=>document.getElementById(id).value.trim()!==expected).map(([id])=>id.replace("run-",""));if(changed.length===0){out.textContent="四个身份字段完全一致：缓存身份匹配。仍需确认运行环境、依赖锁和外部模型 revision 也被纳入记录。";}else{out.textContent="身份不匹配字段："+changed.join("、")+"。应视为新的 stage 输入组合；不能仅凭路径相同复用旧输出。";}}
+ fields.forEach(([id])=>document.getElementById(id).addEventListener("input",render));render();
+})();</script></body></html>

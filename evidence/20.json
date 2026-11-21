@@ -1,0 +1,79 @@
+{
+  "chapter": "20",
+  "title": "词表设计与优化",
+  "updated": "2026-11-21",
+  "claims": [
+    {
+      "id": "20-C1",
+      "claim": "Meta's Llama 3 release describes a tokenizer with a 128K-token vocabulary and reports improved encoding efficiency compared with Llama 2.",
+      "kind": "implementation",
+      "source_url": "https://ai.meta.com/blog/meta-llama-3/",
+      "locator": "Model architecture → tokenizer vocabulary",
+      "status": "verified",
+      "notes": "This is a model-family design choice and does not imply 128K is optimal for every architecture or language distribution."
+    },
+    {
+      "id": "20-C2",
+      "claim": "The public tiktoken GPT-2 encoding defines an explicit vocabulary size of 50,257.",
+      "kind": "implementation",
+      "source_url": "https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py",
+      "locator": "gpt2() encoding definition → explicit_n_vocab",
+      "status": "verified",
+      "notes": "Vocabulary count includes the configured special token ID space."
+    },
+    {
+      "id": "20-C3",
+      "claim": "An input embedding matrix with vocabulary size V and hidden dimension d has V×d parameters; an untied output vocabulary projection adds another V×d matrix.",
+      "kind": "derived",
+      "source_url": "https://doi.org/10.1162/tacl_a_00461",
+      "locator": "ByT5 §3.2 and vocabulary / softmax parameter discussion; matrix-shape derivation",
+      "status": "derived",
+      "notes": "This counts matrix weights only; it excludes bias terms, optimizer state, activations, quantization metadata and sharding."
+    },
+    {
+      "id": "20-C4",
+      "claim": "The ByT5 paper reports that the vocabulary and output softmax matrices in mT5-Base together account for 256 million parameters, or about 66% of that model's parameters.",
+      "kind": "paper-result",
+      "source_url": "https://doi.org/10.1162/tacl_a_00461",
+      "locator": "§3.2 Comparing the Models",
+      "status": "verified",
+      "notes": "This is specific to the mT5-Base configuration discussed by the paper."
+    },
+    {
+      "id": "20-C5",
+      "claim": "A study training 24 monolingual and multilingual LLMs at 2.6B parameters finds tokenizer choice can affect downstream performance and training cost, while fertility and parity are not always predictive of downstream performance.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2310.08754",
+      "locator": "Abstract; experimental design and findings",
+      "status": "verified",
+      "notes": "The result is scoped to the tested models, data, tokenizer algorithms and evaluation setup."
+    },
+    {
+      "id": "20-C6",
+      "claim": "A NeurIPS 2025 study trains approximately 7,000 comparable monolingual tokenizers for 97 languages and finds vocabulary size and pre-tokenization influence token premiums; simply increasing vocabulary size does not eliminate those differences.",
+      "kind": "paper-result",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf",
+      "locator": "Abstract; §5.2 Vocabulary Size; §5.3 SuperBPE",
+      "status": "verified",
+      "notes": "The paper's findings concern its controlled tokenizer experiments and token-premium metric; they do not imply a single global optimal vocabulary."
+    },
+    {
+      "id": "20-C7",
+      "claim": "TokLens evaluates 24 tokenizers across 15 languages using six intrinsic metrics and reports that tokenizer metrics correlate with multilingual performance in its tested setting, with important confounding caveats.",
+      "kind": "paper-result",
+      "source_url": "https://aclanthology.org/2026.acl-srw.18/",
+      "locator": "Abstract; TokLens metric definitions and results",
+      "status": "verified",
+      "notes": "The paper notes correlations and confounding with pretraining data composition; do not present intrinsic metrics as causal or universal predictors."
+    },
+    {
+      "id": "20-C8",
+      "claim": "For fixed text bytes B and measured average bytes-per-token c, the first-order token count estimate T≈B/c is a planning approximation.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2026.acl-srw.18/",
+      "locator": "Tokenizer compression metrics; dimensional derivation",
+      "status": "derived",
+      "notes": "The average depends on language, corpus slice, normalization, tokenizer revision and sample selection."
+    }
+  ]
+}
