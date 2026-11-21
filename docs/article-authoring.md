@@ -59,3 +59,13 @@ This guide adapts the workflow in Olah-style-posts/skills/olah-style-paper-posts
 - Distributed processing: identify map vs shuffle boundaries, hot-key skew, memory pools and checkpoint semantics; make retried shard outputs idempotent.
 - MathML: use semantic MathML for formulas unless a documented local renderer is part of the page. Do not leave raw TeX delimiters such as \\( ... \\) in a page that has no TeX renderer.
 - Interactive examples: label synthetic data as synthetic, keep static explanations complete, and unit-test the same mathematical expression used by the calculator.
+
+
+## Batch 04 topic-specific authoring checks
+
+- Storage: explain File → Row Group → Column Chunk → Page; distinguish persistent Parquet, in-memory Arrow and table-level Iceberg snapshots. Do not equate object-store strong consistency with a multi-object transaction.
+- Reproducibility: identify source snapshot, input checksums, code commit, canonical config, environment lock, model/tokenizer revision, randomness and output manifest. State whether the target is bitwise, semantic or statistical reproduction.
+- Quality evaluation: separate integrity, coverage, redundancy, governance and downstream utility. Define the sample frame, strata, weights, rubric, uncertainty and fixed training recipe.
+- BPE: distinguish pre-tokenization from merge training, character symbols from UTF-8 bytes, and BPE from Unigram. Label simplified code as a teaching implementation.
+- Vocabulary: calculate embedding and optional untied output-head costs explicitly; state what memory terms are excluded. Compare languages with parallel texts using CTC / reference-normalized token premium and pinned tokenizer revisions; bytes-per-token alone is confounded by byte premium.
+- MathML: use explicit multiplication operators in matrix-size formulas and keep raw TeX delimiters out of pages without a TeX renderer.

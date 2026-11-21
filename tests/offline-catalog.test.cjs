@@ -96,3 +96,39 @@ test('batch 03 mathematical expressions use semantic MathML, not unrendered TeX'
     assert.equal(article.includes(String.fromCharCode(92) + '('), false);
   }
 });
+
+test('fourth batch chapters 16-20 expose interactive exercises and evidence ledgers', () => {
+  const controls = {
+    16: ['raw-size', 'compression-ratio', 'file-target'],
+    17: ['run-source', 'run-code', 'run-config', 'run-tokenizer'],
+    18: ['margin-error'],
+    19: ['merge-count'],
+    20: ['vocab-size', 'hidden-size', 'weight-bytes', 'tied-weights'],
+  };
+  for (let index = 16; index <= 20; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
+    assert.match(article, /<h1>/);
+    assert.match(article, /<main/);
+    assert.match(article, /<figure class="diagram">/);
+    assert.match(article, /<footer class="article-footer">/);
+    assert.match(article, /aria-live="polite"/);
+    assert.equal(article.includes(String.fromCharCode(92) + '('), false);
+    for (const id of controls[index]) assert.ok(article.includes('id="' + id + '"'), number + ': missing control ' + id);
+    assert.ok(evidence.claims.length >= 7);
+    for (const claim of evidence.claims) {
+      assert.ok(claim.source_url, number + ': ' + claim.id + ' missing source_url');
+      assert.ok(claim.locator, number + ': ' + claim.id + ' missing locator');
+    }
+  }
+});
+
+test('chapters 18-20 render substantive equations as MathML', () => {
+  for (let index = 18; index <= 20; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    assert.match(article, /<math/);
+    assert.match(article, /aria-label=/);
+  }
+});

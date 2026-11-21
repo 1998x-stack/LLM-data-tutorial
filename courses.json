@@ -539,28 +539,38 @@
       "file": "16.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "理解 Parquet、Arrow、压缩、分层存储与扫描成本。",
+      "summary": "从 Parquet row groups、Arrow 内存布局、Iceberg snapshots 到对象存储一致性，设计可扫描、可演进、可审计的训练语料数据湖。",
       "tags": [
         "storage",
         "parquet",
         "arrow",
-        "compression"
+        "columnar-storage",
+        "row-group",
+        "object-storage",
+        "iceberg",
+        "data-lake",
+        "snapshot",
+        "compression",
+        "schema-evolution",
+        "small-files"
       ],
       "tools": [
-        "Parquet",
-        "Arrow",
-        "zstd"
+        "Apache Parquet",
+        "Apache Arrow",
+        "Apache Iceberg",
+        "PyArrow",
+        "Amazon S3"
       ],
       "level": "进阶",
       "prerequisites": [
         "15"
       ],
       "learningOutcomes": [
-        "选择适合的中间数据格式",
-        "估算压缩与扫描成本",
-        "设计冷热数据分层"
+        "解释 Parquet 的 file / row group / column chunk / page 结构及列投影",
+        "区分 Arrow 内存格式、Parquet 存储格式和 Iceberg 表快照",
+        "设计带 manifest、schema 与文件粒度约束的语料存储布局"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "17",
@@ -568,15 +578,24 @@
       "file": "17.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "使用数据版本、配置哈希、血缘与运行元数据追踪语料构建。",
+      "summary": "用内容哈希、DAG、run manifest、数据血缘和依赖锁定，把一次语料构建变成可检查、可重建的工程对象。",
       "tags": [
         "reproducibility",
         "data-lineage",
+        "manifest",
+        "content-hash",
+        "dvc",
+        "run-cache",
+        "determinism",
+        "sha256",
         "versioning",
-        "metadata"
+        "snapshot",
+        "provenance"
       ],
       "tools": [
-        "DVC"
+        "DVC",
+        "Apache Iceberg",
+        "Python hashlib"
       ],
       "level": "进阶",
       "prerequisites": [
@@ -584,11 +603,11 @@
         "16"
       ],
       "learningOutcomes": [
-        "定义可复现的数据快照",
-        "记录配置和工具版本",
-        "设计失败重跑与审计"
+        "区分字节级、语义级和统计级可复现性",
+        "为源快照、代码、配置、运行环境和输出定义稳定身份",
+        "设计可审计 manifest、内容指纹和失败重跑策略"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "18",
@@ -596,29 +615,39 @@
       "file": "18.html",
       "category": "quality",
       "categoryLabel": "质量、安全与评估",
-      "summary": "构建统计指标、人工抽检、代理任务与下游消融组成的质量体系。",
+      "summary": "以 DCLM、Dolma 和数据集说明书为研究锚点，建立覆盖、多样性、完整性、安全治理、分层人工抽检和下游消融组成的质量体系。",
       "tags": [
         "quality-evaluation",
-        "sampling",
+        "data-quality",
+        "stratified-sampling",
+        "confidence-interval",
+        "wilson-interval",
+        "dataset-documentation",
+        "downstream-evaluation",
+        "dclm",
+        "dolma",
         "ablation",
-        "data-audit"
+        "datasheets"
       ],
       "tools": [
-        "FineWeb",
-        "DCLM"
+        "DCLM",
+        "Dolma",
+        "Datasheets for Datasets",
+        "Python statistics"
       ],
       "level": "研究",
       "prerequisites": [
         "10",
         "11",
-        "14"
+        "14",
+        "15"
       ],
       "learningOutcomes": [
-        "设计分层人工抽检",
-        "区分代理指标与下游能力",
-        "制定质量验收门禁"
+        "把语料质量拆成可观测且互不替代的维度",
+        "设计分层抽样、比例估计与人工审计报告",
+        "用固定训练 recipe 和多任务评测验证数据策略的下游效用"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "19",
@@ -626,27 +655,35 @@
       "file": "19.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "理解 Byte-level BPE、子词合并、token 预算和多语言切分。",
+      "summary": "从相邻符号对计数推导 BPE merge，理解 byte-level 编码、预分词、SentencePiece、特殊 token 与 tokenizer 可复现性。",
       "tags": [
         "tokenization",
         "bpe",
+        "byte-level-bpe",
         "subword",
-        "token-budget"
+        "pre-tokenization",
+        "utf8",
+        "token-budget",
+        "sentencepiece",
+        "tiktoken",
+        "merge-ranks",
+        "tokenizer-evaluation"
       ],
       "tools": [
         "SentencePiece",
-        "tiktoken"
+        "tiktoken",
+        "Hugging Face Tokenizers"
       ],
       "level": "基础",
       "prerequisites": [
         "14"
       ],
       "learningOutcomes": [
-        "推导 BPE 合并过程",
-        "分析 token 数与字符数差异",
-        "理解多语言分词偏差"
+        "手工推导 BPE pair 统计和 merge rank",
+        "区分字符级 BPE、byte-level BPE、Unigram 与预分词",
+        "评估 tokenizer 的 round-trip、压缩率和多语言切分偏差"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "20",
@@ -654,26 +691,37 @@
       "file": "20.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "分析词表规模、覆盖率、序列长度和推理效率之间的权衡。",
+      "summary": "联合分析词表规模、embedding / LM head 参数、logits 成本、序列长度与多语言 token premium，建立可验证的词表选型流程。",
       "tags": [
         "vocabulary",
         "tokenizer",
-        "compression",
-        "multilingual"
+        "embedding",
+        "softmax",
+        "vocabulary-size",
+        "fertility",
+        "bytes-per-token",
+        "token-premium",
+        "multilingual",
+        "super-bpe",
+        "tokenizer-evaluation",
+        "parameter-budget"
       ],
       "tools": [
-        "SentencePiece"
+        "SentencePiece",
+        "tiktoken",
+        "TokLens",
+        "SuperBPE"
       ],
       "level": "进阶",
       "prerequisites": [
         "19"
       ],
       "learningOutcomes": [
-        "评估词表覆盖率",
-        "分析词表扩展的代价",
-        "理解序列长度对训练成本的影响"
+        "推导 tied / untied embedding 与输出词表矩阵的参数成本",
+        "用平行语料评估多语言 tokenizer 的 token premium",
+        "设计包含压缩、模型成本、公平性和下游实验的词表选择流程"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "21",

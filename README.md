@@ -8,8 +8,8 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 已深度重构：01–15，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、算法单元测试和论文证据账本。
-- 01–15 每篇重构文章维护独立 evidence/NN.json 证据清单。
+- 已深度重构：01–20，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
+- 01–20 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
 
@@ -33,9 +33,9 @@
 | 数据采集与提取 | 02–03 | Common Crawl 归档定位、WARC/WAT/WET、正文抽取 |
 | 规范化与过滤 | 04–06 | 语言识别、URL 策略、启发式过滤 |
 | 去重与相似性 | 07–09 | 精确去重、MinHash、LSH、多粒度重复 |
-| 质量、安全与评估 | 10–13、18 | 困惑度、教育质量分类器、LLM 标注、评测去污染、质量评估 |
-| 数据组成与表示 | 14、19–20、22 | 文档/Token 配比、DoReMi/RegMix、Tokenization、词表、领域数据 |
-| 系统与工具链 | 15–17、23–24 | Spark/Ray 分布式处理、存储、可复现性、DataTrove、Dolma |
+| 质量、安全与评估 | 10–13、18 | 困惑度、教育质量分类器、LLM 标注、评测去污染、分层抽检与下游质量评估 |
+| 数据组成与表示 | 14、19–20、22 | 文档/Token 配比、BPE、SentencePiece、词表成本、多语言 token premium、领域数据 |
+| 系统与工具链 | 15–17、23–24 | Spark/Ray、Parquet/Arrow/Iceberg、DVC、数据血缘与可复现性、DataTrove、Dolma |
 | 前沿与自动化 | 21、25–27 | 合成数据、数据范式、自动化编排、在线选择 |
 | 综合实战 | 28 | 从原始数据到可复现训练语料的端到端工程 |
 
@@ -60,11 +60,11 @@
 | 13 | 评测集去污染 | GPT-3 word n-gram、Llama 2 token skipgram、T1–T4 污染 taxonomy |
 | 14 | 多源数据混合配比 | 文档到 token 权重换算、DoReMi、RegMix、RegMix-D |
 | 15 | 分布式数据处理架构 | Spark AQE、Ray Data streaming、Shuffle、Backpressure、幂等恢复 |
-| 16 | 大规模数据存储 | Parquet、Arrow、压缩与冷热分层 |
-| 17 | 流水线可复现性 | 数据版本、配置哈希、血缘与审计 |
-| 18 | 数据质量评估体系 | 质量指标、人工抽检、下游消融 |
-| 19 | Tokenization 与 BPE | Byte-level BPE、分词与 token 预算 |
-| 20 | 词表设计与优化 | 词表规模、覆盖率、推理成本 |
+| 16 | 大规模数据存储 | Parquet row groups、Arrow 内存格式、Iceberg snapshots、对象存储与小文件治理 |
+| 17 | 流水线可复现性 | DVC DAG、content hash、run manifest、依赖锁与输出指纹 |
+| 18 | 数据质量评估体系 | DCLM / Dolma、质量维度、分层抽样、置信区间、受控下游评测 |
+| 19 | Tokenization 与 BPE | pair frequency、merge ranks、byte-level BPE、SentencePiece、tiktoken |
+| 20 | 词表设计与优化 | vocabulary × hidden size、embedding / softmax 成本、多语言 token premium |
 | 21 | 合成数据生成 | Self-Play、数据增强、模型坍缩 |
 | 22 | 领域适配数据策略 | 代码、科学、医学与多语言 |
 | 23 | DataTrove 流水线实战 | 模块化数据处理与可复现配置 |
@@ -80,7 +80,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；01–15 已深度重构；其余章节按五篇一批迁移
+    ├── 01.html ... 28.html       # 章节入口；01–20 已深度重构；其余章节按四至五篇一批迁移
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
@@ -128,9 +128,27 @@
 - [Data Mixing Laws · ICLR 2025](https://arxiv.org/abs/2403.16952)
 - [RegMix · ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/5f67d864aae6115374fed7beddd119e0-Abstract-Conference.html)
 - [RegMix-D · Findings AACL 2026](https://aclanthology.org/2026.findings-aacl.84/)
+- [Apache Parquet Format Specification](https://github.com/apache/parquet-format)
+- [Apache Arrow Format](https://arrow.apache.org/docs/format/Intro.html)
+- [Apache Iceberg Specification](https://iceberg.apache.org/spec/)
+- [Amazon S3 strong consistency](https://aws.amazon.com/s3/consistency/)
+- [DVC · Defining Pipelines](https://doc.dvc.org/user-guide/pipelines/defining-pipelines)
+- [DVC · Reproduce Pipelines](https://doc.dvc.org/command-reference/repro)
+- [Datasheets for Datasets](https://arxiv.org/abs/1803.09010)
+- [Data Statements for NLP · TACL](https://aclanthology.org/Q18-1041/)
+- [DataComp-LM · NeurIPS 2024](https://arxiv.org/abs/2406.11794)
+- [Dolma · ACL 2024](https://aclanthology.org/2024.acl-long.840/)
+- [BPE · Neural Machine Translation of Rare Words with Subword Units](https://aclanthology.org/P16-1162/)
+- [SentencePiece](https://arxiv.org/abs/1808.06226)
+- [OpenAI tiktoken](https://github.com/openai/tiktoken)
+- [GPT-2 tokenizer documentation](https://huggingface.co/docs/transformers/model_doc/gpt2)
+- [Llama 3 tokenizer design](https://ai.meta.com/blog/meta-llama-3/)
+- [Tokenizer Choice For LLM Training](https://arxiv.org/abs/2310.08754)
+- [Explaining and Mitigating Crosslingual Tokenizer Inequities · NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf)
+- [TokLens · ACL 2026 SRW](https://aclanthology.org/2026.acl-srw.18/)
+- [ByT5 · TACL](https://doi.org/10.1162/tacl_a_00461)
 - [Apache Spark documentation](https://spark.apache.org/docs/latest/)
 - [Ray Data documentation](https://docs.ray.io/en/latest/data/)
-- [Dolma · ACL 2024](https://aclanthology.org/2024.acl-long.840/)
 - [Common Crawl documentation](https://commoncrawl.org/get-started)
 - [RFC 3986 · URI Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
 - [Deduplicating Training Data Makes Language Models Better · ACL 2022](https://aclanthology.org/2022.acl-long.577/)

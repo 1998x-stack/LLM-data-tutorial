@@ -1,177 +1,43 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第20章 词表设计与优化</title>
-    <link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html" class="active">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="量化词表大小对 embedding、LM head、上下文长度和多语言 token premium 的影响，建立可验证的词表选择流程。"><title>20 · 词表设计与优化 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
+<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
+<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
+<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" aria-current="page" class="active"><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
+<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 20 / LLM DATA ENGINEERING</p><h1>词表设计与优化</h1><p class="dek">量化词表大小对 embedding、LM head、上下文长度和多语言 token premium 的影响，建立可验证的词表选择流程。</p><div class="article-meta"><span>系统机制 · 数学模型 · 工程实现</span><span>研究生进阶</span></div></header>
+<div class="lead-note"><strong>本章问题</strong><p>词表到底应该是 16K、32K、50K、128K，还是更大？增大词表通常能让常见字符串被更少 token 表示，但模型需要更大的 embedding / output head，输出 logits 也更宽。多语言场景还会出现 token premium：相同内容在不同语言里可能消耗完全不同数量的 token。词表设计是压缩效率、模型参数、训练分布与语言公平性的联合优化问题。</p></div>
+<section id="tradeoff"><h2>词表规模连接了数据、模型和推理成本</h2><figure class="diagram"><img src="assets/diagrams/ch20-vocab-tradeoff.svg" alt="词表变大可能减少序列长度，但会增加 embedding 与输出词表矩阵参数、softmax 计算和稀有 token 学习压力"><figcaption>图 1 · 增大词表不是免费的压缩：输入 embedding、输出投影和每个 token 的学习频率都会受到影响。</figcaption></figure>
+<p>词表 <math aria-label="V"><mi>V</mi></math> 是 tokenizer 输出 ID 的集合。对 hidden size 为 <math aria-label="d"><mi>d</mi></math> 的模型，输入 embedding 矩阵的参数量是 <math aria-label="V 乘 d"><mi>V</mi><mo>×</mo><mi>d</mi></math>。如果输出 LM head 与 embedding 不共享权重，输出投影还需要另一份约 <math aria-label="V 乘 d"><mi>V</mi><mo>×</mo><mi>d</mi></math> 的矩阵；如果 tied embeddings，则两者共享参数，但输出 logits 的计算仍然需要把 hidden state 投影到 <math aria-label="V"><mi>V</mi></math> 个候选 token。</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="Embedding 和 LM head 参数量公式，可横向滚动"><math display="block" aria-label="输入 embedding 参数量 V 乘 d；未绑定 LM head 时再增加 V 乘 d"><mrow><msub><mi>P</mi><mtext>embed</mtext></msub><mo>=</mo><mi>V</mi><mo>×</mo><mi>d</mi><mo>,</mo><mspace width="1em"/><msub><mi>P</mi><mtext>total vocab</mtext></msub><mo>=</mo><mi>V</mi><mo>×</mo><mi>d</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>u</mi><mo>)</mo></mrow></math></div>
+<p>这里 <math aria-label="u 等于 0"><mi>u</mi><mo>=</mo><mn>0</mn></math> 表示输入输出权重绑定，<math aria-label="u 等于 1"><mi>u</mi><mo>=</mo><mn>1</mn></math> 表示不绑定。若权重精度每个参数占 <math aria-label="b"><mi>b</mi></math> bytes，则仅词表权重的理论存储量约为 <math aria-label="V 乘 d 再乘一加 u 再乘 b"><mi>V</mi><mo>×</mo><mi>d</mi><mo>(</mo><mn>1</mn><mo>+</mo><mi>u</mi><mo>)</mo><mi>b</mi></math>。这个估算不包括 optimizer states、梯度、临时 logits buffer、padding、量化元数据或分片冗余。</p>
+</section>
+<section id="sequence"><h2>词表变大后，序列长度如何变化？</h2><p>对固定文本字节数 <math aria-label="B"><mi>B</mi></math>，若 tokenizer 的平均 bytes-per-token 为 <math aria-label="c"><mi>c</mi></math>，token 数粗略约为 <math aria-label="T 等于 B 除以 c"><mi>T</mi><mo>=</mo><mi>B</mi><mo>/</mo><mi>c</mi></math>。这是同一语言、同一语料切片内的容量估算。不同语言的 byte premium 不同，bytes/token 不适合作为跨语言压缩公平性的直接指标；应使用平行文本的 corpus token count（CTC）并相对参考语言归一化。更大的 token 单元可能让同样文本占用更少 context positions；但 bytes-per-token 不会随词表大小线性增长，也受语言、预分词、训练语料和文本类型影响。</p>
+<figure class="diagram"><img src="assets/diagrams/ch20-multilingual-fertility.svg" alt="同一语义内容的多语言平行句子在不同 tokenizer 下产生不同 token 数，造成上下文容量和 token 预算差异"><figcaption>图 2 · 评估多语言 tokenizer 时，应使用平行或内容匹配文本，而不是把不同语言的任意网页样本直接比较。</figcaption></figure>
+<p>词表变大有三个相反方向的效应：</p><ul><li><strong>序列缩短：</strong>常见字符串可以被更长的子词覆盖，固定 token context 能容纳更多原始文本。</li><li><strong>词表矩阵变宽：</strong>embedding 与输出 head 参数、checkpoint 大小、logits 宽度和 softmax 计算增加。</li><li><strong>统计稀疏：</strong>更多 token 需要在训练语料中获得足够曝光；稀有 token 可能得到很少更新，增加覆盖并不自动带来更好的表示。</li></ul>
+</section>
+<section id="metrics"><h2>怎样评价一个词表？</h2><p>至少要把 tokenizer 内在指标和模型下游表现分开。TokLens（ACL 2026 Student Research Workshop）提出六种跨语言内在指标：fertility、characters per token、compression ratio、normalized sequence length、single-token retention rate 和 cross-lingual parity，并在 24 个 tokenizer、15 种语言上做分析。其摘要报告 GPT-2 在日语上每词 token 数是英语的 56 倍，而 Qwen2.5 / Gemma-2 的差距降到 4 倍以内；在控制模型规模后，没有一个内在指标能预测英语 benchmark 表现，但这些指标与 MMLU-ProX 的逐语言表现显著相关。作者明确指出关联仍是相关性证据，并部分受到预训练数据组成混淆，不能把某个压缩指标当作通用性能预测器。</p><div class="table-wrap"><table><thead><tr><th>指标</th><th>计算口径（示意）</th><th>解释与限制</th></tr></thead><tbody><tr><td>Fertility</td><td>tokens / words</td><td>词边界依赖语言和分词器，中文不能直接套用英文空格词口径。</td></tr><tr><td>Bytes per token</td><td>UTF-8 bytes / tokens</td><td>适合同一语言内的压缩统计；不同语言 byte premium 不同，不能直接当作跨语言公平指标。</td></tr><tr><td>Corpus token count / token premium</td><td>对平行文本统计 token 数，并相对参考语言归一化</td><td>固定信息内容后比较 token cost；报告语言、样本和参考语言。</td></tr><tr><td>Characters per token</td><td>Unicode code points / tokens</td><td>不同 script 的字符编码字节数不同，因此不能替代 bytes/token。</td></tr><tr><td>Normalized sequence length</td><td>相对于样本长度基准的 token 序列长度</td><td>归一化方式必须在实验报告中明确。</td></tr><tr><td>Single-token retention</td><td>目标常见词项中完整单 token 的比例</td><td>词表保留词项越多不必然代表模型越懂这些概念。</td></tr><tr><td>Cross-lingual parity</td><td>平行文本的 token cost 差异</td><td>需要翻译质量、语义匹配和长度控制。</td></tr></tbody></table></div>
+</section>
+<section id="evidence"><h2>研究证据：128K 不是一个“最优答案”</h2><p>Meta 在 Llama 3 发布说明中介绍了 128K vocabulary，并指出相对 Llama 2 的 tokenizer 编码效率有所改善。这说明更大的词表可以是具体模型设计的一部分，但不证明 128K 对所有模型或所有语言都是最优值。</p><p>ByT5 论文还给出一个有用的成本提醒：在其 mT5-Base 对照中，词表 embedding 与输出 softmax 矩阵合计约 256M 参数，占该模型约 66% 的参数量；这是该模型与配置下的结果，不应外推到所有架构。2025 年 NeurIPS 论文 <a href="https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf">Explaining and Mitigating Crosslingual Tokenizer Inequities</a> 分析约 7,000 个、覆盖 97 种语言的可比 tokenizer，发现词表大小与预分词方式都会影响 token premium；简单地把词表统一做大，并不能消除语言间的 token cost 差异。论文还指出，跨语言的 bytes-per-token 会受到 byte premium 影响，因此用平行文本 corpus token count（CTC）比较更合适。作者研究按语言寻找更合适的词表大小，以及允许跨空格合并的 SuperBPE。</p><p>TokLens（2026）报告，在其评估的样本中 GPT-2 tokenizer 的日语 tokens-per-word 相对英语差异很大，而 Qwen2.5 / Gemma-2 等新 tokenizer 的差距较小。该结果是特定测试集与 tokenizer 集合的比较，不应当直接外推到任意语料。</p>
+</section>
+<section id="calculator"><h2>交互计算器：词表矩阵会占多少参数与显存？</h2><p>这是一个理论参数 / 权重存储估算。假设 hidden size 固定、embedding 与 LM head 按选择共享或不共享，不计优化器状态、激活、logits 临时 buffer 和分片开销。</p>
+<div class="demo-panel"><label class="range-label" for="vocab-size"><span>Vocabulary size V</span><strong id="vocab-size-value">128,000</strong></label><input id="vocab-size" type="range" min="16000" max="256000" step="4000" value="128000" aria-label="词表大小"><label class="range-label" for="hidden-size"><span>Hidden size d</span><strong id="hidden-size-value">4,096</strong></label><input id="hidden-size" type="range" min="1024" max="16384" step="1024" value="4096" aria-label="隐藏维度"><label class="range-label" for="weight-bytes"><span>每个参数的字节数</span><strong id="weight-bytes-value">2 bytes（BF16 / FP16）</strong></label><input id="weight-bytes" type="range" min="1" max="4" step="1" value="2" aria-label="每个参数占用字节数"><label class="range-label" for="tied-weights"><span>Embedding 与 LM head</span><strong id="tied-value">共享权重</strong></label><input id="tied-weights" type="range" min="0" max="1" step="1" value="0" aria-label="是否共享 embedding 与 LM head 权重"><div id="vocab-cost" class="interactive-output" aria-live="polite">词表矩阵约 524.3M 参数；BF16 权重约 0.98 GiB。</div></div>
+<pre><code>from scripts.vocab_cost import vocabulary_parameter_count, vocabulary_weight_bytes
 
-        <h2>词表大小如何选择</h2>
-
-        <p>上一章我们探讨了 BPE tokenization 的工作原理。但有一个问题悬而未决——词表到底应该设多大？32K？64K？128K？还是像某些实验性的 tokenizer 一样做到 256K？这看似是一个简单的超参数选择，背后却牵涉到模型架构、训练效率、推理成本的多方权衡。</p>
-
-        <p>回看主流模型的选择，你会发现一个清晰的演进趋势：<strong>词表越来越大</strong>。GPT-2 的 50K 词表在 2019 年被认为是合理的，Llama-2 在 2023 年选择了 32K（甚至比 GPT-2 还小），但 2024 年的 Llama-3 直接把词表推到了 128K，2025 年的 DeepSeek-V3 也选择了 128K，而 Qwen-2.5 更进一步到了 152K。这不是无意义的军备竞赛——词表大小直接决定了一个关键指标：<strong>token 压缩率</strong>，即一个词能表示为多少个 token。</p>
-
-        <p>更大的词表意味着模型可以用更少的 token 表示同样的文本。对于 Llama-3 来说，128K 词表使得相同文本的 token 数比 Llama-2 (32K 词表) 减少了大约 25-30%。这意味着在同样 8192 的 context window 下，Llama-3 能"看到"的文本量多出 30%。但代价也很直接——embedding 层的参数数量与词表大小成正比。</p>
-
-        <table>
-            <thead>
-                <tr><th>词表大小</th><th>嵌入维度</th><th>Embedding 参数</th><th>约占总参数比</th><th>文本压缩率</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>32K</td><td>4096</td><td>~134M</td><td>7B 模型: ~2%</td><td>基准</td></tr>
-                <tr><td>64K</td><td>4096</td><td>~268M</td><td>7B 模型: ~4%</td><td>+12%</td></tr>
-                <tr><td>128K</td><td>4096</td><td>~536M</td><td>7B 模型: ~8%</td><td>+25%</td></tr>
-                <tr><td>128K</td><td>8192</td><td>~1.07B</td><td>70B 模型: ~1.5%</td><td>+25%</td></tr>
-                <tr><td>256K</td><td>8192</td><td>~2.15B</td><td>70B 模型: ~3%</td><td>+35%</td></tr>
-            </tbody>
-        </table>
-
-        <p>上面表格揭示了一个重要规律：对于大模型（70B+），embedding 层参数占比很小，所以扩大词表的边际成本很低。但对于 7B 级别的模型，128K 词表意味着 8% 的参数都花在 embedding 上——这是一个不能忽略的开销。这也是为什么小模型通常倾向于使用更小的词表。</p>
-
-        <p>2025 年的一篇系统研究对这个问题给出了更量化的答案：在相同的训练 token 预算下，128K 词表比 32K 在知识密集型任务上的平均得分高出 3-5%，但在简单生成任务上差异不大。这个差距主要来自 token 压缩率提升带来的"信息密度"增加——同样的窗口能装入更多知识。</p>
-
-        <h2>词表扩展 vs 从头训练</h2>
-
-        <p>在实际项目中，我们经常会遇到这样的场景：有一个基于 Llama-3 的通用模型，现在我们想把它适配到医学领域。Llama-3 的 tokenizer 对通用英文覆盖很好，但遇到 "TNF-alpha inhibitor"、"EGFR mutation" 这样的专业术语时，会被拆成一长串 token，既浪费序列长度，又让模型难以学习这些术语的语义。</p>
-
-        <p>解决方案是扩展 tokenizer 词表——在不破坏原有词表结构的前提下，加入领域专业词汇。这个过程通常包括以下几个步骤：</p>
-
-        <pre><code># 扩展已有 tokenizer 词表，加入领域词汇
-from tokenizers import Tokenizer
-
-def extend_tokenizer_vocab(
-    base_tokenizer_path: str,
-    domain_terms: list[str],
-    new_vocab_size: int
-):
-    # 1. 加载基础 tokenizer
-    tokenizer = Tokenizer.from_file(base_tokenizer_path)
-
-    # 2. 找出当前 tokenizer 不高效表示的领域词汇
-    #    （分解后 token 数超过阈值的词）
-    new_tokens = []
-    for term in domain_terms:
-        encoded = tokenizer.encode(term)
-        if len(encoded.tokens) &gt; 2:  # 被拆成 3+ 个 token 就需要加入
-            new_tokens.append(term)
-
-    # 3. 将这些词汇添加到 tokenizer 的词表中
-    #    注意：这需要操作 tokenizer 底层模型
-    current_vocab = tokenizer.get_vocab()
-    next_id = max(current_vocab.values()) + 1
-
-    for token in new_tokens:
-        if token not in current_vocab:
-            tokenizer.add_tokens([token])
-
-    # 4. 重新调整 embedding 矩阵的大小
-    #    （这一步在模型加载时完成）
-    print(f"已添加 {len(new_tokens)} 个领域词汇")
-    print(f"新词表大小: {tokenizer.get_vocab_size()}")
-
-    tokenizer.save("medical_llama_tokenizer.json")
-    return tokenizer</code></pre>
-
-        <div class="tip">
-            <strong>核心要点：</strong> 扩展词表后，新添加 token 的 embedding 是随机初始化的——这意味着模型还没学会如何表示这些新词。你必须对 embedding 层进行额外的训练（通常在微调阶段与其他参数一起训练），或者使用一些初始化技巧（如用相近 token 的 embedding 均值来初始化）。直接使用扩展后的 tokenizer 而不训练 embedding 层，新词的效果就是随机的。
-        </div>
-
-        <p>与词表扩展相对的另一种策略是"从头训练 tokenizer"。这通常发生在构建全新模型时，或者当目标语言与原始语言差异非常大时（例如将一个以英文为主的 tokenizer 适配到纯中文领域）。从头训练的好处是词表从零开始针对目标语料优化，token 效率最高；代价是需要重新训练整个模型。</p>
-
-        <h2>Tokenization 对推理效率的影响</h2>
-
-        <p>词表大小不仅影响训练阶段，更直接决定了推理效率——更大的词表意味着更短的序列，更短的序列意味着更少的 KV cache 占用和更少的推理步骤。在 LLM 服务部署中，<strong>推理延迟与序列长度近似成正比</strong>，所以 token 压缩率的提升可以直接换算成推理成本的降低。</p>
-
-        <p>Llama-3 选择 128K 词表的一个重要考量就是推理效率。以 Llama-3-8B 为例，与使用 32K 词表的模型相比，同样一段 1000 字的文本只需要大约 75% 的 token 数。在服务 1000 个并发请求时，这意味着约 25% 的 GPU 推理成本节省。对于 Meta 这种规模的部署，这笔经济账非常可观。</p>
-
-        <p>但 tokenization 对推理效率的影响不止于序列长度。2025 年提出的 <strong>FR-Spec</strong>（Frequency-Ranked Speculative Decoding）技术揭示了另一个维度：在自回归推理中，LM Head（将 hidden state 投影到词表大小的 logits）是一个计算热点。FR-Spec 利用 token 的频率统计信息，只对高频 token 做完整的 LM Head 计算，对低频 token 使用近似估计，从而将 LM Head 的计算量减少约 75%。这个技术直接受益于词表中 token 频率的分布特征——如果词表设计合理，少数高频 token 承担了大部分生成任务。</p>
-
-        <div class="highlight">
-            <strong>推理效率的量化视角：</strong> 假设模型 A 的词表为 32K，模型 B 的词表为 128K。模型 B 的平均序列长度比模型 A 短 25%，但 embedding 和 LM Head 的参数多了 4 倍。在 batch size 较小时，序列长度缩减带来的好处远大于参数增加的开销（因为 embedding 计算是 memory-bound 的，而序列长度影响的是 compute-bound 的 attention 计算）。综合来看，128K 词表在推理场景下通常比 32K 词表更有优势——但前提是模型足够大，embedding 层的相对开销可以忽略。
-        </div>
-
-        <p>还有一个容易被忽略的细节：tokenize 和 decode 操作本身也有计算开销。每次推理请求都需要将输入文本 tokenize（调用 tokenizer 的 encode 方法），然后对输出 token 进行 decode。对于短输入（如 100 个 token），这个开销可以忽略。但对于需要处理超长上下文的应用（如 CodeX 处理 128K 代码库），tokenize/decode 的时间可能占到总推理时间的 5-10%。在这个场景下，使用 Rust 实现的 HuggingFace Tokenizers（而不是纯 Python 实现）能带来显著的延迟改善。</p>
-
-        <h2>词表消融实验</h2>
-
-        <p>在学术研究中，词表消融实验（vocabulary ablation）是评估 tokenizer 质量的标准方法。基本思路是：保持其他所有条件不变，仅改变 tokenizer 的词表，训练一个小规模模型，观察下游任务的变化。</p>
-
-        <p>2024 年 AI2 的一项系统消融实验揭示了几个关键发现：</p>
-
-        <ul>
-            <li><strong>词表并非越大越好：</strong> 在 7B 模型上，256K 词表相比 128K 虽然 token 压缩率更高，但 MMLU 分数下降了约 1.5%。原因可能是词表过大导致 embedding 层参数过多，在有限的训练数据下无法充分学习。</li>
-            <li><strong>训练数据分布比词表大小更重要：</strong> 同样的 128K 词表，在代码语料上训练的 tokenizer 和在网上语料上训练的 tokenizer，对代码任务的 token 效率可以相差 40%。</li>
-            <li><strong>词表公平性：</strong> 在多语言设置下，英文 token 效率通常是最高的，中文/日文等非拉丁语言的 token/word 比可能高出 50-100%。这意味着一个英语主导的语料训练出的 tokenizer 对其他语言是"不公平"的。</li>
-        </ul>
-
-        <table>
-            <thead>
-                <tr><th>语言</th><th>Llama-2 (32K) token/word</th><th>Llama-3 (128K) token/word</th><th>相对英文效率 (Llama-3)</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>英文</td><td>1.2</td><td>1.1</td><td>100%</td></tr>
-                <tr><td>中文</td><td>2.8</td><td>1.9</td><td>58%</td></tr>
-                <tr><td>日文</td><td>3.5</td><td>2.3</td><td>48%</td></tr>
-                <tr><td>韩文</td><td>2.9</td><td>2.1</td><td>52%</td></tr>
-                <tr><td>阿拉伯文</td><td>2.2</td><td>1.6</td><td>69%</td></tr>
-                <tr><td>泰文</td><td>4.1</td><td>2.8</td><td>39%</td></tr>
-            </tbody>
-        </table>
-
-        <div class="warning">
-            <strong>语言公平性陷阱：</strong> 一个在英语主导语料上训练的 tokenizer，对中文、日文等非拉丁语言非常"不友好"。以 Llama-2 为例，一个英文单词平均仅占 1.2 个 token，而一个中文字需要 2.8 个 token。这意味着在 4096 token 的 context window 下，中文用户能输入的内容只有英文用户的不到一半。如果你的目标用户群包括非英语使用者，在设计 tokenizer 训练语料时必须有意识地平衡各语言的比例。
-        </div>
-
-        <p>解决词表公平性问题的常用策略包括：在 tokenizer 训练语料中对低资源语言进行上采样（比如将中文的采样率从自然分布 5% 提高到 20%），或者使用多阶段训练——先在一个平衡的多语言语料上训练基础词表，再在目标语言上做微调。Qwen-2.5 的 152K 词表就是这种思想的体现——它专门针对中文进行了优化，使得中文的 token 效率在所有主流模型中表现最好。</p>
-
-        <p>词表设计和 tokenization 策略决定了模型如何"看到"世界。但无论你的 tokenizer 设计得多好，它处理的依然是真实世界中存在的天然文本。如果某些场景在天然数据中极其稀少（比如某个专业领域的推理链数据），仅靠优化 tokenizer 也无法创造新知识。下一个话题，我们将探讨如何解决这个天然数据的局限性——合成数据生成。</p>
-
-        <div class="footer-nav">
-            <a href="19.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="21.html">下一章 →</a>
-        </div>
-    </div>
-</div>
-</div>
-</body>
-</html>
+vocab_size = 128_000
+hidden_size = 4_096
+tied = True
+parameters = vocabulary_parameter_count(vocab_size, hidden_size, tied)
+weight_bytes = vocabulary_weight_bytes(vocab_size, hidden_size, 2, tied)
+print(parameters, weight_bytes / (1024 ** 3))</code></pre>
+<p>这里的 128,000 与 4,096 是教学输入，不是对某个已发布模型配置的复刻。共享权重只减少参数矩阵的重复存储，不会让输出 logits 的词表维度消失。</p>
+</section>
+<section id="design"><h2>一个可执行的词表设计流程</h2><ol><li><strong>定义目标文本分布：</strong>列出语言、领域、代码、数学、URL、表格和特殊格式的目标占比。</li><li><strong>构建 tokenizer 训练集：</strong>去重、许可审查、语言分层，并避免测试集泄漏。</li><li><strong>设定候选词表规模：</strong>例如 16K / 32K / 64K / 128K；这些只是实验点，不是行业默认。</li><li><strong>固定其他因素：</strong>统一 tokenizer 算法、normalizer、pre-tokenizer、语料预算和评估样本。</li><li><strong>计算成本：</strong>embedding / head 参数、权重 bytes、logits shape、token throughput 和上下文容量。</li><li><strong>测量公平性：</strong>用平行文本评估各语言 token premium，单独检查低资源语言和特殊字符。</li><li><strong>做小规模下游验证：</strong>在相同模型、训练 token、优化器和数据配比下比较，而不是只凭压缩率选型。</li></ol>
+<div class="callout warning"><strong>词表是模型架构的一部分。</strong>一旦训练开始，随意更换 token ID 或 merge ranks 会破坏 embedding 对应关系。扩展词表通常需要新增 embedding 初始化与额外训练策略，不是替换一个 tokenizer 文件就能无损完成。</div>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li><a href="https://ai.meta.com/blog/meta-llama-3/">Meta Llama 3 release notes</a>：128K tokenizer vocabulary 的模型设计背景。</li><li><a href="https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py">tiktoken public encoding definitions</a>：GPT-2 / r50k vocabulary size 与编码配置。</li><li>Chiu (2026), <a href="https://aclanthology.org/2026.acl-srw.18/">TokLens: A Multilingual Lens on Tokenizer Quality for LLMs</a>，ACL 2026 SRW。</li><li>Arnett et al. (2025), <a href="https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf">Explaining and Mitigating Crosslingual Tokenizer Inequities</a>，NeurIPS 2025。</li><li>Ali et al. (2023), <a href="https://arxiv.org/abs/2310.08754">Tokenizer Choice For LLM Training: Negligible or Crucial?</a>。</li><li>ByT5, <a href="https://doi.org/10.1162/tacl_a_00461">Towards a Token-Free Future with Pre-trained Byte-to-Byte Models</a>：词表与 embedding / softmax 参数成本的讨论。</li></ol></section>
+<footer class="article-footer"><a href="19.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="21.html">下一章 →</a></footer>
+</article></main></div></div><script>(() => {
+ const vocab=document.getElementById("vocab-size"),hidden=document.getElementById("hidden-size"),bytes=document.getElementById("weight-bytes"),tied=document.getElementById("tied-weights");
+ const vv=document.getElementById("vocab-size-value"),hv=document.getElementById("hidden-size-value"),bv=document.getElementById("weight-bytes-value"),tv=document.getElementById("tied-value"),out=document.getElementById("vocab-cost");
+ function render(){const V=Number(vocab.value),d=Number(hidden.value),b=Number(bytes.value),u=Number(tied.value)===0?0:1;const params=V*d*(1+u),gib=params*b/(1024*1024*1024);vv.textContent=V.toLocaleString("en-US");hv.textContent=d.toLocaleString("en-US");bv.textContent=b+" bytes";tv.textContent=u===0?"共享权重":"不共享权重";out.textContent="词表矩阵约 "+(params/1e6).toFixed(1)+"M 参数；权重存储约 "+gib.toFixed(2)+" GiB。仅计算 embedding / LM head 权重，不包括 optimizer、activation、logits buffer 与分片开销。";}
+ [vocab,hidden,bytes,tied].forEach(x=>x.addEventListener("input",render));render();
+})();</script></body></html>
