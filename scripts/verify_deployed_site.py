@@ -21,10 +21,15 @@ REQUIRED = (
     "23.html",
     "24.html",
     "25.html",
+    "26.html",
+    "27.html",
     "28.html",
     "assets/diagrams/ch21-synthetic-data-loop.svg",
     "assets/diagrams/ch23-datatrove-pipeline.svg",
     "assets/diagrams/ch25-curation-paradigms.svg",
+    "assets/diagrams/ch26-asset-dag.svg",
+    "assets/diagrams/ch27-three-regimes.svg",
+    "assets/diagrams/ch28-capstone-pipeline.svg",
 )
 
 

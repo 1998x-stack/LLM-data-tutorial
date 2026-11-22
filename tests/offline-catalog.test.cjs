@@ -168,3 +168,46 @@ test('fifth batch equations use semantic MathML', () => {
     assert.match(article, /aria-label=/);
   }
 });
+
+
+test('sixth batch 26–28: semantic structure, math, diagrams, evidence and controls', () => {
+  const controls = {
+    26: ['gate-kept', 'gate-audited', 'gate-hard', 'gate-result'],
+    27: ['mix-web', 'mix-code', 'mix-math', 'mix-temp', 'mix-explore', 'mix-output'],
+    28: ['cap-min-accepted', 'cap-max-reject', 'cap-output'],
+  };
+  for (let index = 26; index <= 28; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
+    assert.match(article, /<h1>/);
+    assert.match(article, /<main/);
+    assert.match(article, /<nav/);
+    assert.match(article, /<article/);
+    assert.match(article, /<math/);
+    assert.match(article, /<figure class="diagram">/);
+    assert.match(article, /<footer class="article-footer">/);
+    assert.match(article, /aria-live="polite"/);
+    assert.equal(article.includes(String.fromCharCode(92) + '('), false);
+    assert.ok(evidence.claims.length >= 8);
+    for (const id of controls[index]) assert.ok(article.includes('id="' + id + '"'), number + ': missing ' + id);
+    for (const claim of evidence.claims) {
+      for (const key of ['id', 'claim', 'kind', 'status', 'source_url', 'locator', 'notes']) {
+        assert.ok(String(claim[key] || '').trim(), number + ': missing claim field ' + key);
+      }
+    }
+    const scripts = Array.from(article.matchAll(/<script>([\s\S]*?)<\/script>/g), m => m[1]);
+    assert.equal(scripts.length, 1, number + ': expected one local interaction script');
+    assert.doesNotThrow(() => new vm.Script(scripts[0]), number + ': invalid JavaScript syntax');
+  }
+});
+
+test('all 28 chapters have refined metadata and valid prior prerequisites', () => {
+  assert.match(html, /<strong>01–28<\/strong><span>深度重构章节<\/span>/);
+  for (const chapter of canonical.chapters) {
+    assert.equal(chapter.status, 'refined', chapter.num);
+    for (const prereq of chapter.prerequisites || []) {
+      assert.ok(Number(prereq) < Number(chapter.num), chapter.num + ': invalid prerequisite ' + prereq);
+    }
+  }
+});

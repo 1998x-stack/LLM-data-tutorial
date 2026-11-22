@@ -30,3 +30,10 @@
 - Added tests for sequential synthetic-data attrition, token-mixture arithmetic, DataTrove task planning, Bloom-filter sizing and precision/recall/F1.
 - Updated the course catalog, homepage count, taxonomy, architecture, AGENTS.md, article-authoring and quality gates.
 - **Publication:** PR #7 merged; static CI passed (62 Python tests, 12 Node tests; 28 chapters and 48 SVGs validated); GitHub Pages build and deployment succeeded. Browser screenshot QA was not run in this batch.
+
+
+### 2026-11-22 — Final batch 06: 26–28 and repository-wide review
+- New research-grounded chapters cover agentic data preparation, static/offline/online mixture methods, and a runnable stdlib corpus capstone.
+- Added 9 original SVGs, 3 source-located evidence ledgers, 3 interactive exercises, deterministic Python gate/mixer/capstone helpers and tests.
+- Replaced unsupported DataEvolver claims, fixed schedule myths and fictitious DataTrove API usage in legacy 26–28 articles.
+- Extended catalog and site quality gates to 28/28. Repository-wide review identified and removed 15 unreferenced SVG diagrams; 47 referenced diagrams remain. Final feature-branch CI [run 45001201332](https://github.com/1998x-stack/LLM-data-tutorial/actions/runs/45001201332) passed 83 Python, 14 Node and 116 automated Chromium page/viewport checks, 0 issues; mobile table overflows fixed. Merge, latest main Pages and manual print/visual QA tracked separately in review record.

@@ -29,10 +29,10 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["tags"])
             self.assertTrue(chapter["level"])
 
-    def test_first_twenty_five_chapters_have_evidence_ledgers(self):
+    def test_all_twenty_eight_chapters_have_evidence_ledgers(self):
         allowed_kinds = {"paper-result", "paper-method", "official-doc", "standard", "implementation", "derived", "illustrative"}
         allowed_statuses = {"verified", "derived", "illustrative", "unverified"}
-        for number in tuple(f"{index:02d}" for index in range(1, 26)):
+        for number in tuple(f"{index:02d}" for index in range(1, 29)):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
@@ -48,6 +48,18 @@ class CatalogTests(unittest.TestCase):
                 self.assertIn(claim["status"], allowed_statuses, f"{number}: unsupported status")
                 self.assertTrue(claim["source_url"].startswith("https://"), f"{number}: source must use HTTPS")
 
+
+    def test_all_chapters_refined_and_prereqs_exist(self):
+        known = {item["num"] for item in self.catalog["chapters"]}
+        for chapter in self.catalog["chapters"]:
+            self.assertEqual(chapter["status"], "refined", chapter["num"])
+            for prereq in chapter.get("prerequisites", []):
+                self.assertIn(prereq, known)
+                self.assertLess(int(prereq), int(chapter["num"]))
+
+    def test_capstone_fixture_and_policy_exist(self):
+        self.assertTrue((ROOT / "examples/capstone/raw.jsonl").is_file())
+        self.assertTrue((ROOT / "examples/capstone/policy.json").is_file())
 
 if __name__ == "__main__":
     unittest.main()

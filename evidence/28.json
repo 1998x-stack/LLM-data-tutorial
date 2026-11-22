@@ -1,0 +1,106 @@
+{
+  "chapter": "28",
+  "title": "综合实战项目",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "28-C1",
+      "claim": "Common Crawl WARC archives preserve web crawl response metadata and are distinct from the extracted and curated JSONL artifacts used in the teaching sample.",
+      "kind": "official-doc",
+      "source_url": "https://commoncrawl.org/blog/navigating-the-warc-file-format",
+      "locator": "WARC format overview",
+      "status": "verified",
+      "notes": "The teaching capstone does not fetch or parse Common Crawl archives."
+    },
+    {
+      "id": "28-C2",
+      "claim": "DataTrove provides a composable Document, Reader, Filter, Writer and Executor pipeline abstraction for scaling corpus processing.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove",
+      "locator": "README; Pipeline and Executors",
+      "status": "verified",
+      "notes": "The capstone's stdlib implementation is separate from DataTrove and does not claim its scalability."
+    },
+    {
+      "id": "28-C3",
+      "claim": "Dolma documents distinct document data, attribute sidecars, deduplication, mixing and tokenization stages.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/allenai/dolma/blob/main/docs/README.md",
+      "locator": "Dataset curation four steps",
+      "status": "verified",
+      "notes": "The capstone intentionally omits these production stages beyond a tiny demonstration."
+    },
+    {
+      "id": "28-C4",
+      "claim": "DCLM uses controlled language-model training and benchmark evaluation to compare data curation strategies, rather than using only retention or raw cleanliness scores.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/19e4ea30dded58259665db375885e412-Abstract-Datasets_and_Benchmarks_Track.html",
+      "locator": "Abstract; standardized corpus, model recipes and evaluations",
+      "status": "verified",
+      "notes": "A successful input/output count does not establish downstream performance."
+    },
+    {
+      "id": "28-C5",
+      "claim": "Datasheets for Datasets recommends documenting collection, preprocessing, consent/rights, intended use, distribution and maintenance concerns.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1803.09010",
+      "locator": "Datasheet questions and documentation sections",
+      "status": "verified",
+      "notes": "Fixture boolean review flags are not proof of real-world rights or privacy clearance."
+    },
+    {
+      "id": "28-C6",
+      "claim": "Data Cards propose structured documentation of dataset sources, preparation, intended use and risks for responsible AI work.",
+      "kind": "paper-method",
+      "source_url": "https://research.google/pubs/data-cards-purposeful-and-transparent-dataset-documentation-for-responsible-ai/",
+      "locator": "Publication abstract; data card fields and motivations",
+      "status": "verified",
+      "notes": "Data card metadata must be grounded in actual source records."
+    },
+    {
+      "id": "28-C7",
+      "claim": "The capstone Python pipeline emits curated.jsonl, rejected.jsonl, quality_report.json and a SHA-256 checksummed manifest while keeping rejected raw text out of the audit stream.",
+      "kind": "implementation",
+      "source_url": "https://github.com/1998x-stack/LLM-data-tutorial/blob/main/scripts/capstone_pipeline.py",
+      "locator": "build_release, verify_release, tests/test_capstone_pipeline.py",
+      "status": "verified",
+      "notes": "Uses Python standard library; limited to toy local JSONL, not full production PII detection or semantic deduplication."
+    },
+    {
+      "id": "28-C8",
+      "claim": "For the 12 fictional checked-in teaching records and declared policy, the executable pipeline accepts 5 and rejects 7 with seven distinct rejection reasons.",
+      "kind": "implementation",
+      "source_url": "https://github.com/1998x-stack/LLM-data-tutorial/blob/main/examples/capstone/raw.jsonl",
+      "locator": "example fixture and tests/test_capstone_pipeline.py fixed acceptance assertions",
+      "status": "verified",
+      "notes": "These are deterministic teaching fixture measurements, not external data quality statistics."
+    },
+    {
+      "id": "28-C9",
+      "claim": "A cryptographic hash of input, policy and code identity can be used to define a stable run identifier, while output digests can detect accidental changes to the published candidate.",
+      "kind": "derived",
+      "source_url": "https://csrc.nist.gov/pubs/fips/180-4/upd1/final",
+      "locator": "Secure Hash Standard: SHA-256 digest definition; run-ID encoding defined by this repository",
+      "status": "derived",
+      "notes": "A checksum proves byte-level identity, not correctness, license status or safe publication."
+    },
+    {
+      "id": "28-C10",
+      "claim": "The capstone publication gate is READY_FOR_HUMAN_APPROVAL only when accepted count and rejection-fraction conditions are satisfied; it does not perform remote publication.",
+      "kind": "implementation",
+      "source_url": "https://github.com/1998x-stack/LLM-data-tutorial/blob/main/scripts/capstone_pipeline.py",
+      "locator": "build_release gate; remote_publication manifest field",
+      "status": "verified",
+      "notes": "This is the explicit local teaching policy, not a model-training evaluation."
+    },
+    {
+      "id": "28-C11",
+      "claim": "Atomic rename can provide a local same-filesystem commit boundary for the toy output directory but does not create distributed transactions on an object store.",
+      "kind": "derived",
+      "source_url": "https://docs.python.org/3/library/os.html#os.rename",
+      "locator": "os.rename semantics; pipeline directory stage/rename usage",
+      "status": "derived",
+      "notes": "Concurrent producers or object-store writes need separate protocols and idempotency controls."
+    }
+  ]
+}

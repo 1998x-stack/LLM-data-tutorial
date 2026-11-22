@@ -1,0 +1,88 @@
+{
+  "chapter": "26",
+  "title": "自动化数据准备系统",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "26-C1",
+      "claim": "DataFlow defines reusable operators and pipelines and introduces a DataFlow-Agent that can translate natural-language requirements into executable data preparation workflows.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2512.16676",
+      "locator": "Abstract; operator/pipeline abstraction; DataFlow-Agent",
+      "status": "verified",
+      "notes": "A research system with task- and evaluation-specific results; it is not the unverified DataEvolver name in the legacy article."
+    },
+    {
+      "id": "26-C2",
+      "claim": "The DataFlow project repository describes operator generation, pipeline organization, execution and data-evaluation utilities.",
+      "kind": "implementation",
+      "source_url": "https://github.com/OpenDCAI/DataFlow",
+      "locator": "README; project architecture and agent features",
+      "status": "verified",
+      "notes": "Repository APIs evolve; this article does not claim to have deployed the framework."
+    },
+    {
+      "id": "26-C3",
+      "claim": "Data-Juicer publishes a configurable data processing framework for foundation-model corpora with reusable processing operators.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/datajuicer/data-juicer",
+      "locator": "README; Data Processor and operator docs",
+      "status": "verified",
+      "notes": "Data-Juicer is distinct from DataFlow and from the article's conceptual release controller."
+    },
+    {
+      "id": "26-C4",
+      "claim": "Apache Airflow's Dynamic Task Mapping creates task instances at runtime from upstream outputs rather than requiring static fanout at DAG parse time.",
+      "kind": "official-doc",
+      "source_url": "https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dynamic-task-mapping.html",
+      "locator": "Dynamic Task Mapping overview",
+      "status": "verified",
+      "notes": "Behavior refers to the stable Airflow documentation at the cited URL; actual deployment requires a pinned version."
+    },
+    {
+      "id": "26-C5",
+      "claim": "Dagster provides asset checks that test properties of data assets, with results associated with materializations and execution.",
+      "kind": "official-doc",
+      "source_url": "https://docs.dagster.io/guides/test/asset-checks",
+      "locator": "Asset checks overview and execution",
+      "status": "verified",
+      "notes": "Asset checks are not a legal rights clearance system."
+    },
+    {
+      "id": "26-C6",
+      "claim": "Datasheets for Datasets argues that dataset creation, contents, preprocessing, intended use and maintenance should be documented for transparency and accountability.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1803.09010",
+      "locator": "Abstract; motivation; proposed datasheet questionnaire",
+      "status": "verified",
+      "notes": "A transparency framework does not automatically certify data rights."
+    },
+    {
+      "id": "26-C7",
+      "claim": "The teaching release gate blocks on any hard-governance violation; otherwise it requests review if retention or audit coverage falls below the configured thresholds.",
+      "kind": "implementation",
+      "source_url": "https://github.com/1998x-stack/LLM-data-tutorial/blob/main/scripts/automation_gate.py",
+      "locator": "evaluate_batch; test_automation_gate.py",
+      "status": "verified",
+      "notes": "This repository policy is an illustrative recommendation, not an Airflow/Dagster default or a statistically calibrated threshold."
+    },
+    {
+      "id": "26-C8",
+      "claim": "A workflow's completion or successful exit status is not evidence that corpus correctness, legal rights, privacy and downstream utility are verified.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/1803.09010",
+      "locator": "Datasheets questionnaire; release-gate synthesis",
+      "status": "verified",
+      "notes": "Governance and quality are separate review dimensions; actual authorization depends on organizational policy."
+    },
+    {
+      "id": "26-C9",
+      "claim": "Reproducible candidate comparison should freeze the input data and evaluation protocol and version code/configuration before comparing curation strategies.",
+      "kind": "derived",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/19e4ea30dded58259665db375885e412-Abstract-Datasets_and_Benchmarks_Track.html",
+      "locator": "DataComp-LM controlled comparison setup",
+      "status": "verified",
+      "notes": "Recommended experimental discipline; not proof that the conceptual AI planner improves data quality."
+    }
+  ]
+}

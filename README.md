@@ -8,8 +8,8 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 已深度重构：01–25，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
-- 01–25 每篇重构文章维护独立 evidence/NN.json 证据清单。
+- 已深度重构：01–28，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
+- 01–28 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - 第五批（21–25）内容审计记录见 [docs/batch-05-2026-11.md](docs/batch-05-2026-11.md)。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
@@ -71,9 +71,9 @@
 | 23 | DataTrove 流水线实战 | DataTrove v0.10.1：模块化数据处理与可复现配置 |
 | 24 | Dolma 工具链全解析 | Dolma 3T-token 语料与 Toolkit v1.2.1 |
 | 25 | 七类预训练数据构建范式对比 | 规则、模型、混合与数据选择 |
-| 26 | 自动化数据准备系统 | Agent 编排、质量反馈与治理 |
-| 27 | 在线数据选择与动态配比 | 课程学习、在线采样与动态调度 |
-| 28 | 端到端综合实战 | 数据契约、流水线、验收与排障 |
+| 26 | 自动化数据准备系统 | DataFlow-Agent、DAG、沙箱执行、治理硬门与人工审批 |
+| 27 | 在线数据选择与动态配比 | Curriculum、DoReMi、RegMix、RegMix-D、ODM / AC-ODM |
+| 28 | 端到端综合实战 | 真实可运行的 stdlib JSONL 流水线、哈希清单和质量门禁 |
 
 ## 仓库结构
 
@@ -81,7 +81,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；01–25 已深度重构；26–28 按批次继续完善
+    ├── 01.html ... 28.html       # 章节入口；01–28 已深度重构；26–28 按批次继续完善
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
@@ -165,3 +165,24 @@
 ## License / Data provenance
 
 课程代码、原创图示和文档的许可应以仓库根目录的 LICENSE（若存在）为准。引用的数据集、模型和第三方语料分别遵守各自的许可、使用条款与隐私约束。数据源公开可访问不等于其中所有内容都可自由再分发。
+
+
+## 第六批完整实战入口
+
+- 26.html：Operator / DAG / Agent 的受限自动化与发布治理门
+- 27.html：DoReMi、RegMix、RegMix-D、ODM / AC-ODM 的机制差异及教学反馈采样器
+- 28.html：端到端本地数据项目及逐层质量验收
+- 研究证据：evidence/26.json、27.json、28.json
+- 项目说明：examples/capstone/README.md
+
+运行无第三方依赖的教学管线：
+
+```bash
+python3 scripts/capstone_pipeline.py \
+  --input examples/capstone/raw.jsonl \
+  --policy examples/capstone/policy.json \
+  --out /tmp/llm-data-tutorial-capstone
+python3 -m unittest discover -s tests -v
+```
+
+本地 fixture 为虚构文本，稳定产出 5 条保留、7 条拒绝及 SHA-256 manifest。程序不抓取 Common Crawl、不运行模型、不进行真实权利/隐私审查，也不会自动对外发布。

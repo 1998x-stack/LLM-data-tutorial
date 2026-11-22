@@ -32,6 +32,38 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Run offline catalog tests
         run: node --test tests/offline-catalog.test.cjs
+      - name: Audit all 28 chapters and assets
+        run: python3 scripts/review_repo.py --strict --output review-results/repo-review.json
+      - name: Upload repository audit result
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-repository-review
+          path: review-results/repo-review.json
+
+  browser-qa:
+    name: Browser responsive and interaction review
+    needs: static-quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and Playwright
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Test all 28 chapters and homepage at four viewports
+        run: python3 scripts/browser_qa.py --out browser-results
+      - name: Preserve screenshots and browser report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-qa
+          path: browser-results/
 
   public-site-smoke:
     name: Verify published Pages matches main

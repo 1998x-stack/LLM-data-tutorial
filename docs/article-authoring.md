@@ -78,3 +78,12 @@ This guide adapts the workflow in Olah-style-posts/skills/olah-style-paper-posts
 - DataTrove: describe Document, PipelineStep, task, worker, rank and executor using the pinned version. Keep task count and input mapping stable across retries; document optional extras and external side effects.
 - Dolma: distinguish original dataset, Dolma Toolkit CLI and Dolma 3 dataset recipes. Explain attributes sidecars, Bloom false positives, mixer semantics, token output index and version-specific licenses.
 - Cleaning paradigms: define the six evidence families and their distinct error/cost profiles. Keep license, privacy, safety and benchmark decontamination as governance gates. Report confusion-matrix metrics and downstream ablations.
+
+
+## Batch 06 topic-specific authoring checks
+
+- Automation: distinguish planner proposals, sandbox execution, deterministic asset checks, independent release control and human authorization. No unverified "DataEvolver" project or invented industry speedups. Treat raw crawl content as untrusted data, not agent instructions.
+- Dynamic mixing: separate fixed mixture, offline curriculum, proxy-derived offline selection, proxy-trajectory scheduling and target-time online feedback. DoReMi Group DRO is not simple high-loss sampling; RegMix-D has offline and online variants.
+- Feedback-demo formula: temperature softmax plus uniform exploration floor is a teaching approximation, not a reproduction of DoReMi / ODM / AC-ODM. Keep same normalization in Python and JS tests; use fixed signal semantics and preserve provenance of actual token exposure.
+- Capstone: code must run locally without external data/model downloads; include fixture and policy, exact output and rejection counts, hash manifest, tamper detection, idempotency and tests. Do not claim source flags replace real rights or privacy review.
+- Review: independently verify CI, source-ledger consistency, article nav, tags, links, SVG XML, MathML, all JS controls, empty/invalid input behavior, main branch and Pages. Record unrun browser screenshots as not verified.
