@@ -104,7 +104,7 @@ def validate():
                     errors.append(f"{chapter['file']}: evidence ledger must contain a non-empty claims list")
                     claims = []
                 seen_claim_ids = set()
-                allowed_kinds = {"paper-result", "paper-method", "official-doc", "implementation", "derived", "illustrative"}
+                allowed_kinds = {"paper-result", "paper-method", "official-doc", "standard", "implementation", "derived", "illustrative"}
                 allowed_statuses = {"verified", "derived", "illustrative", "unverified"}
                 required_fields = ("id", "claim", "kind", "source_url", "locator", "status", "notes")
                 for claim in claims:
