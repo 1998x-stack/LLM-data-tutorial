@@ -178,3 +178,8 @@
 ## License / Data provenance
 
 课程代码、原创图示和文档的许可应以仓库根目录的 LICENSE（若存在）为准。引用的数据集、模型和第三方语料分别遵守各自的许可、使用条款与隐私约束。数据源公开可访问不等于其中所有内容都可自由再分发。
+
+
+## Latest quality follow-up
+
+- [Versioned-tool and evidence-ledger audit (2026-11-22)](docs/versioned-tool-followup-2026-11.md): DataTrove v0.10.1 / Dolma Toolkit v1.2.1 source pins, Dolma JSONL and token-index corrections, and strict evidence validation.
