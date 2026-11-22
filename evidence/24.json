@@ -1,0 +1,70 @@
+{
+  "chapter": "24",
+  "title": "Dolma 工具链全解析",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "CH24-C01",
+      "claim": "The Dolma dataset card describes a three-trillion-token English corpus built from web content, academic publications, code, books and encyclopedic materials, among other sources.",
+      "kind": "dataset-card",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Dataset overview; dataset description",
+      "status": "verified",
+      "notes": "Three trillion tokens describes the corpus-level release framing, not the exact token count consumed by every model trained on a Dolma version."
+    },
+    {
+      "id": "CH24-C02",
+      "claim": "The dataset card marks v1_7 as the default version and says it was released on 2024-04-15 for OLMo 7B-v1.7; its summary distinguishes full-corpus token counts from sampled training exposure.",
+      "kind": "dataset-card",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Versions table; Summary Statistics (v1.7); lines describing 1.715T tokens after sampling",
+      "status": "verified",
+      "notes": "The chapter explicitly distinguishes dataset version v1_7 from the Dolma Toolkit package version 1.2.1."
+    },
+    {
+      "id": "CH24-C03",
+      "claim": "Dolma Toolkit v1.2.1 is the latest tagged release in the inspected repository release history and was published on 2025-07-07.",
+      "kind": "official-release",
+      "source_url": "https://github.com/allenai/dolma/releases/tag/v1.2.1",
+      "locator": "Release tag v1.2.1 metadata",
+      "status": "verified",
+      "notes": "This is a software release version, not a corpus snapshot version."
+    },
+    {
+      "id": "CH24-C04",
+      "claim": "The v1.2.1 CLI documents tag, dedupe, mix, list, stat and tokens commands, and the getting-started guide demonstrates the processing sequence.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md",
+      "locator": "CLI help output; Process Wikipedia steps 1–4",
+      "status": "verified",
+      "notes": "The commands and example flags are tied to the v1.2.1 documentation; input paths and process counts are illustrative environment-specific values."
+    },
+    {
+      "id": "CH24-C05",
+      "claim": "Dolma's dedupe command uses an in-memory Bloom filter and can produce false positives.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md",
+      "locator": "Deduplication overview",
+      "status": "verified",
+      "notes": "The chapter warns that a positive Bloom-filter match is not an exact duplicate proof."
+    },
+    {
+      "id": "CH24-C06",
+      "claim": "The dataset card states ODC-BY licensing and requires users to also observe original source licenses and terms.",
+      "kind": "dataset-card",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Licensing Information",
+      "status": "verified",
+      "notes": "Do not summarize this as unrestricted reuse; downstream use must account for source-level terms and applicable law."
+    },
+    {
+      "id": "CH24-C07",
+      "claim": "The token-share expression is a bookkeeping definition based on per-source token counts.",
+      "kind": "derived",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Editorial formula in this chapter; related to dataset summary token statistics",
+      "status": "derived",
+      "notes": "This formula is a tutorial definition and does not claim that Dolma's mixer directly guarantees an exact token share."
+    }
+  ]
+}
