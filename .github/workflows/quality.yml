@@ -32,3 +32,18 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Run offline catalog tests
         run: node --test tests/offline-catalog.test.cjs
+
+  public-site-smoke:
+    name: Verify published Pages matches main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: static-quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout validated main commit
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compare public tutorial assets with checked-out source
+        run: python3 scripts/verify_deployed_site.py --base-url "https://1998x-stack.github.io/LLM-data-tutorial/"
