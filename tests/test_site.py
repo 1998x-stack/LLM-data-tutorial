@@ -30,7 +30,7 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["level"])
 
     def test_first_twenty_five_chapters_have_evidence_ledgers(self):
-        allowed_kinds = {"paper-result", "paper-method", "official-doc", "implementation", "derived", "illustrative"}
+        allowed_kinds = {"paper-result", "paper-method", "official-doc", "standard", "implementation", "derived", "illustrative"}
         allowed_statuses = {"verified", "derived", "illustrative", "unverified"}
         for number in tuple(f"{index:02d}" for index in range(1, 26)):
             path = ROOT / "evidence" / f"{number}.json"
