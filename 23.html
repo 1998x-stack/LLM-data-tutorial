@@ -42,6 +42,7 @@ pipeline = [
     LanguageFilter(
         languages=["en"],
         language_threshold=0.65,
+        backend="ft176",
     ),
     JsonlWriter(
         output_folder="data/clean",
@@ -56,7 +57,7 @@ executor = LocalPipelineExecutor(
     logging_dir="logs/lang-filter-v1",
 )
 executor.run()</code></pre>
-<p>这是一个小型示例，不代表完整的生产语料配方。<code>LanguageFilter</code> 会把预测语言与分数写入 metadata；设置语言列表和阈值后再决定是否保留。DataTrove 当前源码的默认语言阈值为 0.65，但实际阈值应按目标语言、混合文本和误杀成本校准。</p>
+<p>这是一个小型示例，不代表完整的生产语料配方。<code>LanguageFilter</code> 会把预测语言与分数写入 metadata；设置语言列表和阈值后再决定是否保留。DataTrove v0.10.1 的 LanguageFilter 默认 backend 为 ft176、language_threshold 为 0.65，但实际阈值应按目标语言、混合文本和误杀成本校准。</p>
 <h3>自定义 PipelineStep</h3>
 <pre><code>from datatrove.data import DocumentsPipeline
 from datatrove.pipeline.base import PipelineStep
