@@ -1,172 +1,24 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第22章 领域适配数据策略</title>
-    <link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html" class="active">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-
-        <h2>通用 vs 领域模型的数据差异</h2>
-
-        <p>前面所有的章节，我们讨论的几乎都是"通用数据"——从 Common Crawl 中清洗出的多领域、多语言文本。这种思路对通用大模型是正确的：你希望模型知道得越多越好，覆盖面越广越好。但是，当目标从"一个什么都知道的通用助手"变成"一个精通医学诊断的 AI 医生"时，数据策略需要一场彻底的改变。</p>
-
-        <p>这背后是数据工程中一个根本性的权衡：<strong>广度 vs 深度</strong>。通用模型需要数据广度——覆盖尽可能多的主题、风格和领域。领域模型需要数据深度——在同一主题上拥有足够的密度和颗粒度，让模型能够理解领域内的细微差别和专业术语。</p>
-
-        <p>2024 年，某知名医疗 AI 团队做了一个有趣的实验：他们在一个通用模型的基础上，用 200 亿 token 的医学文献进行继续预训练（continue pre-training），获得了专精医学的领域模型。但在评测时发现，这个领域模型在医学问答上表现优异，但在普通对话场景中反而比原版通用模型更差——因为医学文献的语体风格（严谨、正式、充满术语）"污染"了模型的通用表达能力。这个案例说明了领域数据策略的一个核心原则：<strong>领域适配必须在通用能力和专业能力之间找到平衡</strong>。单纯堆砌领域数据而不做策略设计，会带来灾难性的知识遗忘（catastrophic forgetting）。</p>
-
-        <p>在实践中，领域数据策略通常包含三个环节：<strong>领域数据采集与清洗</strong>（找到高质量的专业语料）、<strong>通用数据保持</strong>（在继续预训练中混入一定比例的通用数据，防止知识遗忘）、以及<strong>领域配比优化</strong>（确定通用与领域数据的最佳混合比例）。这三个环节在不同领域的具体实现差异巨大。</p>
-
-        <h2>代码领域</h2>
-
-        <p>代码是 LLM 最早的"领域成功故事"之一。GitHub Copilot、Code Llama、DeepSeek-Coder 等代码模型证明了专用数据策略的巨大价值。但代码数据的清洗和处理方式与通用文本有着本质区别。</p>
-
-        <p>第一个挑战是 <strong>自动生成的代码 vs 人工编写的代码</strong>。GitHub 上有大量由 IDE 自动生成、模板填充、或者从其他库复制粘贴的代码。这些代码虽然在语法上正确，但通常质量低下——缺乏注释、不符合编码规范、没有考虑边界情况。一个简单的判定方法：如果一段代码的 commit message 是 "auto-generated" 或 "initial commit"，它大概率是低质量的自动生成代码。</p>
-
-        <p>第二个挑战是 <strong>代码去重</strong>。你不能用清洗自然语言文档的方法去重代码。自然语言去重关注的是文本级别的精确或近似重复；但代码中，两段在文本上几乎一样的代码（仅变量名不同）可能就是完全不同的函数实现。反过来，两段文本完全不同的代码可能实现了相同的功能（一个用 for 循环，一个用 while 循环）。正确的做法是使用<strong>抽象语法树（AST）级别的去重</strong>——将代码解析为语法树，比较树结构的相似性。</p>
-
-        <table>
-            <thead>
-                <tr><th>清洗规则</th><th>自然语言</th><th>代码领域</th><th>说明</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>去重方法</td><td>文本 n-gram 哈希</td><td>AST 结构相似度</td><td>代码去重要忽略变量名差异</td></tr>
-                <tr><td>质量过滤</td><td>困惑度/教育评分</td><td>编译是否通过 + Star 数</td><td>可执行的代码才有价值</td></tr>
-                <tr><td>短文档处理</td><td>丢弃过短文本</td><td>保留单函数片段</td><td>代码中短片段（单行 import）也有用</td></tr>
-                <tr><td>语言识别</td><td>fastText 语言预测</td><td>文件扩展名 + shebang</td><td>代码语言不是自然语言</td></tr>
-                <tr><td>PII 过滤</td><td>正则 + 命名实体识别</td><td>额外检查 API key / token</td><td>代码中硬编码凭据更常见</td></tr>
-                <tr><td>许可证过滤</td><td>不适用</td><td>检测 GPL/AGPL 头部注释</td><td>许可证合规是代码独有需求</td></tr>
-            </tbody>
-        </table>
-
-        <p>代码质量标注方面，DCLM（DataComp for Language Models）在 2024 年提出了一种高效方法：他们用代码仓库的 GitHub Star 数作为代理标签（proxy label），训练一个分类器来预测代码质量。Star 数超过 1000 的项目中的代码被视为正样本，Star 数为 0 的视为负样本。虽然这个指标并不完美（好的代码也可能在冷门仓库中），但在大规模筛选中它出人意料地有效——使用这个分类器筛选后的代码数据训练出的模型，在 HumanEval 上的 pass@1 提升了 11%。</p>
-
-        <h2>医学和科学领域</h2>
-
-        <p>医学和科学领域的数据清洗方法与通用领域有显著不同。通用领域追求"去除噪声"，而科学领域追求"保留精确的专业结构"。一篇医学论文中的表格、化学式中的下标、基因序列中的特定模式——这些在通用数据清洗中可能被视为"难以处理"的内容被丢弃的东西，恰好是领域模型中最重要的信息载体。</p>
-
-        <p>在 2025 年的 FineMed 研究中，研究人员发现了一个引人深思的结果：对医学领域来说，<strong>医学术语密度过滤比通用教育质量过滤效果高出 2 倍</strong>。也就是说，与其用通用的"教育质量评分"来判断一篇文档是否适合训练医学模型，不如直接计算文档中医学术语的密度——包含更多医学术语的文档更有价值。</p>
-
-        <pre><code># 医学术语密度过滤实现
-import re
-from typing import Set
-
-# 医学术语词典（从 UMLS、MeSH 中提取）
-MEDICAL_TERMS: Set[str] = {
-    # 疾病名称（示例子集）
-    "myocardial infarction", "diabetes mellitus", "hypertension",
-    "osteoarthritis", "pneumonia", "schizophrenia",
-    # 药物名称
-    "metformin", "atorvastatin", "lisinopril", "omeprazole",
-    # 解剖学术语
-    "myocardium", "endothelium", "cerebellum", "epidermis",
-    # 临床概念
-    "biopsy", "angiography", "electrocardiogram", "hemoglobin A1c",
-    # 中文医学术语（示例）
-    "心肌梗死", "糖尿病", "高血压", "骨关节炎", "肺炎",
-    "二甲双胍", "阿托伐他汀", "心肌", "内皮",
-}
-
-MIN_TERM_DENSITY = 0.02  # 最低医学术语密度阈值（2%）
-
-def medical_term_density_filter(doc: str) -> bool:
-    """
-    医学术语密度过滤器。
-    保留术语密度高于阈值的文档。
-    """
-    total_words = len(doc.split())
-    if total_words == 0:
-        return False
-
-    doc_lower = doc.lower()
-    term_count = 0
-    for term in MEDICAL_TERMS:
-        # 使用词边界匹配，避免部分匹配
-        pattern = r'\b' + re.escape(term) + r'\b'
-        matches = re.findall(pattern, doc_lower)
-        term_count += len(matches)
-
-    density = term_count / total_words
-    return density >= MIN_TERM_DENSITY
-
-def filter_medical_corpus(documents: list[str]) -> list[str]:
-    """对整个医学语料库执行过滤"""
-    kept = 0
-    total = len(documents)
-    filtered = []
-    for doc in documents:
-        if medical_term_density_filter(doc):
-            filtered.append(doc)
-            kept += 1
-    print(f"保留率: {kept/total*100:.1f}% ({kept}/{total})")
-    return filtered</code></pre>
-
-        <p>类似的逻辑也适用于科学领域的其他分支。物理学论文中的费曼图术语、生物学论文中的基因名称、化学论文中的化合物命名——每种科学领域都有自己的专业词汇特征。基于专业词汇密度进行过滤，比通用的文本质量指标更能识别出对该领域有价值的内容。这种方法的核心洞察是：<strong>领域知识的特征不在于"写得好不好"，而在于"用了多少专业术语"</strong>。</p>
-
-        <p>PubMed 和 ArXiv 是医学和科学领域的两个核心数据源。但它们的数据需要专门处理：PDF 格式的论文需要转换为可解析的文本（使用 GROBID、ScienceBeam 等工具），数学公式需要保留 LaTeX 表示而非渲染成图片，引用关系可以提取出来作为额外的训练信号。2025 年的一篇论文发现，将论文中的引用关系（"根据 Smith et al. (2023)...") 显式标记并保留，而不是像通用清洗那样当作无意义段落丢弃，可以使模型在科学问答上的准确率提升 7%。</p>
-
-        <h2>多语言领域适配</h2>
-
-        <p>如果说代码和医学领域的挑战是"数据质量"，那么多语言领域的挑战首先是"数据可得性"。在 Common Crawl 的数据分布中，英文占比约 45%，而很多语言的占比不到 0.01%。这种严重不平衡导致了一个残酷的现实：即使你用最先进的过滤技术处理撒哈拉以南非洲地区的本地语言数据，你最终能得到的数据量可能还不够填满一个 GPU 的显存。</p>
-
-        <p>CCNet 项目对 174 种语言的覆盖是一个标志性工作。Meta AI 团队为每种语言训练了独立的 fastText 语言识别模型，并针对每种语言的数据量设定了不同的处理策略——对于高资源语言（英文、中文、西班牙文），使用复杂的三阶段清洗；对于低资源语言（如斯瓦希里语、祖鲁语），则只做基础的语言验证和暴力过滤，以尽可能保留数据。</p>
-
-        <p>2026 年的一个研究进一步提出了"语言适应性数据策略"的概念：对于每种语言，先评估其"数据可利用性"（data availability），然后动态调整清洗强度。对于可用数据极少的语言，清洗标准应该极度宽松——宁可保留一些噪声，也不要因为过度清洗而丢掉稀缺的语料。这背后的工程哲学是：<strong>低资源语言的第一要务是"有数据"，然后才是"有好数据"</strong>。</p>
-
-        <div class="tip">
-            <strong>低资源语言的数据策略：</strong> 对于数据量少于 10GB 的语言，清洗流水线的重点应该从质量过滤转移到语言识别精度。因为这类语言的最大问题不是"数据不够干净"，而是"数据中混入了太多其他语言的文本"。提高语言识别模型的精度（例如使用更大的 n-gram 特征）、引入语言特有的停用词过滤、甚至使用人工标注的种子数据训练专用识别器，这些投入的 ROI 远高于通用质量过滤。换句话说：对于低资源语言，先把"是不是这种语言"搞清楚，再去纠结"这数据质量好不好"。
-        </div>
-
-        <p>语言平衡策略是另一个关键议题。在多语言数据配比中，常见的做法是对低资源语言进行上采样（upsampling）——人为提高它们在训练数据中的占比。比如，斯瓦希里语在 Common Crawl 中只占约 0.005%，但在训练配比中可能被上采样到 1%。但这个做法有一个上限：如果上采样倍数过大，模型会在低资源语言上出现"死记硬背"（overfitting）的现象，反而损害泛化能力。</p>
-
-        <p>2026 年的一篇综述性论文给出了一个经验法则：对于多语言数据配比，各语言的 token 数量与对应语言使用人口的比例不应相差超过一个数量级。也就是说，如果一个语言的使用人口是英文的 1/100，它的训练数据量不应低于英文的 1/1000。这个比例既能保证各语言都有足够的训练信号，又不会因过度上采样而损害模型的多语言泛化能力。</p>
-
-        <p>至此，我们完成了第五部分"Tokenization 与高级策略"的全部内容，涵盖了从 tokenizer 原理、词表设计、合成数据到领域适配的完整技术栈。从下一章开始，我们将进入第六部分——实战与前沿。我们将不再讨论理论，而是直接用 DataTrove 跑一个完整的 FineWeb 清洗流水线，亲手搭建数据处理工具链，并探索自动化数据准备系统的最新进展。</p>
-
-        <div class="footer-nav">
-            <a href="21.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="23.html">下一章 →</a>
-        </div>
-    </div>
-</div>
-</div>
-</body>
-</html>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="领域适配不是把某一领域的语料比例调到最大，而是在专业能力、通用能力、数据许可与评测风险之间建立可测量的平衡。"><title>22 · 领域适配数据策略 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head><body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell"><header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header><div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" aria-current="page" class="active"><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>七类预训练数据构建范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav><main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 22 / LLM DATA ENGINEERING</p><h1>领域适配数据策略</h1><p class="dek">领域适配不是把某一领域的语料比例调到最大，而是在专业能力、通用能力、数据许可与评测风险之间建立可测量的平衡。</p><div class="article-meta"><span>研究证据 · 系统机制 · 工程实践</span><span>研究生进阶</span><span>来源与版本见文末</span></div></header><div class="lead-note"><strong>本章问题</strong><p>通用模型已经学到大量语言和世界知识，为什么还需要领域语料？医学、法律、代码、科学和企业内部知识有独特术语、文体、事实更新和任务分布。关键不是“堆更多专业文本”，而是定义目标领域、挑选可靠来源、控制训练暴露并监控通用能力回归。</p></div>
+<section id="dapt"><h2>DAPT 与 TAPT：继续预训练的两个层次</h2>
+<p><strong>Domain-Adaptive Pretraining（DAPT）</strong>是在通用预训练模型之后，用目标领域的未标注文本继续进行语言模型预训练；<strong>Task-Adaptive Pretraining（TAPT）</strong>则进一步使用目标任务相关的未标注语料。它们发生在监督微调之前，不能与有标签的 task fine-tuning 混为一谈。</p>
+<figure class="diagram"><img src="assets/diagrams/ch22-domain-adaptation.svg" alt="通用语料与领域语料按 token 级配比进入 DAPT 或 TAPT，训练后分别检查领域能力与通用能力回归" loading="lazy"><figcaption>图 1 · 领域适配需要双轨评测：只看领域任务提升，会漏掉通用语言能力、指令遵循和安全表现的退化。</figcaption></figure>
+<p>Gururangan 等人的 ACL 2020 研究覆盖生物医学、计算机科学论文、新闻和评论四个领域、八个分类任务，报告 DAPT 在高资源和低资源设置下均能带来性能收益；在 DAPT 后再做 TAPT 也能继续改善目标任务。该结论来自论文指定的模型、数据与分类任务，不意味着任何领域语料都能自动提升任何模型。</p>
+<p>这项研究给出的工程启示是：先判断瓶颈是否真的来自领域语言分布，再决定继续预训练是否值得；如果目标任务只有少量未标注样本，任务相关数据选择也可能是成本更低的替代方案。</p></section>
+<section id="domain-data"><h2>不同领域需要不同的数据契约</h2>
+<div class="research-grid">
+<div class="research-card"><span>代码与软件工程</span><h3>代码不是普通网页文本</h3><p>记录仓库、commit、文件路径、语言、许可证和依赖上下文；过滤凭据与密钥；用解析、编译、单元测试和静态分析做多层验证。AST 相似度可以辅助发现结构近似代码，但不能单独判断两个实现语义等价。</p><a href="https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/" target="_blank" rel="noopener noreferrer">Code Llama 研究 ↗</a></div>
+<div class="research-card"><span>医学与生命科学</span><h3>术语准确与隐私优先</h3><p>保留论文版本、期刊/数据库标识、发布日期、证据层级和引用上下文；对病例、患者叙述和临床记录做隐私审查；不能把模型生成的医学解释当作事实标签。</p></div>
+<div class="research-card"><span>科学与工程</span><h3>方法、数据与结论要连在一起</h3><p>保存实验条件、单位、变量定义、数据集版本、代码和表格定位；抽取公式时保留上下文。不同领域的同名指标可能有不同计算口径。</p></div>
+<div class="research-card"><span>多语言领域</span><h3>按语言切片评估</h3><p>监控语言识别误差、低资源语言覆盖、tokenizer 的 token cost、翻译噪声和代码切换；不能用英语上的质量阈值直接替代多语言校准。</p></div>
+</div></section>
+<section id="mixture"><h2>通用与领域语料如何混合？</h2>
+<p>用一个简单目标函数表达继续预训练时的混合思想。这里 <math aria-label="lambda"><mi>λ</mi></math> 是训练 token 暴露比例的设计变量，不是文档数量的简单比例。</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="通用与领域语言模型目标的加权混合公式，可横向滚动"><math display="block" aria-label="总损失等于一减 lambda 乘通用语料损失，加 lambda 乘领域语料损失"><mrow><mi>ℒ</mi><mo>(</mo><mi>θ</mi><mo>)</mo><mo>=</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><msub><mi>ℒ</mi><mtext>general</mtext></msub><mo>(</mo><mi>θ</mi><mo>)</mo><mo>+</mo><mi>λ</mi><msub><mi>ℒ</mi><mtext>domain</mtext></msub><mo>(</mo><mi>θ</mi><mo>)</mo></mrow></math></div>
+<p>这个式子是概念化的目标，不是某篇论文规定的通用配方。实际训练中还要说明数据采样、重复曝光、序列打包、截断、损失掩码和不同数据源的 tokenization。按文档数各取一半，不保证最终训练 token 也各占一半。</p>
+<p>可以从小规模对照实验开始：固定模型、tokenizer、总 token budget、训练步数和优化器，比较不同的领域暴露比例或阶段式日程；同时在领域验证集和通用回归集上评估。若领域收益只来自重复记忆或评测污染，必须在数据去重和独立测试上暴露出来。</p></section>
+<section id="forgetting"><h2>如何监控灾难性遗忘</h2>
+<p>继续预训练可能改变模型原有能力。不要只报告领域 benchmark 的单一平均分，应至少维护两组评测：</p>
+<ul><li><strong>领域能力：</strong>专业术语、事实检索、推理、格式遵循、领域任务和校准。</li><li><strong>通用能力：</strong>常识、通用指令、基础推理、多语言、拒答、安全和输出风格。</li></ul>
+<p>还应按来源、时间、语言、专业子领域和难度做切片。若领域能力提高但通用能力下降，优先检查混合比例、训练日程、数据重复和领域语料偏差；不要直接把“继续训练更多步”当作修复方法。</p></section>
+<section id="workflow"><h2>领域语料构建的八步流程</h2><ol><li>写清目标任务和目标用户，区分预训练、继续预训练、SFT 与偏好数据。</li><li>建立来源清单：来源所有者、版本、许可、更新时间、获取方式和使用限制。</li><li>定义领域质量 rubric：专业准确、完整、时效、引用、格式、隐私和安全。</li><li>采集后保留原始快照与内容 hash，不要只保留清洗后的文本。</li><li>做领域专属抽取、语言识别、PII/秘密检测和重复处理。</li><li>用专家抽样验证规则误杀与漏检，报告各切片保留率。</li><li>设计 token 级混合与训练日程，记录实际 token exposure。</li><li>使用领域与通用双轨评测，版本化数据、模型、配置和结果。</li></ol></section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Gururangan et al. <a href="https://aclanthology.org/2020.acl-main.740/" target="_blank" rel="noopener noreferrer">Don’t Stop Pretraining: Adapt Language Models to Domains and Tasks</a>, ACL 2020.</li><li>Rozière et al. <a href="https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/" target="_blank" rel="noopener noreferrer">Code Llama: Open Foundation Models for Code</a>, Meta AI, 2023.</li></ol></section><footer class="article-footer"><a href="21.html">← 21 · 合成数据生成</a><a href="index.html">返回课程总览</a><a href="23.html">23 · DataTrove 流水线实战 →</a></footer></article></main></div></div></body></html>
