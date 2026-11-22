@@ -50,3 +50,16 @@ Reviewed surface: all 28 article paths, catalog, homepage, AGENTS, README, docs,
 - **Production rights/PII:** teaching flags do not prove real-world permission, privacy clearance or benchmark decontamination.
 - **Scale:** the capstone reads entire small fixtures into memory; production requires WARC parsing, streaming, sharding, retry-safe sinks, cross-crawl dedup and downstream evaluations.
 - **Visual SVG QA:** Chromium confirmed nonzero image geometry and loaded SVGs, but per-diagram topology and small-label overlap require manual visual inspection.
+
+## Final PR and publication closure
+
+- **PR:** [#10](https://github.com/1998x-stack/LLM-data-tutorial/pull/10) — reviewed by written COMMENT review, then squash-merged into main.
+- **Released content commit:** `6e4d2f98b7628d84de0f35d984ad6730ab1c60bd` (PR #10 merge).
+- **Main quality workflow:** [run 45001741025](https://github.com/1998x-stack/LLM-data-tutorial/actions/runs/45001741025) — static-quality, real Chromium browser QA and public-site content smoke **all succeeded**.
+- **Main test counts:** 83 Python and 14 Node tests; 28/28 chapters, 47/47 diagrams, 206 distinct tags, 0 static audit errors/warnings; 116 real Chromium page/viewport checks with 0 issues.
+- **Pages deployment:** [run 45001740378](https://github.com/1998x-stack/LLM-data-tutorial/actions/runs/45001740378) — Jekyll build, deployment and status all **success**, targeting release content commit `6e4d2f9`.
+- **Online regression:** the public-site smoke job verified byte-identical source-vs-live HTML, catalog and selected SVGs including `26.html`, `27.html`, `28.html`, `ch26-asset-dag.svg`, `ch27-three-regimes.svg`, and `ch28-capstone-pipeline.svg`, and reported `PUBLIC DEPLOYMENT VERIFIED`.
+- **Live site:** https://1998x-stack.github.io/LLM-data-tutorial/
+- **Remaining limits:** manual individual screenshot/art-diagram composition review, keyboard tab-order audit, print CSS emulation, original paper training reproduction, external-link drift monitoring, and production rights/privacy approval are outside this accepted automated test scope.
+
+This is a traceable release-acceptance record. Any later documentation-only commit changes the main SHA but does not invalidate the referenced content-release commit and its completed checks.
