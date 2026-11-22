@@ -56,6 +56,15 @@
       "locator": "Executors → LocalPipelineExecutor",
       "status": "verified",
       "notes": "The chapter's JSONL example combines documented block patterns; users must install the required I/O and processing extras and test their own input layout."
+    },
+    {
+      "id": "CH23-C07",
+      "claim": "DataTrove v0.10.1 release metadata records publication on 2026-09-30.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/releases/tag/v0.10.1",
+      "locator": "Release v0.10.1 published_at metadata",
+      "status": "verified",
+      "notes": "Release date is separate from the pyproject version and Python requirement; it does not imply every current main-branch API matches this tag."
     }
   ]
 }
