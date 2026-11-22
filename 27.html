@@ -2,11 +2,11 @@
 <div class="lead-note"><strong>本章问题</strong><p>静态混合比例让所有训练阶段都使用同一数据源权重，但模型在早期、晚期与不同领域上的学习速度未必相同。是否应该随训练状态调节采样？关键是先区分“离线选一个比例”“离线生成阶段计划”“训练时闭环更新”，再检查反馈信号到底测量了什么。</p></div>
 <section id="three-times"><h2>三条时间轴：固定比例、预计算调度与在线反馈</h2>
 <figure class="diagram"><img src="assets/diagrams/ch27-three-regimes.svg" alt="静态配比在各训练阶段维持相同比例，离线调度根据预先设计的阶段计划改变比例，而在线配比按当前观测反馈更新后续采样"><figcaption>图 1 · 时变不等于在线：训练前设定的 curriculum 即使比例会变化，也不等于根据训练反馈实时学习。</figcaption></figure>
-<table><thead><tr><th>方案</th><th>何时决定混合权重</th><th>训练期间使用何种信号</th><th>主要风险</th></tr></thead><tbody>
+<div class="table-wrap" tabindex="0" role="region" aria-label="课程数据表，可横向滚动"><table><thead><tr><th>方案</th><th>何时决定混合权重</th><th>训练期间使用何种信号</th><th>主要风险</th></tr></thead><tbody>
 <tr><td>静态混合</td><td>目标训练开始前</td><td>无权重更新</td><td>无法适配能力和分布的变化</td></tr>
 <tr><td>离线 curriculum / schedule</td><td>训练前或阶段开始前</td><td>按已知 step/阶段切换</td><td>依赖先验日程与目标设置</td></tr>
 <tr><td>在线混合</td><td>训练中的更新时点</td><td>模型损失、验证集或奖励反馈</td><td>延迟、噪声、反馈回路不稳定</td></tr>
-</tbody></table>
+</tbody></table></div>
 <p><a href="https://mlanthology.org/icml/2009/bengio2009icml-curriculum/">Curriculum Learning（Bengio et al., 2009）</a>提出按样本难度安排训练顺序的通用思路。课程学习不要求每个算法都采用“先通用后代码”的固定三阶段配方；课程顺序可以由先验定义，也可以由模型能力驱动，而收益需要具体实验验证。</p>
 </section>
 <section id="algorithms"><h2>从 DoReMi、RegMix 到 RegMix-D：到底谁是在线的？</h2>
@@ -19,13 +19,13 @@
 <p><a href="https://aclanthology.org/2026.findings-aacl.84/">RegMix-D（Findings of IJCNLP-AACL 2026）</a>不是把 RegMix 原样换一个名字。它利用代理训练<strong>轨迹</strong>拟合不同训练阶段的混合方案，并提供两种模式：训练前生成完整调度的 offline variant，以及根据目标训练中观测到的损失进一步调整的 online variant。写课程或复现时必须记录使用的是哪一种。</p>
 <h3>ODM 与 AC-ODM：在目标训练中做自适应决策</h3>
 <p><a href="https://arxiv.org/abs/2312.02406">Efficient Online Data Mixing（ODM）</a>将数据源的抽样分配与多臂老虎机反馈联系起来，尝试在训练中更新源权重。<a href="https://proceedings.mlr.press/v306/ma26i.html">AC-ODM（ICML 2026）</a>进一步使用 actor-critic 网络来学习训练期间的动态数据配比与反馈。此类算法是真正的在线方法，但也引入反馈估计误差、额外状态和新的超参数。</p>
-<table><thead><tr><th>方法</th><th>优化/估计机制</th><th>目标模型期间是否动态</th></tr></thead><tbody>
+<div class="table-wrap" tabindex="0" role="region" aria-label="课程数据表，可横向滚动"><table><thead><tr><th>方法</th><th>优化/估计机制</th><th>目标模型期间是否动态</th></tr></thead><tbody>
 <tr><td>DoReMi</td><td>Reference vs proxy excess loss + Group DRO</td><td>通常否（将学习出的配比用于目标训练）</td></tr>
 <tr><td>RegMix</td><td>多组 proxy 训练 + 性能回归</td><td>否（静态选择）</td></tr>
 <tr><td>RegMix-D（离线）</td><td>proxy trajectory → 阶段配比表</td><td>随阶段变化，但不依据目标反馈</td></tr>
 <tr><td>RegMix-D（在线）</td><td>proxy trajectory + 目标训练 loss 反馈</td><td>是</td></tr>
 <tr><td>ODM / AC-ODM</td><td>Bandit / actor-critic feedback</td><td>是</td></tr>
-</tbody></table>
+</tbody></table></div>
 </section>
 <section id="math"><h2>先定义你的反馈信号，再谈更新公式</h2>
 <p>为了理解动态抽样，我们构建一个与上述论文<strong>不等价</strong>的教学采样器：假设第 <math aria-label="i"><mi>i</mi></math> 个领域有一个已经标准化、越高越值得额外抽样的信号 <math aria-label="s i"><msub><mi>s</mi><mi>i</mi></msub></math>，采用 temperature-softmax 并给所有领域保留均匀探索比例。</p>

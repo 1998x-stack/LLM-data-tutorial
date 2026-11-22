@@ -79,20 +79,27 @@ def run(out: Path) -> dict:
                         if fig["height"] <= 0 or not fig["caption"]:
                             bad.append("figure_missing_geometry_or_caption")
                     if number in {"26", "27", "28"}:
-                        for ctl in page.locator('input[type="range"]').all():
-                            cid = ctl.get_attribute("id")
+                        control_ids = page.locator('input[type="range"]').evaluate_all(
+                            "elements => elements.map(el => el.id)")
+                        for cid in control_ids:
+                            page.reload(wait_until="load")
+                            ctl = page.locator(f'[id="{cid}"]')
                             if not cid or not page.locator(f'label[for="{cid}"]').count():
                                 bad.append("missing_range_label:" + str(cid))
                                 continue
                             before = page.locator('[aria-live="polite"]').first.inner_text()
-                            ctl.evaluate("""el => {
-                              let next = el.value === el.min ? el.max : el.min;
-                              el.value = next;
-                              el.dispatchEvent(new Event('input', {bubbles:true}));
-                            }""")
-                            after = page.locator('[aria-live="polite"]').first.inner_text()
-                            if before == after:
+                            changed = False
+                            for endpoint in ("max", "min"):
+                                ctl.evaluate("""(el, endpoint) => {
+                                  el.value = el[endpoint];
+                                  el.dispatchEvent(new Event('input', {bubbles:true}));
+                                }""", endpoint)
+                                if page.locator('[aria-live="polite"]').first.inner_text() != before:
+                                    changed = True
+                                    break
+                            if not changed:
                                 bad.append("inert_range_control:" + cid)
+                        page.reload(wait_until="load")
                     if number in SCREENSHOT_PAGES:
                         page.screenshot(path=str(out / f"{number}-{view}.png"),
                                         full_page=True, animations="disabled")

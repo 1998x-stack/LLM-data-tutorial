@@ -3,14 +3,14 @@
 <section id="contract"><h2>从最终验收倒推：什么叫一次可复现的数据交付？</h2>
 <figure class="diagram"><img src="assets/diagrams/ch28-capstone-pipeline.svg" alt="本地输入 JSONL 和固定策略进入 schema 检查、来源与隐私硬门、文本规范化、哈希去重、质量审计，输出候选语料、拒绝原因和完整 manifest"><figcaption>图 1 · 数据管线不仅生成一个干净 JSONL，还需要输出 rejected stream、质量统计、运行与内容指纹。</figcaption></figure>
 <p>最终需要交付的不只是 <code>curated.jsonl</code>。还要能回答：“这条文本源于哪里、为什么被保留、哪一步拒绝了另一条样本、重新运行能否得出完全相同结果、输出是否被篡改？”这几个问题对应六个最小产物：输入样本、政策文件、代码版本、候选语料、拒绝审计、manifest。</p>
-<table><thead><tr><th>产物</th><th>核心字段</th><th>解决的问题</th></tr></thead><tbody>
+<div class="table-wrap" tabindex="0" role="region" aria-label="课程数据表，可横向滚动"><table><thead><tr><th>产物</th><th>核心字段</th><th>解决的问题</th></tr></thead><tbody>
 <tr><td>raw.jsonl</td><td>id、source、text、license、lang、审查标记</td><td>源头与最小输入数据合同</td></tr>
 <tr><td>policy.json</td><td>允许的来源/许可/语言、评测保留 ID、门限</td><td>显式、可版本化的筛选规则</td></tr>
 <tr><td>curated.jsonl</td><td>规范化文本、稳定 ID、provenance</td><td>本次可用于后续实验的候选数据</td></tr>
 <tr><td>rejected.jsonl</td><td>line、id、source、reason</td><td>为什么过滤，且不回写可能敏感的原文</td></tr>
 <tr><td>quality_report.json</td><td>输入/保留/拒绝数量、各拒绝原因、各来源分布</td><td>质量与覆盖的阶段性审计</td></tr>
 <tr><td>manifest.json</td><td>输入/政策 SHA-256、代码版本、输出 SHA-256、gate</td><td>重跑对比、篡改检查与发布候选身份</td></tr>
-</tbody></table>
+</tbody></table></div>
 <p>这个最小数据合同不是“机器替你完成许可审查”：<code>rights_reviewed</code> 与 <code>privacy_reviewed</code> 是预先完成的人类/组织流程的状态断言，代码只是拒绝没有通过的记录。示例许可标签是教学 fixture，不代表源数据已获合法授权。</p>
 </section>
 <section id="run"><h2>真实可执行的 4 条命令</h2>
@@ -54,7 +54,7 @@ python3 -m unittest tests.test_capstone_pipeline -v</code></pre>
 <p>这是一种对规范化 JSON 字节串求哈希并截取前缀的运行目录命名方法，不是对三个字符串做裸拼接。生产中必须保留完整输出哈希、数据路径清单、容器镜像与依赖锁，并对多节点/对象存储实现专门的事务/manifest 发布协议。目录 rename 只保证同一文件系统上的基本原子可见性，不保证远程对象存储的多对象事务。</p>
 </section>
 <section id="scale"><h2>从教学实现升级为生产系统：差距清单</h2>
-<table><thead><tr><th>教学版当前实现</th><th>生产级扩展</th><th>对应课程</th></tr></thead><tbody>
+<div class="table-wrap" tabindex="0" role="region" aria-label="课程数据表，可横向滚动"><table><thead><tr><th>教学版当前实现</th><th>生产级扩展</th><th>对应课程</th></tr></thead><tbody>
 <tr><td>本地 JSONL，整体读入内存</td><td>Common Crawl WARC/WET 解析、流式读取、输入 manifest、分布式 shard</td><td><a href="02.html">02</a>、<a href="03.html">03</a>、<a href="15.html">15</a></td></tr>
 <tr><td>来源提供的 lang 字段</td><td>经过校准的语言识别器、混语与低资源抽检</td><td><a href="04.html">04</a></td></tr>
 <tr><td>最低长度 + allowlist</td><td>来源级规则、文本启发式、分层质量评分与误杀评估</td><td><a href="05.html">05</a>、<a href="10.html">10</a>、<a href="11.html">11</a></td></tr>
@@ -63,7 +63,7 @@ python3 -m unittest tests.test_capstone_pipeline -v</code></pre>
 <tr><td>本地原子 rename</td><td>DataTrove/Ray/Slurm 重试、对象存储分片、Iceberg/DVC snapshot</td><td><a href="16.html">16</a>、<a href="17.html">17</a>、<a href="23.html">23</a></td></tr>
 <tr><td>无 tokenizer、无训练</td><td>固定 tokenizer / token budget，控制配比和下游训练评估</td><td><a href="14.html">14</a>、<a href="19.html">19</a>、<a href="27.html">27</a></td></tr>
 <tr><td>人工审查状态布尔值</td><td>真实权利与隐私流程、删除请求、人工 QA、数据卡</td><td><a href="18.html">18</a>、<a href="26.html">26</a></td></tr>
-</tbody></table>
+</tbody></table></div>
 <div class="callout warning"><strong>边界是课程的重要部分：</strong>这个程序不能直接下载 Common Crawl、不能自动检测隐私泄漏、不能判断法律许可、不能执行语义去重，也不能宣称训练出更好的模型。它验证的是一条可观察、可回溯、会拒绝坏输入的最小数据生产链。升级每一层都要增加独立的测试和来源证据。</div>
 </section>
 <section id="final"><h2>综合验收：从“能跑”到“可以解释”</h2>

@@ -4,13 +4,13 @@
 <p>传统的单机脚本能完成一次清洗，却常缺乏明确的输入合同、数据快照和恢复边界。将几十个操作符放进一个长 Python 文件并不自动构成生产系统：只要上游解析器升级、许可变更或某个 task 重试，就可能产生不可解释的不同输出。</p>
 <figure class="diagram"><img src="assets/diagrams/ch26-asset-dag.svg" alt="数据流从来源清单进入采集、解析、过滤、去重、质量评估和候选发布，各阶段保存快照、指标和失败记录"><figcaption>图 1 · 一个节点代表有数据契约和版本的资产；箭头表示输入依赖，不是“Agent 可以任意跳过”的操作顺序。</figcaption></figure>
 <p>把一次数据运行表示为 <code>Run = (input snapshot, operator graph, code, config, model revisions, environment)</code>。每个节点都公开输入 schema、输出 schema、指标、失败类型和可重试策略。数据流的关键并非使用了哪个编排产品，而是任何输出能沿着边追溯到确定的上游版本。</p>
-<table><thead><tr><th>层次</th><th>责任</th><th>不应承担的责任</th></tr></thead><tbody>
+<div class="table-wrap" tabindex="0" role="region" aria-label="课程数据表，可横向滚动"><table><thead><tr><th>层次</th><th>责任</th><th>不应承担的责任</th></tr></thead><tbody>
 <tr><td>Operator</td><td>清洗、打标、规范化、去重等单一变换</td><td>自行决定权限、覆写不可变历史</td></tr>
 <tr><td>Orchestrator</td><td>调度、依赖、checkpoint、重试与指标汇总</td><td>根据“任务完成”推断数据质量已合格</td></tr>
 <tr><td>Evaluator</td><td>在冻结的样本框上比较质量、覆盖与效用</td><td>只用单个准确率替代治理与误差审计</td></tr>
 <tr><td>Agent planner</td><td>提出 DAG、配置、测试和故障定位候选</td><td>绕过审查直接运行特权命令或发布</td></tr>
 <tr><td>Release controller</td><td>审查证据、批准候选、标记版本、回滚</td><td>让自动文本评分覆盖许可与隐私硬门</td></tr>
-</tbody></table>
+</tbody></table></div>
 <p>Apache <a href="https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dynamic-task-mapping.html">Airflow 动态任务映射</a>把下游 task 的数量延后到上游结果可用时再生成。<a href="https://docs.dagster.io/guides/test/asset-checks">Dagster 的 Asset Checks</a>则把某项资产的验证与物化结果联系起来。它们提供的是可组合的调度与质量接口，并不自带完整的语料许可审查。</p>
 </section>
 <section id="agent"><h2>Agent 能做什么：计划在沙箱里，晋级在控制面</h2>
