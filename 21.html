@@ -22,7 +22,7 @@
 <div class="research-grid">
 <div class="research-card"><span>ACL 2023 · 指令自举</span><h3>Self-Instruct</h3><p>从模型生成的指令、输入和输出样本出发，再过滤无效或相似样本。论文报告的是其特定 GPT-3 微调设置和 Super-NaturalInstructions 评测，不应外推为所有任务都能获得同样收益。</p><a href="https://aclanthology.org/2023.acl-long.754/" target="_blank" rel="noopener noreferrer">阅读原论文 ↗</a></div>
 <div class="research-card"><span>arXiv 2023 · 指令演化</span><h3>WizardLM / Evol-Instruct</h3><p>从种子指令出发，逐步增加复杂度，再将生成样本用于微调。复杂度扩展仍需正确性和可执行性验证，否则只是把错误包装得更复杂。</p><a href="https://arxiv.org/abs/2304.12244" target="_blank" rel="noopener noreferrer">阅读原论文 ↗</a></div>
-<div class="research-card"><span>Microsoft Research · 2024</span><h3>Phi-4 Technical Report</h3><p>报告描述了 14B 参数 Phi-4，并称合成数据构成其训练数据主体之一，覆盖多智能体提示、自我修订和指令反转等生成方法。应把这些方法放回报告描述的训练配方中理解，而不是简化成“只靠合成数据训练”。</p><a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">阅读技术报告 ↗</a></div>
+<div class="research-card"><span>Microsoft Research · 2024</span><h3>Phi-4 Technical Report</h3><p>报告描述了 14B 参数 Phi-4，并明确称合成数据构成其训练数据的主体，生成方法包括多智能体提示、自我修订和指令反转。报告同时讨论了经过筛选的网页、代码和其他来源；不能将其简化成“只靠合成数据训练”。</p><a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">arXiv 技术报告 ↗</a> · <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2024/12/P4TechReport.pdf" target="_blank" rel="noopener noreferrer">Microsoft Research PDF ↗</a></div>
 </div></section>
 <section id="collapse"><h2>模型坍缩：风险真实，但不要编造安全比例</h2>
 <p>Shumailov 等人在 Nature 2024 研究了递归使用模型生成数据训练后续模型的情形，指出模型可能逐代丢失原始分布的尾部信息，最终偏离真实数据分布。论文分析了统计近似、函数表达能力和学习过程误差等来源。</p>
