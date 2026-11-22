@@ -92,6 +92,15 @@
       "locator": "Release v0.10.1 published_at metadata",
       "status": "verified",
       "notes": "This date identifies the immutable release tag used by this chapter; later main-branch changes are not implicitly included."
+    },
+    {
+      "id": "23-C11",
+      "claim": "DataTrove v0.10.1 LanguageFilter defaults to backend='ft176' and language_threshold=0.65.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/filters/language_filter.py",
+      "locator": "LanguageFilter.__init__ defaults",
+      "status": "verified",
+      "notes": "The tutorial now specifies both values explicitly. These defaults are not universal thresholds and require slice-level calibration for mixed or low-resource language data."
     }
   ]
 }
