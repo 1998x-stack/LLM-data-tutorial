@@ -1,0 +1,61 @@
+{
+  "chapter": "21",
+  "title": "合成数据生成",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "CH21-C01",
+      "claim": "Self-Instruct generates instruction, input and output samples from a language model, then filters invalid or similar samples before fine-tuning.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2023.acl-long.754/",
+      "locator": "Abstract; Method section",
+      "status": "verified",
+      "notes": "Scope this claim to the Self-Instruct pipeline described in the ACL 2023 paper; do not generalize its benchmark result to all tasks or models."
+    },
+    {
+      "id": "CH21-C02",
+      "claim": "Evol-Instruct iteratively rewrites seed instructions to increase instruction complexity before instruction tuning.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2304.12244",
+      "locator": "Abstract; Evol-Instruct method",
+      "status": "verified",
+      "notes": "Complexity growth is the method objective, not a correctness guarantee; generated samples still require independent validation."
+    },
+    {
+      "id": "CH21-C03",
+      "claim": "The Phi-4 technical report describes a 14B model whose training recipe incorporates synthetic data, including multi-agent prompting, self-revision and instruction reversal.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2412.08905",
+      "locator": "Abstract; Introduction; synthetic-data training recipe",
+      "status": "verified",
+      "notes": "Attribute the recipe to the authors' report. Do not claim that Phi-4 was trained only on synthetic data or infer undisclosed corpus percentages."
+    },
+    {
+      "id": "CH21-C04",
+      "claim": "Recursive training on model-generated data can cause distribution-tail loss and model collapse under the studied settings.",
+      "kind": "paper-result",
+      "source_url": "https://doi.org/10.1038/s41586-024-07566-y",
+      "locator": "Nature 631 (2024), 755–759; main results",
+      "status": "verified",
+      "notes": "The finding is conditional on recursive synthetic-data regimes studied in the paper; it does not establish a universal synthetic-data share limit."
+    },
+    {
+      "id": "CH21-C05",
+      "claim": "The retained-sample indicator formula is an operational definition combining structural validity, task verification and novelty.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2023.acl-long.754/",
+      "locator": "Editorial definition in this chapter; related to filtering stages in Self-Instruct",
+      "status": "derived",
+      "notes": "The formula is a pedagogical bookkeeping definition authored for this tutorial, not an equation reported by Self-Instruct."
+    },
+    {
+      "id": "CH21-C06",
+      "claim": "A synthetic-data release should preserve generator version, prompt, sampling parameters, provenance, rejection reasons and slice-level quality checks.",
+      "kind": "editorial-recommendation",
+      "source_url": "https://arxiv.org/abs/2412.08905",
+      "locator": "Training-recipe and data-generation discussion; tutorial governance recommendation",
+      "status": "derived",
+      "notes": "This is a reproducibility and quality-governance recommendation derived from the need to trace generation recipes; it is not a verbatim checklist from Phi-4."
+    }
+  ]
+}
