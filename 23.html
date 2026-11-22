@@ -101,11 +101,11 @@ print(plan_tasks(file_count=10_000, tasks=1_000, workers=100))</code></pre>
 <pre><code>python -m pip install "datatrove[io,processing]==0.10.1"</code></pre>
 </section>
 <section id="references"><h2>参考资料</h2><ol class="references">
-<li><a href="https://github.com/huggingface/datatrove">Hugging Face DataTrove repository / README</a>：pipeline、Document、Executor、任务恢复和合成生成。</li>
+<li><a href="https://github.com/huggingface/datatrove/tree/v0.10.1">Hugging Face DataTrove repository / README</a>：pipeline、Document、Executor、任务恢复和合成生成。</li>
 <li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/base.py">PipelineStep source</a>：run(data, rank, world_size) 接口与统计。</li>
 <li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/filters/base_filter.py">BaseFilter source</a>：true 表示保留、false 表示过滤及 exclusion writer。</li>
 <li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/fineweb.py">FineWeb reproduction example</a>：网页处理与三阶段 MinHash 后过滤。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py">MinHash deduplication example</a>：signature、buckets、cluster、filter 四阶段。</li>
+<li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py">MinHash deduplication example</a>：signature、buckets、cluster、filter 四阶段。</li>
 <li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml">DataTrove pyproject.toml</a>：当前版本与 Python 依赖约束。</li>
 </ol></section>
 <footer class="article-footer"><a href="22.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="24.html">下一章 →</a></footer>
