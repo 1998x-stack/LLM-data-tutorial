@@ -1,172 +1,71 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第22章 领域适配数据策略</title>
-    <link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html" class="active">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="系统理解 DAPT、TAPT 与 Continual Pretraining，利用领域数据与通用 replay 兼顾专业能力和旧知识保持。"><title>22 · 领域适配数据策略 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
+<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
+<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
+<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html"><span>21</span>合成数据生成</a></li><li><a href="22.html" aria-current="page" class="active"><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
+<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 22 / LLM DATA ENGINEERING</p><h1>领域适配数据策略</h1><p class="dek">系统理解 DAPT、TAPT 与 Continual Pretraining，利用领域数据与通用 replay 兼顾专业能力和旧知识保持。</p><div class="article-meta"><span>研究证据 · 数据机制 · 工程实践</span><span>进阶</span></div></header>
 
-        <h2>通用 vs 领域模型的数据差异</h2>
+<div class="lead-note"><strong>本章问题</strong><p>一个通用模型已经读过大量网页，但它未必熟悉医学、法律、金融、代码仓库或某个新兴领域。继续预训练可以让模型适应新的文本分布；问题是，如何增加领域能力而不把原有通用能力冲掉？答案不是简单地“多喂一些领域语料”，而是设计目标语料、阶段顺序、混合比例和双轨评测。</p></div>
+<section id="concept"><h2>领域适配不是把 SFT 改个名字</h2>
+<figure class="diagram"><img src="assets/diagrams/ch22-adaptation-path.svg" alt="通用预训练模型依次经过领域自适应预训练 DAPT、任务自适应预训练 TAPT，再进入监督微调与评估"><figcaption>图 1 · DAPT 使用领域无标注语料；TAPT 使用目标任务附近的无标注文本；SFT 才使用带任务监督的样本。</figcaption></figure>
+<table><thead><tr><th>阶段</th><th>训练文本</th><th>优化目标</th><th>回答的问题</th></tr></thead><tbody>
+<tr><td>通用预训练</td><td>广覆盖、多来源语料</td><td>语言建模目标</td><td>建立通用语言与知识表示</td></tr>
+<tr><td>DAPT</td><td>目标领域无标注文本</td><td>继续语言建模</td><td>模型是否熟悉领域术语、语体与知识分布？</td></tr>
+<tr><td>TAPT</td><td>目标任务相关的无标注文本</td><td>继续语言建模</td><td>模型是否更贴近具体任务的数据分布？</td></tr>
+<tr><td>SFT</td><td>指令、输入、标签或目标输出</td><td>监督任务损失</td><td>模型是否学会按要求完成任务？</td></tr>
+</tbody></table>
+<p><a href="https://aclanthology.org/2020.acl-main.740/">Don’t Stop Pretraining（Gururangan et al., ACL 2020）</a>在生物医学、计算机科学、新闻和评论四个领域、八个分类任务上研究 DAPT 与 TAPT。论文报告领域继续预训练带来收益，进一步使用任务语料的 TAPT 在 DAPT 后仍能改善表现；在该研究的比较中，DAPT 后接 TAPT 的组合取得最好的任务表现。请注意：这项研究以 RoBERTa 和分类任务为实验环境，不能把其绝对收益直接外推到任意 decoder-only LLM。</p>
+</section>
+<section id="domain-data"><h2>领域语料：专业，不等于可靠</h2>
+<figure class="diagram"><img src="assets/diagrams/ch22-domain-data.svg" alt="领域数据治理从来源登记、领域识别、质量过滤、去重、许可与隐私审查到版本化领域语料"><figcaption>图 2 · 领域语料先建立可审计来源，再谈模型继续训练。</figcaption></figure>
+<p>领域数据常见问题不是“量太少”这么简单，而是数据质量和权利结构更复杂：</p>
+<ul><li><strong>医学：</strong>论文、临床指南、教材、病例和患者生成文本的可信度、时效性与隐私风险完全不同；不能把病例文本视为普通网页。</li>
+<li><strong>法律：</strong>法规、判例、合同模板和评论文章有不同权威等级与生效日期；版本和司法辖区必须成为元数据。</li>
+<li><strong>代码：</strong>仓库、文件、函数、issue、commit 与测试构成关联结构；许可证、复制代码、构建可执行性和依赖环境都影响训练价值。</li>
+<li><strong>金融与企业知识：</strong>数据可能有访问控制、商业秘密和时间敏感性；脱敏后仍需做权限和再识别风险审查。</li>
+<li><strong>科学研究：</strong>论文正文、补充材料、图表、公式和引用链需要保留文档结构，避免 OCR / 解析错误变成训练事实。</li></ul>
+<p>建议每条领域样本保留：source id、领域/子领域、创建时间、抓取时间、版本、生效区间、许可/使用条件、解析器版本、语言置信度、质量审计状态和 split。领域标签不是永久真值；跨领域文档应允许多标签或不确定标签。</p>
+</section>
+<section id="replay"><h2>Continual Pretraining：新知识注入与旧能力保持</h2>
+<figure class="diagram"><img src="assets/diagrams/ch22-replay-mix.svg" alt="继续预训练时将新领域 token 与旧通用 token 混合，利用 replay 减少旧分布遗忘"><figcaption>图 3 · Replay 是训练数据层面的保留策略；比例要用实验确定，而不是套用固定行业数字。</figcaption></figure>
+<p>把继续预训练看成混合目标：</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="领域数据和通用回放数据的联合训练目标"><math display="block" aria-label="L theta 等于 lambda 乘领域损失加一减 lambda 乘通用损失"><mrow><mi mathvariant="script">L</mi><mo>(</mo><mi>θ</mi><mo>)</mo><mo>=</mo><mi>λ</mi><msub><mi mathvariant="script">L</mi><mi>D</mi></msub><mo>(</mo><mi>θ</mi><mo>)</mo><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><msub><mi mathvariant="script">L</mi><mi>G</mi></msub><mo>(</mo><mi>θ</mi><mo>)</mo></mrow></math></div>
+<p>其中 <math aria-label="lambda"><mi>λ</mi></math> 表示领域数据在训练 token 中的目标权重，<math aria-label="L D"><msub><mi mathvariant="script">L</mi><mi>D</mi></msub></math> 是领域语料损失，<math aria-label="L G"><msub><mi mathvariant="script">L</mi><mi>G</mi></msub></math> 是通用 replay 损失。这个表达式是混合目标的简化形式；真实训练还受采样器、序列打包、学习率、权重衰减和数据重复曝光影响。</p>
+<p>一个常见错误是按“文档数量”混合。文档长度不同，真正决定模型看到什么的是经过过滤、tokenization、packing 和重复采样后的 token exposure。应该监控实际领域 token share，而不只是配置文件里的 document ratio。</p>
+<p><a href="https://aclanthology.org/2025.acl-long.1551/">TiC-LM（ACL 2025）</a>用 114 个 Common Crawl dumps 构建时间连续预训练基准，并设计跨时间与跨领域评估。论文报告，在其通用网页数据设置中，autoregressive meta-schedule 加固定比例旧数据 replay 的方法可以在显著低于从头重训的计算量下达到相近 held-out loss；但不同领域对 replay 的需求不同，通用网页数据更需要 replay，而特定领域可能有不同权衡。</p>
+<h3>如何观察遗忘？</h3>
+<p>在相同 tokenizer 和评测集上，记录适配前后通用 held-out loss 的变化：</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="通用分布损失变化"><math display="block" aria-label="通用遗忘损失等于适配后通用验证损失减去适配前损失"><mrow><mi>Δ</mi><msub><mi>L</mi><mi>general</mi></msub><mo>=</mo><msub><mi>L</mi><mtext>after</mtext></msub><mo>−</mo><msub><mi>L</mi><mtext>before</mtext></msub></mrow></math></div>
+<p>正值表示通用验证损失变差，但它不是完整的能力指标。还要同时看领域任务、通用任务、事实时效性、校准、安全行为和不同语言切片。不要只挑领域 benchmark 的提升来宣布适配成功。</p>
+</section>
+<section id="calculator"><h2>交互计算器：给定 token budget，领域与通用数据各占多少？</h2>
+<p>此计算器把配置的 token share 转成理论 token 数。它不代表实际有效训练 token；生产中需要从 tokenizer、packing 与 sampler 日志重新统计。</p>
+<div class="demo-panel">
+<label class="range-label" for="domain-total"><span>本阶段 token budget</span><strong id="domain-total-value">100B</strong></label><input id="domain-total" type="range" min="1000000000" max="500000000000" step="1000000000" value="100000000000">
+<label class="range-label" for="domain-share"><span>领域 token 权重 λ</span><strong id="domain-share-value">30%</strong></label><input id="domain-share" type="range" min="0" max="100" step="1" value="30">
+<div id="domain-output" class="interactive-output" aria-live="polite">领域数据 30B tokens；通用 replay 70B tokens。</div></div>
+<pre><code># scripts/domain_mix.py
+from scripts.domain_mix import token_exposure
 
-        <p>前面所有的章节，我们讨论的几乎都是"通用数据"——从 Common Crawl 中清洗出的多领域、多语言文本。这种思路对通用大模型是正确的：你希望模型知道得越多越好，覆盖面越广越好。但是，当目标从"一个什么都知道的通用助手"变成"一个精通医学诊断的 AI 医生"时，数据策略需要一场彻底的改变。</p>
-
-        <p>这背后是数据工程中一个根本性的权衡：<strong>广度 vs 深度</strong>。通用模型需要数据广度——覆盖尽可能多的主题、风格和领域。领域模型需要数据深度——在同一主题上拥有足够的密度和颗粒度，让模型能够理解领域内的细微差别和专业术语。</p>
-
-        <p>2024 年，某知名医疗 AI 团队做了一个有趣的实验：他们在一个通用模型的基础上，用 200 亿 token 的医学文献进行继续预训练（continue pre-training），获得了专精医学的领域模型。但在评测时发现，这个领域模型在医学问答上表现优异，但在普通对话场景中反而比原版通用模型更差——因为医学文献的语体风格（严谨、正式、充满术语）"污染"了模型的通用表达能力。这个案例说明了领域数据策略的一个核心原则：<strong>领域适配必须在通用能力和专业能力之间找到平衡</strong>。单纯堆砌领域数据而不做策略设计，会带来灾难性的知识遗忘（catastrophic forgetting）。</p>
-
-        <p>在实践中，领域数据策略通常包含三个环节：<strong>领域数据采集与清洗</strong>（找到高质量的专业语料）、<strong>通用数据保持</strong>（在继续预训练中混入一定比例的通用数据，防止知识遗忘）、以及<strong>领域配比优化</strong>（确定通用与领域数据的最佳混合比例）。这三个环节在不同领域的具体实现差异巨大。</p>
-
-        <h2>代码领域</h2>
-
-        <p>代码是 LLM 最早的"领域成功故事"之一。GitHub Copilot、Code Llama、DeepSeek-Coder 等代码模型证明了专用数据策略的巨大价值。但代码数据的清洗和处理方式与通用文本有着本质区别。</p>
-
-        <p>第一个挑战是 <strong>自动生成的代码 vs 人工编写的代码</strong>。GitHub 上有大量由 IDE 自动生成、模板填充、或者从其他库复制粘贴的代码。这些代码虽然在语法上正确，但通常质量低下——缺乏注释、不符合编码规范、没有考虑边界情况。一个简单的判定方法：如果一段代码的 commit message 是 "auto-generated" 或 "initial commit"，它大概率是低质量的自动生成代码。</p>
-
-        <p>第二个挑战是 <strong>代码去重</strong>。你不能用清洗自然语言文档的方法去重代码。自然语言去重关注的是文本级别的精确或近似重复；但代码中，两段在文本上几乎一样的代码（仅变量名不同）可能就是完全不同的函数实现。反过来，两段文本完全不同的代码可能实现了相同的功能（一个用 for 循环，一个用 while 循环）。正确的做法是使用<strong>抽象语法树（AST）级别的去重</strong>——将代码解析为语法树，比较树结构的相似性。</p>
-
-        <table>
-            <thead>
-                <tr><th>清洗规则</th><th>自然语言</th><th>代码领域</th><th>说明</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>去重方法</td><td>文本 n-gram 哈希</td><td>AST 结构相似度</td><td>代码去重要忽略变量名差异</td></tr>
-                <tr><td>质量过滤</td><td>困惑度/教育评分</td><td>编译是否通过 + Star 数</td><td>可执行的代码才有价值</td></tr>
-                <tr><td>短文档处理</td><td>丢弃过短文本</td><td>保留单函数片段</td><td>代码中短片段（单行 import）也有用</td></tr>
-                <tr><td>语言识别</td><td>fastText 语言预测</td><td>文件扩展名 + shebang</td><td>代码语言不是自然语言</td></tr>
-                <tr><td>PII 过滤</td><td>正则 + 命名实体识别</td><td>额外检查 API key / token</td><td>代码中硬编码凭据更常见</td></tr>
-                <tr><td>许可证过滤</td><td>不适用</td><td>检测 GPL/AGPL 头部注释</td><td>许可证合规是代码独有需求</td></tr>
-            </tbody>
-        </table>
-
-        <p>代码质量标注方面，DCLM（DataComp for Language Models）在 2024 年提出了一种高效方法：他们用代码仓库的 GitHub Star 数作为代理标签（proxy label），训练一个分类器来预测代码质量。Star 数超过 1000 的项目中的代码被视为正样本，Star 数为 0 的视为负样本。虽然这个指标并不完美（好的代码也可能在冷门仓库中），但在大规模筛选中它出人意料地有效——使用这个分类器筛选后的代码数据训练出的模型，在 HumanEval 上的 pass@1 提升了 11%。</p>
-
-        <h2>医学和科学领域</h2>
-
-        <p>医学和科学领域的数据清洗方法与通用领域有显著不同。通用领域追求"去除噪声"，而科学领域追求"保留精确的专业结构"。一篇医学论文中的表格、化学式中的下标、基因序列中的特定模式——这些在通用数据清洗中可能被视为"难以处理"的内容被丢弃的东西，恰好是领域模型中最重要的信息载体。</p>
-
-        <p>在 2025 年的 FineMed 研究中，研究人员发现了一个引人深思的结果：对医学领域来说，<strong>医学术语密度过滤比通用教育质量过滤效果高出 2 倍</strong>。也就是说，与其用通用的"教育质量评分"来判断一篇文档是否适合训练医学模型，不如直接计算文档中医学术语的密度——包含更多医学术语的文档更有价值。</p>
-
-        <pre><code># 医学术语密度过滤实现
-import re
-from typing import Set
-
-# 医学术语词典（从 UMLS、MeSH 中提取）
-MEDICAL_TERMS: Set[str] = {
-    # 疾病名称（示例子集）
-    "myocardial infarction", "diabetes mellitus", "hypertension",
-    "osteoarthritis", "pneumonia", "schizophrenia",
-    # 药物名称
-    "metformin", "atorvastatin", "lisinopril", "omeprazole",
-    # 解剖学术语
-    "myocardium", "endothelium", "cerebellum", "epidermis",
-    # 临床概念
-    "biopsy", "angiography", "electrocardiogram", "hemoglobin A1c",
-    # 中文医学术语（示例）
-    "心肌梗死", "糖尿病", "高血压", "骨关节炎", "肺炎",
-    "二甲双胍", "阿托伐他汀", "心肌", "内皮",
-}
-
-MIN_TERM_DENSITY = 0.02  # 最低医学术语密度阈值（2%）
-
-def medical_term_density_filter(doc: str) -> bool:
-    """
-    医学术语密度过滤器。
-    保留术语密度高于阈值的文档。
-    """
-    total_words = len(doc.split())
-    if total_words == 0:
-        return False
-
-    doc_lower = doc.lower()
-    term_count = 0
-    for term in MEDICAL_TERMS:
-        # 使用词边界匹配，避免部分匹配
-        pattern = r'\b' + re.escape(term) + r'\b'
-        matches = re.findall(pattern, doc_lower)
-        term_count += len(matches)
-
-    density = term_count / total_words
-    return density >= MIN_TERM_DENSITY
-
-def filter_medical_corpus(documents: list[str]) -> list[str]:
-    """对整个医学语料库执行过滤"""
-    kept = 0
-    total = len(documents)
-    filtered = []
-    for doc in documents:
-        if medical_term_density_filter(doc):
-            filtered.append(doc)
-            kept += 1
-    print(f"保留率: {kept/total*100:.1f}% ({kept}/{total})")
-    return filtered</code></pre>
-
-        <p>类似的逻辑也适用于科学领域的其他分支。物理学论文中的费曼图术语、生物学论文中的基因名称、化学论文中的化合物命名——每种科学领域都有自己的专业词汇特征。基于专业词汇密度进行过滤，比通用的文本质量指标更能识别出对该领域有价值的内容。这种方法的核心洞察是：<strong>领域知识的特征不在于"写得好不好"，而在于"用了多少专业术语"</strong>。</p>
-
-        <p>PubMed 和 ArXiv 是医学和科学领域的两个核心数据源。但它们的数据需要专门处理：PDF 格式的论文需要转换为可解析的文本（使用 GROBID、ScienceBeam 等工具），数学公式需要保留 LaTeX 表示而非渲染成图片，引用关系可以提取出来作为额外的训练信号。2025 年的一篇论文发现，将论文中的引用关系（"根据 Smith et al. (2023)...") 显式标记并保留，而不是像通用清洗那样当作无意义段落丢弃，可以使模型在科学问答上的准确率提升 7%。</p>
-
-        <h2>多语言领域适配</h2>
-
-        <p>如果说代码和医学领域的挑战是"数据质量"，那么多语言领域的挑战首先是"数据可得性"。在 Common Crawl 的数据分布中，英文占比约 45%，而很多语言的占比不到 0.01%。这种严重不平衡导致了一个残酷的现实：即使你用最先进的过滤技术处理撒哈拉以南非洲地区的本地语言数据，你最终能得到的数据量可能还不够填满一个 GPU 的显存。</p>
-
-        <p>CCNet 项目对 174 种语言的覆盖是一个标志性工作。Meta AI 团队为每种语言训练了独立的 fastText 语言识别模型，并针对每种语言的数据量设定了不同的处理策略——对于高资源语言（英文、中文、西班牙文），使用复杂的三阶段清洗；对于低资源语言（如斯瓦希里语、祖鲁语），则只做基础的语言验证和暴力过滤，以尽可能保留数据。</p>
-
-        <p>2026 年的一个研究进一步提出了"语言适应性数据策略"的概念：对于每种语言，先评估其"数据可利用性"（data availability），然后动态调整清洗强度。对于可用数据极少的语言，清洗标准应该极度宽松——宁可保留一些噪声，也不要因为过度清洗而丢掉稀缺的语料。这背后的工程哲学是：<strong>低资源语言的第一要务是"有数据"，然后才是"有好数据"</strong>。</p>
-
-        <div class="tip">
-            <strong>低资源语言的数据策略：</strong> 对于数据量少于 10GB 的语言，清洗流水线的重点应该从质量过滤转移到语言识别精度。因为这类语言的最大问题不是"数据不够干净"，而是"数据中混入了太多其他语言的文本"。提高语言识别模型的精度（例如使用更大的 n-gram 特征）、引入语言特有的停用词过滤、甚至使用人工标注的种子数据训练专用识别器，这些投入的 ROI 远高于通用质量过滤。换句话说：对于低资源语言，先把"是不是这种语言"搞清楚，再去纠结"这数据质量好不好"。
-        </div>
-
-        <p>语言平衡策略是另一个关键议题。在多语言数据配比中，常见的做法是对低资源语言进行上采样（upsampling）——人为提高它们在训练数据中的占比。比如，斯瓦希里语在 Common Crawl 中只占约 0.005%，但在训练配比中可能被上采样到 1%。但这个做法有一个上限：如果上采样倍数过大，模型会在低资源语言上出现"死记硬背"（overfitting）的现象，反而损害泛化能力。</p>
-
-        <p>2026 年的一篇综述性论文给出了一个经验法则：对于多语言数据配比，各语言的 token 数量与对应语言使用人口的比例不应相差超过一个数量级。也就是说，如果一个语言的使用人口是英文的 1/100，它的训练数据量不应低于英文的 1/1000。这个比例既能保证各语言都有足够的训练信号，又不会因过度上采样而损害模型的多语言泛化能力。</p>
-
-        <p>至此，我们完成了第五部分"Tokenization 与高级策略"的全部内容，涵盖了从 tokenizer 原理、词表设计、合成数据到领域适配的完整技术栈。从下一章开始，我们将进入第六部分——实战与前沿。我们将不再讨论理论，而是直接用 DataTrove 跑一个完整的 FineWeb 清洗流水线，亲手搭建数据处理工具链，并探索自动化数据准备系统的最新进展。</p>
-
-        <div class="footer-nav">
-            <a href="21.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="23.html">下一章 →</a>
-        </div>
-    </div>
-</div>
-</div>
-</body>
-</html>
+plan = token_exposure(total_tokens=100_000_000_000, domain_share=0.30)
+print(plan)  # domain=30B, general=70B</code></pre>
+</section>
+<section id="workflow"><h2>可执行的领域适配决策流程</h2>
+<ol><li><strong>定义适配目标：</strong>写清目标领域、子任务、语言、时间窗口和可接受的通用能力退化范围。</li><li><strong>建立领域数据卡：</strong>来源、许可、时效、隐私、版本、覆盖和排除条件。</li><li><strong>建立基线：</strong>保存 base model 在领域和通用验证集上的损失与任务分数。</li><li><strong>设计对照组：</strong>base only、DAPT、DAPT+replay、DAPT+TAPT；预算与 tokenizer 尽量一致。</li><li><strong>监控实际 token exposure：</strong>按来源、领域、语言、时间和重复簇统计。</li><li><strong>评估遗忘与迁移：</strong>领域提升、通用保持、时间泛化和安全切片一起报告。</li><li><strong>版本化发布：</strong>记录 checkpoint、数据快照、配比、训练步数、学习率、tokenizer 与评测结果。</li></ol>
+<div class="callout warning"><strong>没有通用的最佳领域比例。</strong>不同领域的更新速度、语料质量、模型容量和目标任务都不同。TiC-LM 的结果本身就显示 replay 需求随领域而变；把 70/30 或 90/10 当成默认真理是不严谨的。</div>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references">
+<li>Gururangan et al. (2020), <a href="https://aclanthology.org/2020.acl-main.740/">Don’t Stop Pretraining: Adapt Language Models to Domains and Tasks</a>，ACL 2020。</li>
+<li>Li et al. (2025), <a href="https://aclanthology.org/2025.acl-long.1551/">TiC-LM: A Web-Scale Benchmark for Time-Continual LLM Pretraining</a>，ACL 2025。</li>
+<li>Shi (2025), <a href="https://doi.org/10.1145/3735633">Continual Learning of Large Language Models: A Comprehensive Survey</a>，ACM Computing Surveys。</li>
+<li>Zhang et al. (2025), <a href="https://arxiv.org/abs/2510.10071">ADEPT: Continual Pretraining via Adaptive Expansion and Dynamic Decoupled Tuning</a>。</li>
+<li><a href="https://arxiv.org/abs/2403.16952">Data Mixing Laws</a>，ICLR 2025：数据混合权重与模型表现的实验分析。</li>
+</ol></section>
+<footer class="article-footer"><a href="21.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="23.html">下一章 →</a></footer>
+</article></main></div></div><script>(()=>{
+const total=document.getElementById("domain-total"),share=document.getElementById("domain-share");
+const tv=document.getElementById("domain-total-value"),sv=document.getElementById("domain-share-value"),out=document.getElementById("domain-output");
+function fmt(x){if(x>=1e12)return (x/1e12).toFixed(2)+"T";if(x>=1e9)return (x/1e9).toFixed(1)+"B";if(x>=1e6)return (x/1e6).toFixed(1)+"M";return Math.round(x).toLocaleString("en-US");}
+function render(){const n=Number(total.value),p=Number(share.value)/100,d=n*p,g=n-d;tv.textContent=fmt(n);sv.textContent=share.value+"%";out.textContent="领域数据 "+fmt(d)+" tokens；通用 replay "+fmt(g)+" tokens。配置比例不是实测曝光比例；请在 tokenization / packing 后复核。";}
+total.addEventListener("input",render);share.addEventListener("input",render);render();
+})();</script></body></html>

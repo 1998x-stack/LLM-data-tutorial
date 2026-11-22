@@ -22,3 +22,11 @@
 - Assets: ten original SVGs, five evidence ledgers, five accessible interactive exercises, five dependency-free utility modules and 24 unit tests.
 - Editorial controls: no universal storage sizing, no seed-only reproducibility claim, no one-number data-quality score, no conflation of teaching BPE with production byte-level BPE, no universally optimal vocabulary size.
 - **Validation / publication:** PR #5 merged; static CI passed (45 Python tests, 10 Node tests, 28 chapter paths and 34 SVGs validated); GitHub Pages deployment succeeded. Browser screenshot QA was not run in this batch.
+
+
+### 2026-11-22 — Batch 05: synthetic data, domain adaptation, DataTrove, Dolma and cleaning paradigms
+- Migrated chapters 21–25 to the evidence-backed article system with 14 original SVG diagrams, five source-located evidence ledgers, five interactive exercises and five dependency-free utility modules.
+- Replaced legacy unsupported market-share / model-collapse percentages, unverified DataEvolver claims and anecdotal domain-adaptation numbers with primary-paper or official-document evidence and explicit scope notes.
+- Added tests for sequential synthetic-data attrition, token-mixture arithmetic, DataTrove task planning, Bloom-filter sizing and precision/recall/F1.
+- Updated the course catalog, homepage count, taxonomy, architecture, AGENTS.md, article-authoring and quality gates.
+- CI, merge, deployment and browser QA status will be appended after verification.

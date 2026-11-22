@@ -166,3 +166,36 @@ A release report must include:
 - Pin tokenizer revisions when reporting token counts. Compare parallel texts using corpus token count (CTC) / reference-normalized token premium; bytes-per-token alone is not a fair cross-language compression metric because byte premiums differ.
 - Vocabulary costs include embedding and possibly untied LM-head weights, logits width and token-frequency allocation; report tied/untied assumptions and excluded memory terms.
 - Do not infer language complexity from token fertility or claim a single vocabulary size is universally optimal.
+
+
+### Synthetic-data generation and evaluation
+- Treat synthetic data as a provenance attribute, not a guarantee of correctness or a generic replacement for real data.
+- Separate task/seed design, generation, schema checks, independent factual or execution verification, deduplication, governance review and downstream evaluation.
+- Record teacher model and revision, prompt/template version, decoding parameters, seed/source IDs, verifier version, duplicate cluster and reviewer decision.
+- Distinguish Self-Instruct, Evol-Instruct, teacher explanation traces, data augmentation and simulated environments; do not collapse them into one generation method.
+- Scope model-collapse claims to recursive replacement / contamination settings. Preserve real-data anchors and audit long-tail coverage; never invent a universal safe synthetic-data percentage.
+
+### Domain adaptation and continual pretraining
+- Distinguish DAPT (domain unlabeled corpus), TAPT (task-associated unlabeled corpus), continual/time adaptation and supervised fine-tuning.
+- Track actual token exposure after filtering, tokenization, packing and sampling; document the replay mixture and source snapshots.
+- Evaluate target-domain gains and retention on general, prior-time and low-resource slices. Report forgetting and forward transfer rather than one benchmark score.
+- Treat replay ratios as experimental variables, not universal constants. Include domain rights, privacy and version/time metadata.
+
+### DataTrove implementation
+- Pin DataTrove version and Python requirement. Cite official README and source for API behavior.
+- Explain Document, PipelineStep, rank/world_size, task shards, workers and executors separately.
+- Keep task count and source file mapping stable when resuming completed task markers. A completion marker is not proof of exactly-once external side effects.
+- Use rank in output filenames; keep logging directories unique; make custom blocks streaming and retry-safe.
+- For MinHash, describe signature, bucket, cluster and filter stages and preserve the same source/sharding between signature and final filtering.
+
+### Dolma dataset and toolkit
+- Distinguish the original Dolma dataset, the `dolma` CLI toolkit and the Dolma 3 recipe repository.
+- Preserve required id/text/source fields and align attribute sidecars to document files.
+- Explain Bloom false-positive risk and treat duplicate flags as attributes until the mixer applies them.
+- Preserve token index metadata (start/end/id/src/loc) so token spans can be traced back to source documents.
+- Recheck the exact dataset version, data sheet, license, source conditions and removal policy before redistribution.
+
+### Six cleaning evidence families
+- Compare rule, statistical, deduplication, classifier, LLM-judge and human/downstream evidence separately.
+- Keep license, privacy, safety and benchmark decontamination as eligibility gates, not compensable quality-score terms.
+- Report precision, recall, false-positive cost, slice-level retention, distribution shifts and controlled downstream utility.

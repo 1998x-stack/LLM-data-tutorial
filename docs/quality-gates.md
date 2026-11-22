@@ -5,8 +5,8 @@
 - courses.json parses and contains unique chapter numbers and valid category IDs.
 - courses-data.js is reproducibly generated from courses.json.
 - Every chapter file exists and every local chapter link resolves.
-- New articles 01–20 have one H1, semantic main/article/nav, figure captions, accessible MathML and primary references.
-- Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability, perplexity score conversion, document-to-token mixture math, storage capacity estimates, manifest fingerprints, Wilson intervals, BPE merges and vocabulary parameter costs.
+- New articles 01–25 have one H1, semantic main/article/nav, figure captions, accessible MathML and primary references.
+- Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability, perplexity score conversion, document-to-token mixture math, storage capacity estimates, manifest fingerprints, Wilson intervals, BPE merges, vocabulary parameter costs, synthetic-data attrition, domain token mixtures, task-sharding estimates, Bloom-filter sizing and cleaning confusion-matrix metrics.
 - Articles 11–15 distinguish synthetic teaching values from empirical paper results and include source locators for verified quantitative claims.
 - Annotation exercises state that LLM labels are noisy measurements; contamination detection separates overlap from task leakage; data-mixture examples distinguish document shares from token shares.
 - Distributed-processing examples distinguish task retry from exactly-once side effects and cache/persist from reliable checkpointing.
@@ -39,3 +39,10 @@ Report each check as passed, failed or not verified. Static validation does not 
 - Quality audits report sampling frames, strata, weights and confidence assumptions; no universal scalar quality score is asserted.
 - Tokenizer examples label character-BPE as a teaching implementation, not a faithful GPT-2/tiktoken implementation; vocabulary comparisons use matched text and pinned tokenizer revisions.
 - Vocabulary calculators distinguish tied vs untied matrices and weight storage from optimizer state, activations and logits buffers.
+
+- Articles 21–25 include source-located evidence for Self-Instruct / Evol-Instruct, DAPT / TAPT / TiC-LM, DataTrove implementation behavior, Dolma Toolkit / Dolma 3 and six cleaning evidence families.
+- Synthetic-data examples distinguish generated candidates from validated accepted samples; verifier rates are sequential conditional rates and model-collapse claims are scoped to recursive replacement settings.
+- Domain adaptation examples distinguish unlabeled DAPT / TAPT from SFT and measure token exposure after tokenization / packing; no universal replay ratio is asserted.
+- DataTrove examples preserve task count and input shard mapping across retries; task markers are not claimed to provide exactly-once external side effects.
+- Dolma pages distinguish dataset, CLI toolkit and Dolma 3 recipe repository; Bloom-filter hits are not treated as exact duplicate proof.
+- Cleaning comparisons separate governance hard gates from quality scoring and report precision / recall alongside retained-distribution shifts.

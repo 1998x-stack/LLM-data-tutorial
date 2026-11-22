@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-labelledby="s22replay-title s22replay-desc"><title id="s22replay-title">领域训练与通用 Replay</title><desc id="s22replay-desc">继续预训练将目标领域 token 与通用回放 token 混合，混合权重由下游评测决定。</desc><rect width="1200" height="460" rx="22" fill="#f7faf9" stroke="#d9e5e0"/><g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<text x="48" y="46" font-size="15" font-weight="700" fill="#56716c">CONTINUAL PRETRAINING · TOKEN EXPOSURE</text>
+<rect x="110" y="115" width="980" height="100" rx="16" fill="#e8f1f7" stroke="#9bb7c8" stroke-width="2"/>
+<rect x="110" y="115" width="980" height="100" rx="16" fill="none" stroke="#9bb7c8" stroke-width="2"/>
+<rect x="110" y="115" width="588" height="100" rx="16" fill="#dcece4" stroke="#a3c9b4" stroke-width="1"/>
+<path d="M698 115 V215" stroke="#ffffff" stroke-width="4"/>
+<text x="404" y="158" text-anchor="middle" font-size="22" font-weight="800" fill="#315b55">Domain tokens · λ</text>
+<text x="404" y="186" text-anchor="middle" font-size="13" fill="#536b75">新领域知识注入</text>
+<text x="894" y="158" text-anchor="middle" font-size="22" font-weight="800" fill="#24465b">General replay · 1−λ</text>
+<text x="894" y="186" text-anchor="middle" font-size="13" fill="#536b75">保持通用分布与旧能力</text>
+<rect x="170" y="285" width="250" height="75" rx="14" fill="#e8f4ee" stroke="#a3c9b4" stroke-width="2"/><text x="295" y="319" text-anchor="middle" font-size="19" font-weight="800" fill="#24465b">Domain evaluation</text><text x="295" y="347" text-anchor="middle" font-size="13" fill="#536b75">专业任务 / 新时间片</text>
+<rect x="780" y="285" width="250" height="75" rx="14" fill="#eaf2f8" stroke="#9bb7c8" stroke-width="2"/><text x="905" y="319" text-anchor="middle" font-size="19" font-weight="800" fill="#24465b">Retention evaluation</text><text x="905" y="347" text-anchor="middle" font-size="13" fill="#536b75">通用任务 / 旧时间片</text>
+<text x="600" y="415" text-anchor="middle" font-size="14" fill="#647b78">配置 token share 不是最终事实：以 tokenization 和 packing 后的实际曝光为准</text>
+</g></svg>

@@ -729,15 +729,28 @@
       "file": "21.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "研究 Self-Play、数据增强、合成语料过滤和模型坍缩风险。",
+      "summary": "以 Self-Instruct、Evol-Instruct、Orca 与 Phi-4 为研究锚点，设计种子扩展、独立验证、去重、来源追踪和下游效用评估的合成数据闭环。",
       "tags": [
         "synthetic-data",
-        "self-play",
+        "self-instruct",
+        "evol-instruct",
+        "instruction-generation",
+        "teacher-model",
         "data-augmentation",
-        "model-collapse"
+        "verifier",
+        "execution-feedback",
+        "data-diversity",
+        "model-collapse",
+        "provenance",
+        "data-quality",
+        "privacy"
       ],
       "tools": [
-        "LLM"
+        "Self-Instruct",
+        "WizardLM",
+        "DataTrove",
+        "vLLM",
+        "SymPy"
       ],
       "level": "研究",
       "prerequisites": [
@@ -746,11 +759,11 @@
         "18"
       ],
       "learningOutcomes": [
-        "区分合成数据的生成与筛选",
-        "设计多样性约束",
-        "分析模型自我训练风险"
+        "区分 Self-Instruct、Evol-Instruct、teacher trace 与领域合成数据的生成目标",
+        "为候选样本设计结构、事实、执行、去重和治理验证器",
+        "建立带 provenance、长尾覆盖审计和下游消融的合成数据闭环"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "22",
@@ -758,29 +771,40 @@
       "file": "22.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "针对代码、科学、医学等领域设计来源、过滤和混合策略。",
+      "summary": "系统比较 DAPT、TAPT 与 Continual Pretraining，使用领域语料与通用 replay 控制知识注入和遗忘，并设计时间分层评测。",
       "tags": [
         "domain-adaptation",
+        "dapt",
+        "tapt",
+        "continual-pretraining",
+        "catastrophic-forgetting",
+        "replay",
+        "domain-mixture",
+        "token-exposure",
+        "temporal-drift",
+        "evaluation",
         "code-data",
         "scientific-text",
-        "multilingual"
+        "medical-text",
+        "licensing"
       ],
       "tools": [
-        "The Stack",
-        "Dolma"
+        "Hugging Face Transformers",
+        "TiC-LM",
+        "OLMo"
       ],
-      "level": "研究",
+      "level": "进阶",
       "prerequisites": [
         "14",
         "18",
-        "19"
+        "20"
       ],
       "learningOutcomes": [
-        "定义领域质量标准",
-        "识别领域特有噪声",
-        "设计领域与通用语料混合"
+        "区分 DAPT、TAPT、SFT 与时间连续预训练",
+        "按实际 token exposure 设计领域数据与通用 replay 配比",
+        "同时评估领域收益、通用能力保持和时间分布漂移"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "23",
@@ -788,29 +812,41 @@
       "file": "23.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "使用模块化算子构建可配置、可追踪的网页数据清洗流水线。",
+      "summary": "从 Document、PipelineStep 到 Local、Slurm 和 Ray Executor，掌握 DataTrove 的任务分片、过滤、四阶段 MinHash、恢复与可观测性。",
       "tags": [
         "datatrove",
         "pipeline",
-        "filtering",
-        "deduplication"
+        "pipeline-step",
+        "executor",
+        "task-sharding",
+        "slurm",
+        "ray",
+        "local-executor",
+        "resumability",
+        "idempotency",
+        "minhash",
+        "fsspec",
+        "jsonl",
+        "fineweb"
       ],
       "tools": [
-        "DataTrove"
+        "DataTrove",
+        "Slurm",
+        "Ray",
+        "Hugging Face"
       ],
-      "level": "实战",
+      "level": "进阶",
       "prerequisites": [
-        "05",
-        "08",
         "15",
+        "16",
         "17"
       ],
       "learningOutcomes": [
-        "组合 DataTrove 算子",
-        "复现过滤和去重步骤",
-        "输出可审计运行元数据"
+        "解释 DataTrove Document、PipelineStep、task、worker 与 executor 的职责边界",
+        "构建 JSONL 读取、过滤、统计与写出流水线",
+        "设计可恢复的分片任务、MinHash 阶段依赖和幂等输出"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "24",
@@ -818,30 +854,40 @@
       "file": "24.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "分析 Dolma 语料、数据处理设计与开源工具链。",
+      "summary": "拆解 Dolma Dataset、Dolma Toolkit 与 Dolma 3，掌握统一文档格式、属性 sidecar、Bloom Filter 去重、Mixer 和 token 索引。",
       "tags": [
         "dolma",
+        "dolma-toolkit",
+        "dolma3",
         "open-corpus",
-        "data-curation",
-        "pipeline"
+        "data-format",
+        "attribute-sidecar",
+        "tagger",
+        "bloom-filter",
+        "mixer",
+        "tokenization",
+        "odc-by",
+        "olmo"
       ],
       "tools": [
-        "Dolma",
-        "OLMo"
+        "Dolma Toolkit",
+        "Dolma 3",
+        "OLMo",
+        "Hugging Face Datasets"
       ],
-      "level": "研究",
+      "level": "进阶",
       "prerequisites": [
-        "09",
-        "14",
+        "16",
         "17",
+        "18",
         "23"
       ],
       "learningOutcomes": [
-        "解释 Dolma 的多源语料结构",
-        "定位数据处理步骤",
-        "复用公开工具链"
+        "区分原始 Dolma 语料、dolma CLI 工具包与 Dolma 3 配方仓库",
+        "解释 documents 与 attributes sidecar 的对齐方式及 tag-dedupe-mix-tokenize 流程",
+        "追踪 token IDs 到源文档的索引，并审查数据版本和使用条件"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "25",
@@ -849,33 +895,50 @@
       "file": "25.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "比较规则、语言模型、分类器、人工标注与混合质量策略。",
+      "summary": "系统比较规则、统计、去重、监督分类器、LLM 语义评估和人工下游验证，建立分层治理与可审计的组合式清洗策略。",
       "tags": [
         "curation-paradigms",
         "heuristics",
-        "classifier",
+        "statistical-filtering",
         "perplexity",
-        "ablation"
+        "deduplication",
+        "classifier",
+        "llm-as-judge",
+        "human-audit",
+        "precision",
+        "recall",
+        "f1",
+        "data-governance",
+        "ablation",
+        "downstream-evaluation",
+        "data-retention",
+        "false-positive"
       ],
       "tools": [
-        "C4",
-        "CCNet",
-        "FineWeb",
-        "DCLM"
+        "DataTrove",
+        "Dolma Toolkit",
+        "DCLM",
+        "Python"
       ],
       "level": "研究",
       "prerequisites": [
         "05",
+        "07",
+        "08",
         "10",
         "11",
-        "18"
+        "12",
+        "13",
+        "18",
+        "23",
+        "24"
       ],
       "learningOutcomes": [
-        "构建方法比较矩阵",
-        "匹配方法与资源约束",
-        "识别跨论文不可比因素"
+        "区分六种清洗范式的证据来源、成本和误差结构",
+        "用人工抽检混淆矩阵计算 precision、recall 与 F1",
+        "组合治理硬门、质量筛选和固定配方下游消融"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "26",

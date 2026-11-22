@@ -1,0 +1,88 @@
+{
+  "chapter": "21",
+  "title": "合成数据生成",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "21-C1",
+      "claim": "Self-Instruct bootstraps instruction-following data by generating new instructions and instances from a seed task pool, then filtering invalid or similar generations before fine-tuning.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2023.acl-long.754/",
+      "locator": "Abstract; §3 Self-Instruct",
+      "status": "verified",
+      "notes": "The paper's task generation and filtering pipeline is specific to instruction-tuning data, not generic pretraining text."
+    },
+    {
+      "id": "21-C2",
+      "claim": "The Self-Instruct paper reports a 33-percentage-point absolute improvement over vanilla GPT-3 on Super-NaturalInstructions under its experimental setup.",
+      "kind": "paper-result",
+      "source_url": "https://aclanthology.org/2023.acl-long.754/",
+      "locator": "Abstract; reported Super-NaturalInstructions result",
+      "status": "verified",
+      "notes": "This is a paper-specific result and must not be generalized to other model families, data mixtures or evaluation protocols."
+    },
+    {
+      "id": "21-C3",
+      "claim": "Evol-Instruct iteratively rewrites seed instructions into more complex instructions using depth and breadth evolution strategies.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2304.12244",
+      "locator": "Abstract; Evol-Instruct method",
+      "status": "verified",
+      "notes": "Increased instruction complexity is not equivalent to correctness, diversity or downstream utility."
+    },
+    {
+      "id": "21-C4",
+      "claim": "Orca trains a smaller model using rich signals from GPT-4, including explanation traces and step-by-step reasoning examples.",
+      "kind": "paper-method",
+      "source_url": "https://www.microsoft.com/en-us/research/publication/orca-progressive-learning-from-complex-explanation-traces-of-gpt-4/",
+      "locator": "Abstract; data and learning signals",
+      "status": "verified",
+      "notes": "The reported results belong to Orca's model and benchmark setting; teacher traces are not automatically correct."
+    },
+    {
+      "id": "21-C5",
+      "claim": "The Phi-4 technical report describes a 14B-parameter model whose training recipe strategically incorporates synthetic data throughout the training process.",
+      "kind": "paper-method",
+      "source_url": "https://www.microsoft.com/en-us/research/publication/phi-4-technical-report/",
+      "locator": "Abstract; data and training recipe",
+      "status": "verified",
+      "notes": "The report attributes performance to data quality, curriculum and post-training innovations together, not synthetic data alone."
+    },
+    {
+      "id": "21-C6",
+      "claim": "Indiscriminately training on recursively generated data can cause model collapse, including loss of information from the tails of the original data distribution.",
+      "kind": "paper-result",
+      "source_url": "https://www.nature.com/articles/s41586-024-07566-y",
+      "locator": "Abstract; Definition 2.1; model-collapse experiments",
+      "status": "verified",
+      "notes": "The claim concerns recursive contamination and replacement settings; it does not imply that every curated synthetic dataset is harmful."
+    },
+    {
+      "id": "21-C7",
+      "claim": "In the settings studied by Gerstgrasser et al., accumulating synthetic generations alongside original real data avoided the collapse observed when original data were replaced by each new synthetic generation.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2404.01413",
+      "locator": "Abstract; real-data accumulation experiments",
+      "status": "verified",
+      "notes": "This result is scoped to the paper's experimental models and data; it does not establish a universal safe synthetic-data percentage."
+    },
+    {
+      "id": "21-C8",
+      "claim": "The LLM Data Auditor framework organizes synthetic-data evaluation around quality and trustworthiness dimensions rather than relying only on downstream utility.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2601.17717",
+      "locator": "Abstract; quality and trustworthiness taxonomy",
+      "status": "verified",
+      "notes": "This is a survey/framework proposal; metric selection must still match the data modality and task."
+    },
+    {
+      "id": "21-C9",
+      "claim": "If each stage retention rate is measured conditionally on the previous stage's output, the expected final sample count is the initial count multiplied by the sequential conditional retention rates.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2023.acl-long.754/",
+      "locator": "Self-Instruct generation-and-filtering stages; conditional attrition arithmetic",
+      "status": "derived",
+      "notes": "Rates must be measured sequentially; multiplying marginal rates from different populations would be invalid."
+    }
+  ]
+}

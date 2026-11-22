@@ -29,13 +29,21 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["tags"])
             self.assertTrue(chapter["level"])
 
-    def test_first_twenty_chapters_have_evidence_ledgers(self):
-        for number in tuple(f"{index:02d}" for index in range(1, 21)):
+    def test_first_twenty_five_chapters_have_evidence_ledgers(self):
+        for number in tuple(f"{index:02d}" for index in range(1, 26)):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
             minimum_claims = 3 if number <= "05" else 5
             self.assertGreaterEqual(len(ledger["claims"]), minimum_claims)
+
+    def test_batch_five_evidence_is_source_located(self):
+        for number in ("21", "22", "23", "24", "25"):
+            ledger = json.loads((ROOT / "evidence" / f"{number}.json").read_text(encoding="utf-8"))
+            self.assertGreaterEqual(len(ledger["claims"]), 8)
+            for claim in ledger["claims"]:
+                self.assertTrue(claim.get("source_url"), claim.get("id"))
+                self.assertTrue(claim.get("locator"), claim.get("id"))
 
 
 if __name__ == "__main__":

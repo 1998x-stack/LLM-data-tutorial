@@ -1,0 +1,88 @@
+{
+  "chapter": "23",
+  "title": "DataTrove 流水线实战",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "23-C1",
+      "claim": "DataTrove models processing as a list of reusable pipeline blocks and supports platform-agnostic execution through local, Slurm and Ray executors.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
+      "locator": "Terminology; Pipeline; Executors",
+      "status": "verified",
+      "notes": "Executor availability and optional dependencies depend on the installed DataTrove version."
+    },
+    {
+      "id": "23-C2",
+      "claim": "DataTrove Documents carry text, an identifier and metadata, while PipelineStep.run consumes and yields a document generator with rank and world_size arguments.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/base.py",
+      "locator": "PipelineStep.run; Document format in README",
+      "status": "verified",
+      "notes": "Reader, filter, stats and writer steps specialize the shared generator contract."
+    },
+    {
+      "id": "23-C3",
+      "claim": "DataTrove distributes input files across logical tasks; its README warns that tasks greater than the number of files leave tasks without data.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
+      "locator": "Terminology; task and shard definitions",
+      "status": "verified",
+      "notes": "A task processes a shard of files; DataTrove does not automatically split one large file into arbitrary subfiles."
+    },
+    {
+      "id": "23-C4",
+      "claim": "DataTrove records completed task markers under logging_dir/completions and recommends keeping the total task count unchanged when resuming a failed run.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
+      "locator": "Executors; task completion and retry caution",
+      "status": "verified",
+      "notes": "Completion markers do not make arbitrary external side effects exactly-once; output writers still need safe commit behavior."
+    },
+    {
+      "id": "23-C5",
+      "claim": "LocalPipelineExecutor exposes tasks and workers as separate controls: tasks define the logical task count, while workers define how many tasks run concurrently.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/executor/local.py",
+      "locator": "LocalPipelineExecutor.__init__ arguments and class documentation",
+      "status": "verified",
+      "notes": "Effective throughput also depends on file-size skew, I/O, memory and processing time."
+    },
+    {
+      "id": "23-C6",
+      "claim": "DataTrove BaseFilter keeps a document when filter returns true and drops it when filter returns false; an exclusion_writer can persist dropped documents.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/filters/base_filter.py",
+      "locator": "BaseFilter.filter; BaseFilter.run",
+      "status": "verified",
+      "notes": "The optional tuple return can also attach a reason for the dropped document."
+    },
+    {
+      "id": "23-C7",
+      "claim": "DataTrove's MinHash example separates deduplication into signature generation, bucket matching, cluster construction and a final filtering pass.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py",
+      "locator": "stage1 MinhashDedupSignature; stage2 MinhashDedupBuckets; stage3 MinhashDedupCluster; stage4 MinhashDedupFilter",
+      "status": "verified",
+      "notes": "The final filter must use the same source data and compatible sharding as signature generation."
+    },
+    {
+      "id": "23-C8",
+      "claim": "The current DataTrove pyproject metadata declares version 0.10.1 and requires Python 3.11 or newer.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/pyproject.toml",
+      "locator": "[project].version and requires-python",
+      "status": "verified",
+      "notes": "Main-branch metadata can change; pin a release and dependency lock for reproducible production runs."
+    },
+    {
+      "id": "23-C9",
+      "claim": "The current DataTrove README documents inference-based synthetic generation with rollout functions, chunk checkpoints and a request cache for retry-safe generation.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
+      "locator": "Practical guides → Synthetic data generation; Recoverable generation",
+      "status": "verified",
+      "notes": "Inference extras and server/provider configuration are optional; generation quality still requires independent validation."
+    }
+  ]
+}

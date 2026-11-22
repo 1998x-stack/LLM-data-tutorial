@@ -132,3 +132,39 @@ test('chapters 18-20 render substantive equations as MathML', () => {
     assert.match(article, /aria-label=/);
   }
 });
+
+test('fifth batch chapters 21-25 expose accessible exercises and evidence ledgers', () => {
+  const controls = {
+    21: ['syn-count', 'syn-schema', 'syn-verify', 'syn-unique', 'syn-safe'],
+    22: ['domain-total', 'domain-share'],
+    23: ['dt-files', 'dt-tasks', 'dt-workers'],
+    24: ['bloom-n', 'bloom-p'],
+    25: ['clean-tp', 'clean-fp', 'clean-fn'],
+  };
+  for (let index = 21; index <= 25; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    const evidence = JSON.parse(fs.readFileSync(path.join(root, 'evidence', number + '.json'), 'utf8'));
+    assert.match(article, /<h1>/);
+    assert.match(article, /<main/);
+    assert.match(article, /<figure class="diagram">/);
+    assert.match(article, /<footer class="article-footer">/);
+    assert.match(article, /aria-live="polite"/);
+    assert.equal(article.includes(String.fromCharCode(92) + '('), false);
+    for (const id of controls[index]) assert.ok(article.includes('id="' + id + '"'), number + ': missing control ' + id);
+    assert.ok(evidence.claims.length >= 8);
+    for (const claim of evidence.claims) {
+      assert.ok(claim.source_url, number + ': ' + claim.id + ' missing source_url');
+      assert.ok(claim.locator, number + ': ' + claim.id + ' missing locator');
+    }
+  }
+});
+
+test('fifth batch equations use semantic MathML', () => {
+  for (let index = 21; index <= 25; index++) {
+    const number = String(index).padStart(2, '0');
+    const article = fs.readFileSync(path.join(root, number + '.html'), 'utf8');
+    assert.match(article, /<math/);
+    assert.match(article, /aria-label=/);
+  }
+});
