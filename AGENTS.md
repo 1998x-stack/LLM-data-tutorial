@@ -94,6 +94,13 @@ A threshold is an experimental choice tied to a dataset and target. Report false
 ### Quality and data mixing
 “High quality” is task-dependent. Report model, dataset, token budget, tokenizer, evaluation protocol and source locator for any model result. Keep document counts distinct from token counts.
 
+### Version-sensitive tools and corpora
+
+- Bind every command, API, default, package requirement and configuration example to an explicit release or commit. Prefer versioned official documentation and source links over unversioned blog posts.
+- Distinguish dataset snapshot/version from the toolkit/package version. For example, a Dolma corpus version is not the same thing as a Dolma Toolkit release.
+- Label code as verified against the pinned version, illustrative pseudocode, or not executed. Never imply that a snippet was run when it was only transcribed from documentation.
+- For benchmark and dataset statistics, record whether the number is full-corpus size, sampled training exposure, tokenized count or a model-specific experimental budget.
+
 ## Completion report
 
 A release report must include:
