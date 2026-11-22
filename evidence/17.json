@@ -1,7 +1,7 @@
 {
   "chapter": "17",
   "title": "流水线可复现性",
-  "updated": "2026-11-21",
+  "updated": "2026-11-22",
   "claims": [
     {
       "id": "17-C1",
@@ -55,7 +55,7 @@
       "source_url": "https://docs.python.org/3/library/hashlib.html",
       "locator": "hashlib.sha256; Hash objects",
       "status": "verified",
-      "notes": "The digest identifies the exact serialized bytes; stable canonical serialization must be defined before hashing."
+      "notes": "The digest identifies the exact serialized bytes. The repository helper defines a project-local Python serialization contract; json.dumps(sort_keys=True, ...) is not automatically RFC 8785/JCS-conformant. Use a shared canonicalization standard when interoperable cross-language IDs or signatures are required."
     },
     {
       "id": "17-C7",
@@ -65,6 +65,15 @@
       "locator": "Dependencies, parameters and outputs; engineering synthesis",
       "status": "derived",
       "notes": "This is a recommended provenance contract, not a formal DVC manifest schema."
+    },
+    {
+      "id": "17-C8",
+      "claim": "RFC 8785 specifies the JSON Canonicalization Scheme (JCS) for deterministic JSON serialization; a project-local Python json.dumps configuration is not automatically a conforming JCS implementation.",
+      "kind": "official-doc",
+      "source_url": "https://www.rfc-editor.org/rfc/rfc8785",
+      "locator": "Abstract; Section 3 JSON Canonicalization Scheme",
+      "status": "verified",
+      "notes": "The tutorial's helper intentionally provides a stable repository-local digest contract, not cross-language JCS interoperability."
     }
   ]
 }
