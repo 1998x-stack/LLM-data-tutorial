@@ -29,8 +29,8 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["tags"])
             self.assertTrue(chapter["level"])
 
-    def test_first_twenty_chapters_have_evidence_ledgers(self):
-        for number in tuple(f"{index:02d}" for index in range(1, 21)):
+    def test_first_twenty_five_chapters_have_evidence_ledgers(self):
+        for number in tuple(f"{index:02d}" for index in range(1, 26)):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
