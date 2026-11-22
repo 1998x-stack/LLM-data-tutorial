@@ -750,9 +750,9 @@
         "18"
       ],
       "learningOutcomes": [
-        "区分合成数据的生成与筛选",
-        "设计多样性约束",
-        "分析模型自我训练风险"
+        "区分合成数据生成范式与训练阶段",
+        "设计独立验证、去重、覆盖和来源记录闭环",
+        "解释递归合成数据可能造成的分布尾部损失及其适用边界"
       ],
       "status": "refined"
     },
@@ -785,9 +785,9 @@
         "19"
       ],
       "learningOutcomes": [
-        "定义领域质量标准",
-        "识别领域特有噪声",
-        "设计领域与通用语料混合"
+        "区分 DAPT、TAPT 与有监督微调",
+        "按 token 暴露量设计通用/领域语料混合",
+        "建立领域能力与通用能力双轨评测"
       ],
       "status": "refined"
     },
@@ -819,9 +819,9 @@
         "17"
       ],
       "learningOutcomes": [
-        "组合 DataTrove 算子",
-        "复现过滤和去重步骤",
-        "输出可审计运行元数据"
+        "在 DataTrove v0.10.1 中组合 Reader、Filter、Dedup 与 Writer",
+        "解释 Local/Slurm executor、任务分片和完成标记",
+        "为输入、配置、日志与输出建立可复现 manifest"
       ],
       "status": "refined"
     },
@@ -839,7 +839,7 @@
         "taggers",
         "bloom-filter",
         "data-mixing",
-        "provenance"
+        "source-provenance"
       ],
       "tools": [
         "Dolma Toolkit 1.2.1",
@@ -854,9 +854,9 @@
         "23"
       ],
       "learningOutcomes": [
-        "解释 Dolma 的多源语料结构",
-        "定位数据处理步骤",
-        "复用公开工具链"
+        "区分 Dolma corpus snapshot 与 Toolkit package release",
+        "解释 tag、dedupe、mix、stat、tokens 的职责与限制",
+        "识别 Bloom filter false positives、token share 与来源许可风险"
       ],
       "status": "refined"
     },
@@ -895,9 +895,9 @@
         "18"
       ],
       "learningOutcomes": [
-        "构建方法比较矩阵",
-        "匹配方法与资源约束",
-        "识别跨论文不可比因素"
+        "比较七类代表性语料构建策略及其设计目标",
+        "解释数据来源、过滤、去重、混合与评测的不同层次",
+        "识别跨论文 benchmark 结果不可直接比较的条件"
       ],
       "status": "refined"
     },
