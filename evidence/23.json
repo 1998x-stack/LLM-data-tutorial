@@ -68,12 +68,12 @@
     },
     {
       "id": "23-C8",
-      "claim": "The DataTrove v0.10.1 tag declares package version 0.10.1 and requires Python >=3.10.0; the current main branch has a different Python requirement and should not be treated as the same immutable API snapshot.",
+      "claim": "The DataTrove v0.10.1 release tag declares package version 0.10.1 and requires Python >=3.10.0.",
       "kind": "implementation",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml",
-      "locator": "[project].version and requires-python; compare with current main metadata",
+      "locator": "[project].version and requires-python",
       "status": "verified",
-      "notes": "The article pins the release tag, not the moving main branch. The package version string alone does not guarantee identical source or dependency requirements across branches."
+      "notes": "This chapter pins the immutable v0.10.1 release tag. Do not infer moving main-branch requirements or APIs from the package version string."
     },
     {
       "id": "23-C9",
@@ -101,6 +101,15 @@
       "locator": "LanguageFilter.__init__ defaults",
       "status": "verified",
       "notes": "The tutorial now specifies both values explicitly. These defaults are not universal thresholds and require slice-level calibration for mixed or low-resource language data."
+    },
+    {
+      "id": "23-C12",
+      "claim": "The DataTrove repository main branch as checked on 2026-11-22 still reports package version 0.10.1 but requires Python >=3.11.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/main/pyproject.toml",
+      "locator": "[project].version and requires-python; main branch snapshot checked 2026-11-22",
+      "status": "verified",
+      "notes": "This is a dated observation of a moving branch, not an immutable release contract. The tutorial's runnable example is pinned to the v0.10.1 tag and its >=3.10.0 requirement."
     }
   ]
 }
