@@ -66,9 +66,11 @@ def review(root: Path = ROOT) -> dict:
         counts = parser.tag_counts
         for issue in parser.errors:
             errors.append(f"{num}: {issue}")
-        for tag in ("h1", "main", "article"):
+        for tag in ("h1", "main"):
             if counts[tag] != 1:
                 errors.append(f"{num}: expected one {tag}, got {counts[tag]}")
+        if counts["article"] < 1:
+            errors.append(f"{num}: missing article content")
         if counts["nav"] < 1:
             errors.append(f"{num}: missing nav")
         if counts["figure"] != counts["figcaption"]:

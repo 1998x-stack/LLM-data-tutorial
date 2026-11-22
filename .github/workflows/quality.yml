@@ -32,6 +32,13 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Run offline catalog tests
         run: node --test tests/offline-catalog.test.cjs
+      - name: Audit all 28 chapters and assets
+        run: python3 scripts/review_repo.py --strict --output review-results/repo-review.json
+      - name: Upload repository audit result
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-repository-review
+          path: review-results/repo-review.json
 
   public-site-smoke:
     name: Verify published Pages matches main
