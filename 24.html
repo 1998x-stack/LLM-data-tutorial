@@ -13,8 +13,11 @@
 <tr><td>Dolma Toolkit</td><td>可扩展的数据整理工具包</td><td>Python 库与 <code>dolma</code> CLI，支持 tagging、dedupe、mix、stats、tokens。</td></tr>
 <tr><td>Dolma 3</td><td>OLMo 3 家族的数据集与重建配方</td><td>官方仓库描述 5.9T 预训练、100B mid-training、50B long-context 三类数据集。</td></tr>
 </tbody></table>
-<p><a href="https://aclanthology.org/2024.acl-long.840/">Dolma 论文（ACL 2024）</a>强调开放语料、构建过程文档和工具链透明度。官方 <a href="https://github.com/allenai/dolma">allenai/dolma</a> 仓库同时包含原始数据集说明和 Dolma Toolkit 源码。当前 AI2 文档把 Dolma 3 描述为最新数据版本，并指出它用于 OLMo 3。</p>
-<div class="callout warning"><strong>不要混淆接口：</strong><code>pip install dolma</code> 安装的是原始 Dolma Toolkit 的 Python / CLI 工具；<a href="https://github.com/allenai/dolma3">allenai/dolma3</a> 是 Dolma 3 数据集及重建配方仓库，不等于旧 CLI 的一个新命令。</div>
+<p><a href="https://aclanthology.org/2024.acl-long.840/">Dolma 论文（ACL 2024）</a>强调开放语料、构建过程文档和工具链透明度。官方 <a href="https://github.com/allenai/dolma/tree/v1.2.1">allenai/dolma v1.2.1</a> tag 包含本章所讨论的原始 Dataset 说明与 Toolkit 源码。当前 AI2 文档（2026-11-22 检查）把 Dolma 3 描述为 OLMo 3 的数据家族；它是持续更新的说明页，不作为旧 Toolkit CLI 的版本依据。</p>
+<div class="callout warning"><strong>不要混淆接口：</strong><code>pip install dolma</code> 安装的是原始 Dolma Toolkit 的 Python / CLI 工具；<a href="https://github.com/allenai/dolma3/tree/1a9daced81670e0fa768e47fbed32af6694a1865">allenai/dolma3</a> 是 Dolma 3 数据集及重建配方仓库，不等于旧 CLI 的一个新命令。</div>
+<div class="callout"><strong>CLI 版本基线：</strong>本章 <code>tag</code>、<code>dedupe</code>、<code>mix</code>、<code>tokens</code> 命令按 Dolma Toolkit <code>v1.2.1</code>（2025-07-07 release）核对。请安装固定版本，并用该 tag 下的文档核对参数；不要将 Dolma Dataset 的 <code>v1_7</code> 与 Python package 的 <code>v1.2.1</code> 混为一谈。</div>
+<pre><code>python -m pip install "dolma==1.2.1"
+dolma --help</code></pre>
 </section>
 <section id="workflow"><h2>Toolkit 的四段式整理流程</h2>
 <figure class="diagram"><img src="assets/diagrams/ch24-toolkit-flow.svg" alt="Dolma Toolkit 先用 taggers 生成属性，再执行 dedupe，接着 mix 过滤与重组文档，最后 tokens 转换为 token ids"><figcaption>图 2 · Tagger 先产生可审计属性，Mixer 再按属性做选择；这让打标和删除决策分离。</figcaption></figure>
@@ -47,10 +50,10 @@
 <section id="mix-tokenize"><h2>Mixer 与 Tokenizer：从标签决策到训练文件</h2>
 <p><code>dolma mix</code> 可以组合多个 streams，合并指定属性，使用 JSONPath include / exclude 条件筛选文档，也能按带分数的 span 替换文本。它更像一个可配置的“物化视图”步骤：原文与属性不变，输出一个新的 curated corpus。</p>
 <p><code>dolma tokens</code> 使用兼容的 tokenizer。官方文档描述输出包括：</p>
-<ul><li><code>.npy</code>：拼接后的 token ID 数组；</li><li><code>.csv.gz</code>：每段 token 的索引元数据，包含 <code>start</code>、<code>end</code>、<code>id</code>、<code>src</code> 和 <code>loc</code>。</li></ul>
+<ul><li><code>.npy</code>：拼接后的 token ID 数组；</li><li><code>.csv.gz</code>：每段 token 的索引元数据，包含 <code>start</code>、<code>end</code>、<code>path</code> 和 <code>id</code>。</li></ul>
 <p>索引文件让训练端能够从连续 token 数组追溯回原始文档 ID、源文件路径和行位置。若只保留 token IDs 而丢掉这些映射，后续数据审计、去污染和删除请求都会更困难。</p>
 <pre><code># 典型 CLI 流程（路径和配置需替换为自己的数据）
-dolma tag --documents "data/v0/documents/*.json.gz" \
+dolma tag --documents "data/v0/documents/*.jsonl.gz" \
   --taggers random_number_v1 char_length_with_paragraphs_v1 \
   --experiment audit --processes 8
 
@@ -86,10 +89,10 @@ print(bloom_filter_size(6_000_000, 0.0001))</code></pre>
 </section>
 <section id="references"><h2>参考资料</h2><ol class="references">
 <li>Soldaini et al. (2024), <a href="https://aclanthology.org/2024.acl-long.840/">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>，ACL 2024。</li>
-<li><a href="https://github.com/allenai/dolma">allenai/dolma</a>：原始 Dolma Dataset 与 Toolkit。</li>
-<li><a href="https://github.com/allenai/dolma/tree/main/docs">Dolma Toolkit docs</a>：Getting Started、Data Format、Taggers、Deduplication、Mixer、Tokenization。</li>
+<li><a href="https://github.com/allenai/dolma/tree/v1.2.1">allenai/dolma v1.2.1</a>：本章 CLI、数据格式与 Toolkit 源码。</li>
+<li>Dolma Toolkit v1.2.1 docs：<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md">Getting Started</a>、<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/data-format.md">Data Format</a>、<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md">Deduplication</a>、<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/mixer.md">Mixer</a>、<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/tokenize.md">Tokenization</a>。</li>
 <li><a href="https://docs.allenai.org/training_data/dolma/">AI2 Dolma documentation</a>：当前 Dolma / Dolma 3 版本说明。</li>
-<li><a href="https://github.com/allenai/dolma3">allenai/dolma3</a>：Dolma 3 datasets 与 reconstruction recipes。</li>
+<li><a href="https://github.com/allenai/dolma3/tree/1a9daced81670e0fa768e47fbed32af6694a1865">allenai/dolma3</a>：固定到 2026-04-20 commit 的 Dolma 3 datasets 与 reconstruction recipes。</li>
 <li><a href="https://www.datocms-assets.com/64837/1763646865-olmo_3_technical_report-1.pdf">OLMo 3 Technical Report</a>：Dolma 3 Mix、数据阶段与工具链说明。</li>
 </ol></section>
 <footer class="article-footer"><a href="23.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="25.html">下一章 →</a></footer>
