@@ -6,7 +6,7 @@
     {
       "id": "CH23-C01",
       "claim": "DataTrove release v0.10.1 declares Python >=3.10 and version 0.10.1 in its project metadata.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml",
       "locator": "[project].version and requires-python",
       "status": "verified",
@@ -15,7 +15,7 @@
     {
       "id": "CH23-C02",
       "claim": "The DataTrove Document contract exposes text, id and metadata fields.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
       "locator": "Pipeline → DataTrove Document",
       "status": "verified",
@@ -24,7 +24,7 @@
     {
       "id": "CH23-C03",
       "claim": "DataTrove pipelines are lists of processing blocks and can be run by different executors, including local and Slurm execution.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
       "locator": "Pipeline → Full pipeline; Executors",
       "status": "verified",
@@ -33,7 +33,7 @@
     {
       "id": "CH23-C04",
       "claim": "The official Common Crawl example composes WarcReader, URLFilter, Trafilatura, LanguageFilter, Gopher repetition/quality filters and JsonlWriter.",
-      "kind": "implementation-example",
+      "kind": "implementation",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/process_common_crawl_dump.py",
       "locator": "Complete pipeline list",
       "status": "verified",
@@ -42,7 +42,7 @@
     {
       "id": "CH23-C05",
       "claim": "The official MinHash example uses signature, bucket, cluster and final filtering stages, and requires the final filter stage to match the signature stage's input and task distribution.",
-      "kind": "implementation-example",
+      "kind": "implementation",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py",
       "locator": "stage1 through stage4 comments and executor definitions",
       "status": "verified",
@@ -51,7 +51,7 @@
     {
       "id": "CH23-C06",
       "claim": "The v0.10.1 LocalPipelineExecutor example uses tasks, workers and a logging directory to run a pipeline.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
       "locator": "Executors → LocalPipelineExecutor",
       "status": "verified",
