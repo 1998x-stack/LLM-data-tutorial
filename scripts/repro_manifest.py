@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import PurePosixPath
 from typing import Any
 
@@ -31,8 +32,16 @@ def dataset_root_digest(shards: list[dict]) -> str:
     normalized = []
     seen_paths = set()
     for shard in shards:
-        path = str(PurePosixPath(shard["path"]))
-        if path in {"", "."} or path.startswith("/") or ".." in PurePosixPath(path).parts:
+        raw_path = shard["path"]
+        if not isinstance(raw_path, str) or not raw_path:
+            raise ValueError("shard path must be a non-empty string")
+        # A backslash or drive prefix is ambiguous across POSIX and Windows.
+        # Keep manifest paths portable by accepting only relative POSIX paths.
+        if "\\" in raw_path or "\x00" in raw_path or re.match(r"^[A-Za-z]:", raw_path):
+            raise ValueError("shard path must use portable POSIX separators")
+        path_obj = PurePosixPath(raw_path)
+        path = str(path_obj)
+        if path in {"", "."} or path.startswith("/") or ".." in path_obj.parts:
             raise ValueError("shard path must be a safe relative POSIX path")
         if path in seen_paths:
             raise ValueError(f"duplicate shard path: {path}")
