@@ -28,6 +28,7 @@ executor = LocalPipelineExecutor(
     workers=4,
 )
 executor.run()</code></pre>
+<p>在 v0.10.1 中，<code>GopherQualityFilter()</code> 的默认配置包括最少 50 个词、最多 100,000 个词、平均词长 3–10、至少 2 个 stop words，并默认按英语规则处理。它们是该版本实现的默认值，不是经过你目标语料校准的通用质量阈值；代码、中文、短文本和多语言语料通常需要单独设计过滤器。</p>
 <p>本地运行不意味着数据天然可复现。应同时保存输入 manifest、文件 checksum、代码 commit、依赖锁、过滤器参数、任务数、日志目录和输出 checksum。DataTrove 的 completion markers 用于跳过已完成任务；重跑失败任务时不要随意改变任务总数，否则输入文件分配可能改变。</p></section>
 <section id="commoncrawl"><h2>从 Common Crawl WARC 到训练文本</h2>
 <p>DataTrove v0.10.1 的官方 <code>process_common_crawl_dump.py</code> 示例展示了一条更完整的流程：<code>WarcReader</code> 读取指定 crawl dump，<code>URLFilter</code> 过滤 URL，<code>Trafilatura</code> 抽取正文，<code>LanguageFilter</code> 做语言筛选，再用 <code>GopherRepetitionFilter</code> 和 <code>GopherQualityFilter</code> 处理重复与质量，最后通过 <code>JsonlWriter</code> 写出。示例运行于 Slurm，并将排除样本分别写入独立目录，便于审计。</p>
