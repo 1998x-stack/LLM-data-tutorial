@@ -1,0 +1,61 @@
+{
+  "chapter": "23",
+  "title": "DataTrove 流水线实战",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "CH23-C01",
+      "claim": "DataTrove release v0.10.1 declares Python >=3.10 and version 0.10.1 in its project metadata.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml",
+      "locator": "[project].version and requires-python",
+      "status": "verified",
+      "notes": "The tutorial pins this release explicitly. Recheck release metadata before upgrading examples to another version."
+    },
+    {
+      "id": "CH23-C02",
+      "claim": "The DataTrove Document contract exposes text, id and metadata fields.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Pipeline → DataTrove Document",
+      "status": "verified",
+      "notes": "This describes the version-pinned README contract; it is not a claim that all source formats contain complete metadata."
+    },
+    {
+      "id": "CH23-C03",
+      "claim": "DataTrove pipelines are lists of processing blocks and can be run by different executors, including local and Slurm execution.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Pipeline → Full pipeline; Executors",
+      "status": "verified",
+      "notes": "Executor options and dependencies vary by installed extras and environment; the tutorial does not imply that a local machine can run cluster-scale workloads."
+    },
+    {
+      "id": "CH23-C04",
+      "claim": "The official Common Crawl example composes WarcReader, URLFilter, Trafilatura, LanguageFilter, Gopher repetition/quality filters and JsonlWriter.",
+      "kind": "implementation-example",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/process_common_crawl_dump.py",
+      "locator": "Complete pipeline list",
+      "status": "verified",
+      "notes": "The chapter summarizes the official example's sequence; filtering thresholds and resource settings must be tuned for a target corpus."
+    },
+    {
+      "id": "CH23-C05",
+      "claim": "The official MinHash example uses signature, bucket, cluster and final filtering stages, and requires the final filter stage to match the signature stage's input and task distribution.",
+      "kind": "implementation-example",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py",
+      "locator": "stage1 through stage4 comments and executor definitions",
+      "status": "verified",
+      "notes": "MinHash provides approximate duplicate candidates; it is not a semantic-equivalence proof."
+    },
+    {
+      "id": "CH23-C06",
+      "claim": "The v0.10.1 LocalPipelineExecutor example uses tasks, workers and a logging directory to run a pipeline.",
+      "kind": "official-documentation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Executors → LocalPipelineExecutor",
+      "status": "verified",
+      "notes": "The chapter's JSONL example combines documented block patterns; users must install the required I/O and processing extras and test their own input layout."
+    }
+  ]
+}
