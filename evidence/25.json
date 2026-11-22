@@ -1,0 +1,88 @@
+{
+  "chapter": "25",
+  "title": "六大清洗范式对比",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "25-C1",
+      "claim": "The C4 corpus construction described with T5 uses language identification, heuristic filtering, deduplication and removal of noisy or inappropriate content.",
+      "kind": "paper-method",
+      "source_url": "https://jmlr.org/papers/v21/20-074.html",
+      "locator": "§2.1.1 C4; Appendix C.1",
+      "status": "verified",
+      "notes": "The rules are specific to the English C4 construction and should not be treated as universal thresholds."
+    },
+    {
+      "id": "25-C2",
+      "claim": "CCNet adds a language-model perplexity filter to a web-corpus pipeline to select documents closer to high-quality reference corpora such as Wikipedia.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2020.lrec-1.494/",
+      "locator": "Abstract; §1 Introduction; filtering pipeline",
+      "status": "verified",
+      "notes": "Perplexity measures fit to a chosen reference distribution, not universal truth or quality."
+    },
+    {
+      "id": "25-C3",
+      "claim": "Dolma documents Bloom-filter-based deduplication for document keys or paragraph spans, while DataTrove provides a multi-stage MinHash workflow for approximate document deduplication.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/allenai/dolma/blob/main/docs/deduplication.md",
+      "locator": "Deduplication overview",
+      "status": "verified",
+      "notes": "Exact and approximate deduplication have different error profiles; a candidate similarity is not proof of semantic redundancy."
+    },
+    {
+      "id": "25-C4",
+      "claim": "DCLM evaluates data curation methods under a standardized raw pool and downstream training/evaluation setup, making downstream utility a central comparison signal.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2406.11794",
+      "locator": "Abstract; DCLM benchmark design",
+      "status": "verified",
+      "notes": "A filter ranking is conditional on the model, data pool, compute budget, tokenizer and evaluation suite."
+    },
+    {
+      "id": "25-C5",
+      "claim": "The LLM Data Auditor framework distinguishes synthetic-data quality from trustworthiness and surveys intrinsic metrics as well as evaluation practice.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2601.17717",
+      "locator": "Abstract; quality and trustworthiness dimensions",
+      "status": "verified",
+      "notes": "LLM-judge scores are one measurement source and should be calibrated and audited rather than treated as ground truth."
+    },
+    {
+      "id": "25-C6",
+      "claim": "A 2025 survey of LLM datasets describes a broad preprocessing workflow including collection, filtering, deduplication, standardization and review.",
+      "kind": "paper-method",
+      "source_url": "https://link.springer.com/article/10.1007/s10462-025-11403-7",
+      "locator": "§3.4 Preprocessing of pre-training data",
+      "status": "verified",
+      "notes": "This is a survey-level synthesis, not a mandated order for every production pipeline."
+    },
+    {
+      "id": "25-C7",
+      "claim": "Precision, recall and F1 can be computed from TP, FP and FN as TP/(TP+FP), TP/(TP+FN), and 2PR/(P+R), respectively.",
+      "kind": "derived",
+      "source_url": "https://scikit-learn.org/stable/modules/model_evaluation.html#precision-recall-f-measure-metrics",
+      "locator": "Precision, recall and F-measure definitions",
+      "status": "derived",
+      "notes": "The positive class must be explicitly defined; when removal is positive, false positives represent good data incorrectly discarded."
+    },
+    {
+      "id": "25-C8",
+      "claim": "Filtering decisions should be audited for retained-distribution changes and false-positive costs, not evaluated only by a single aggregate accuracy score.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/2406.11794",
+      "locator": "DCLM standardized curation comparisons and downstream evaluation; engineering synthesis",
+      "status": "derived",
+      "notes": "Report slices, confidence intervals, data retention and the controlled downstream recipe."
+    },
+    {
+      "id": "25-C9",
+      "claim": "License, privacy, safety and benchmark decontamination constraints should be treated as eligibility or governance gates rather than values that can be compensated by a high quality score.",
+      "kind": "derived",
+      "source_url": "https://arxiv.org/abs/1803.09010",
+      "locator": "Datasheets for Datasets; data collection, distribution and maintenance questions",
+      "status": "derived",
+      "notes": "This is an engineering governance recommendation; actual legal obligations depend on source, jurisdiction and intended use."
+    }
+  ]
+}

@@ -83,10 +83,10 @@ def validate():
                 errors.append(f"{chapter['file']}: missing local asset/link {target}")
         errors.extend(f"{chapter['file']}: {error}" for error in parser.errors)
         article_text = path.read_text(encoding="utf-8")
-        if chapter["num"] in {"16", "17", "18", "19", "20"}:
+        if chapter["num"] in {"16", "17", "18", "19", "20", "21", "22", "23", "24", "25"}:
             if chr(92) + "(" in article_text or chr(92) + ")" in article_text:
                 errors.append(f"{chapter['file']}: raw TeX delimiter found without a TeX renderer")
-        if chapter["num"] in {f"{n:02d}" for n in range(1, 21)}:
+        if chapter["num"] in {f"{n:02d}" for n in range(1, 26)}:
             if parser.h1 != 1: errors.append(f"{chapter['file']}: expected one H1, got {parser.h1}")
             if parser.main != 1: errors.append(f"{chapter['file']}: expected one main, got {parser.main}")
             if parser.nav < 1: errors.append(f"{chapter['file']}: missing nav")

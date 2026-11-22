@@ -8,8 +8,8 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 已深度重构：01–20，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
-- 01–20 每篇重构文章维护独立 evidence/NN.json 证据清单。
+- 已深度重构：01–25，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
+- 01–25 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
 
@@ -65,11 +65,11 @@
 | 18 | 数据质量评估体系 | DCLM / Dolma、质量维度、分层抽样、置信区间、受控下游评测 |
 | 19 | Tokenization 与 BPE | pair frequency、merge ranks、byte-level BPE、SentencePiece、tiktoken |
 | 20 | 词表设计与优化 | vocabulary × hidden size、embedding / softmax 成本、多语言 token premium |
-| 21 | 合成数据生成 | Self-Play、数据增强、模型坍缩 |
-| 22 | 领域适配数据策略 | 代码、科学、医学与多语言 |
-| 23 | DataTrove 流水线实战 | 模块化数据处理与可复现配置 |
-| 24 | Dolma 工具链全解析 | 开放语料、数据整理与工具链 |
-| 25 | 数据清洗范式比较 | 规则、模型、混合与数据选择 |
+| 21 | 合成数据生成 | Self-Instruct、Evol-Instruct、独立验证、来源追踪与模型坍缩边界 |
+| 22 | 领域适配数据策略 | DAPT、TAPT、Continual Pretraining、Replay 与遗忘评估 |
+| 23 | DataTrove 流水线实战 | Document、PipelineStep、Local/Slurm/Ray、任务恢复与 MinHash |
+| 24 | Dolma 工具链全解析 | Dataset / Toolkit / Dolma 3、Tagger、Dedupe、Mixer、Tokens |
+| 25 | 六大清洗范式对比 | 规则、统计、去重、分类器、LLM Judge、人工与下游实验 |
 | 26 | 自动化数据准备系统 | Agent 编排、质量反馈与治理 |
 | 27 | 在线数据选择与动态配比 | 课程学习、在线采样与动态调度 |
 | 28 | 端到端综合实战 | 数据契约、流水线、验收与排障 |
@@ -80,7 +80,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；01–20 已深度重构；其余章节按四至五篇一批迁移
+    ├── 01.html ... 28.html       # 章节入口；01–25 已深度重构；26–28 待迁移
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
@@ -146,6 +146,20 @@
 - [Tokenizer Choice For LLM Training](https://arxiv.org/abs/2310.08754)
 - [Explaining and Mitigating Crosslingual Tokenizer Inequities · NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/file/5b91cefbfa52340af2f16f249572dc76-Paper-Conference.pdf)
 - [TokLens · ACL 2026 SRW](https://aclanthology.org/2026.acl-srw.18/)
+- [Self-Instruct · ACL 2023](https://aclanthology.org/2023.acl-long.754/)
+- [WizardLM / Evol-Instruct](https://arxiv.org/abs/2304.12244)
+- [Orca · Microsoft Research](https://www.microsoft.com/en-us/research/publication/orca-progressive-learning-from-complex-explanation-traces-of-gpt-4/)
+- [Phi-4 Technical Report](https://www.microsoft.com/en-us/research/publication/phi-4-technical-report/)
+- [AI models collapse when trained on recursively generated data · Nature 2024](https://www.nature.com/articles/s41586-024-07566-y)
+- [Is Model Collapse Inevitable?](https://arxiv.org/abs/2404.01413)
+- [Don’t Stop Pretraining · ACL 2020](https://aclanthology.org/2020.acl-main.740/)
+- [TiC-LM · ACL 2025](https://aclanthology.org/2025.acl-long.1551/)
+- [Continual Learning of LLMs · ACM Computing Surveys 2025](https://doi.org/10.1145/3735633)
+- [Hugging Face DataTrove](https://github.com/huggingface/datatrove)
+- [AI2 Dolma Toolkit](https://github.com/allenai/dolma)
+- [Dolma 3 datasets and recipes](https://github.com/allenai/dolma3)
+- [AI2 Dolma documentation](https://docs.allenai.org/training_data/dolma/)
+- [LLM Data Auditor · 2026](https://arxiv.org/abs/2601.17717)
 - [ByT5 · TACL](https://doi.org/10.1162/tacl_a_00461)
 - [Apache Spark documentation](https://spark.apache.org/docs/latest/)
 - [Ray Data documentation](https://docs.ray.io/en/latest/data/)

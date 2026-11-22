@@ -69,3 +69,12 @@ This guide adapts the workflow in Olah-style-posts/skills/olah-style-paper-posts
 - BPE: distinguish pre-tokenization from merge training, character symbols from UTF-8 bytes, and BPE from Unigram. Label simplified code as a teaching implementation.
 - Vocabulary: calculate embedding and optional untied output-head costs explicitly; state what memory terms are excluded. Compare languages with parallel texts using CTC / reference-normalized token premium and pinned tokenizer revisions; bytes-per-token alone is confounded by byte premium.
 - MathML: use explicit multiplication operators in matrix-size formulas and keep raw TeX delimiters out of pages without a TeX renderer.
+
+
+## Batch 05 topic-specific authoring checks
+
+- Synthetic data: separate seed design, generation, independent verification, deduplication, safety / privacy review and downstream utility. Record teacher model, revision, prompt, decoding config, provenance and verifier versions. Do not claim a universal synthetic-data share or imply all synthetic data causes model collapse.
+- Domain adaptation: distinguish DAPT, TAPT, continual pretraining and SFT. Report token exposure after filtering, tokenization and packing. Evaluate domain gains and general retention on time- and domain-stratified held-out sets; avoid universal replay ratios.
+- DataTrove: describe Document, PipelineStep, task, worker, rank and executor using the pinned version. Keep task count and input mapping stable across retries; document optional extras and external side effects.
+- Dolma: distinguish original dataset, Dolma Toolkit CLI and Dolma 3 dataset recipes. Explain attributes sidecars, Bloom false positives, mixer semantics, token output index and version-specific licenses.
+- Cleaning paradigms: define the six evidence families and their distinct error/cost profiles. Keep license, privacy, safety and benchmark decontamination as governance gates. Report confusion-matrix metrics and downstream ablations.
