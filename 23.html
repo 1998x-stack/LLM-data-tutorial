@@ -1,301 +1,40 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>第23章 DataTrove 流水线实战</title>
-    <link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div class="double-border">
-<div class="container">
-    <div class="sidebar">
-        <h3>🤖 课程目录</h3>
-        <ul class="chapter-list">
-            <li><a href="01.html">第1章 LLM数据工程概述</a></li>
-            <li><a href="02.html">第2章 Common Crawl 数据采集</a></li>
-            <li><a href="03.html">第3章 网页正文提取</a></li>
-            <li><a href="04.html">第4章 语言识别与过滤</a></li>
-            <li><a href="05.html">第5章 启发式规则过滤</a></li>
-            <li><a href="06.html">第6章 URL与域名过滤</a></li>
-            <li><a href="07.html">第7章 精确去重</a></li>
-            <li><a href="08.html">第8章 MinHash 近邻去重</a></li>
-            <li><a href="09.html">第9章 多粒度去重策略</a></li>
-            <li><a href="10.html">第10章 困惑度质量过滤</a></li>
-            <li><a href="11.html">第11章 教育质量分类器</a></li>
-            <li><a href="12.html">第12章 LLM辅助数据标注</a></li>
-            <li><a href="13.html">第13章 评测集去污染</a></li>
-            <li><a href="14.html">第14章 多源数据混合配比</a></li>
-            <li><a href="15.html">第15章 分布式数据处理架构</a></li>
-            <li><a href="16.html">第16章 大规模数据存储</a></li>
-            <li><a href="17.html">第17章 流水线可复现性</a></li>
-            <li><a href="18.html">第18章 数据质量评估体系</a></li>
-            <li><a href="19.html">第19章 Tokenization 与 BPE</a></li>
-            <li><a href="20.html">第20章 词表设计与优化</a></li>
-            <li><a href="21.html">第21章 合成数据生成</a></li>
-            <li><a href="22.html">第22章 领域适配数据策略</a></li>
-            <li><a href="23.html" class="active">第23章 DataTrove 流水线实战</a></li>
-            <li><a href="24.html">第24章 Dolma 工具链全解析</a></li>
-            <li><a href="25.html">第25章 六大清洗范式对比</a></li>
-            <li><a href="26.html">第26章 自动化数据准备系统</a></li>
-            <li><a href="27.html">第27章 在线数据选择与动态配比</a></li>
-            <li><a href="28.html">第28章 综合实战项目</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="以 DataTrove v0.10.1 为版本锚点，理解 Document、pipeline block、executor、任务分片和可恢复运行，搭建一条可追踪的离线文本清洗流水线。"><title>23 · DataTrove 流水线实战 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head><body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell"><header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header><div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" aria-current="page" class="active"><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>七类预训练数据构建范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav><main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 23 / LLM DATA ENGINEERING</p><h1>DataTrove 流水线实战</h1><p class="dek">以 DataTrove v0.10.1 为版本锚点，理解 Document、pipeline block、executor、任务分片和可恢复运行，搭建一条可追踪的离线文本清洗流水线。</p><div class="article-meta"><span>研究证据 · 系统机制 · 工程实践</span><span>工程实战</span><span>版本绑定 v0.10.1</span></div></header><div class="lead-note"><strong>版本范围</strong><p>本章示例绑定 <code>datatrove==0.10.1</code>（2026-09-30 发布），官方项目声明 Python 3.10+。DataTrove API 会随版本变化；复制示例前应核对锁定版本和官方 release，而不是把当前 main 分支的行为当作历史版本承诺。</p></div>
+<section id="mental-model"><h2>DataTrove 的核心抽象：Document 流</h2>
+<p>DataTrove 是用于大规模文本处理、过滤和去重的可组合框架。它把一条流水线拆成若干处理 block：reader 读取数据，extractor 抽取正文，filter 删除不符合规则的文档，stats 收集统计，tokens 处理 token 计数，dedup 执行去重，writer 写出结果。</p>
+<figure class="diagram"><img src="assets/diagrams/ch23-datatrove-pipeline.svg" alt="DataTrove 流水线由 Reader、Extractor、Filter、Dedup、Stats 和 Writer 组成，由 Local、Slurm、Ray 或 Jobs executor 分片运行" loading="lazy"><figcaption>图 1 · 同一条 pipeline 可以交给不同 executor；处理步骤与计算环境解耦，但任务分片和日志目录仍是可复现配置的一部分。</figcaption></figure>
+<p>每个 block 处理统一的 <code>Document</code> 对象，核心字段为 <code>text</code>（文本内容）、<code>id</code>（样本唯一标识）和 <code>metadata</code>（额外元数据字典）。这让不同 reader 和 writer 之间可以用同一种数据契约连接。</p></section>
+<section id="install"><h2>安装时把版本和可选依赖写清楚</h2>
+<pre><code>python -m venv .venv
+. .venv/bin/activate
+python -m pip install "datatrove[processing,io]==0.10.1"</code></pre>
+<p><code>processing</code> extra 提供正文抽取、过滤和 tokenization 相关依赖；<code>io</code> extra 用于 WARC、Parquet 等 I/O 场景。若需要 S3、Ray、推理或其他可选功能，再按 v0.10.1 的 pyproject 配置选择相应 extra。不要为了跑一个 JSONL 过滤例子就默认安装所有依赖。</p></section>
+<section id="local"><h2>最小本地流水线</h2>
+<p>下面示例使用 JSONL 输入、Gopher 质量过滤和 JSONL 输出。它演示的是组件组合，不代表 Gopher 规则适合所有语言或领域；实际阈值与适用语料必须单独验证。</p>
+<pre><code>from datatrove.executor import LocalPipelineExecutor
+from datatrove.pipeline.filters import GopherQualityFilter
+from datatrove.pipeline.readers import JsonlReader
+from datatrove.pipeline.writers.jsonl import JsonlWriter
 
-        <h2>从理论到工具</h2>
+pipeline = [
+    JsonlReader("data/raw/"),
+    GopherQualityFilter(),
+    JsonlWriter(output_folder="data/filtered/"),
+]
 
-        <p>前面的章节我们花了大量篇幅讲解数据清洗的每一个环节——URL 过滤、正文提取、语言识别、启发式规则、去重、质量评分——但如果你问我"到底怎么把这一整套串联起来跑通"，坦白讲，理论只是第一步。真正让这些环节产生价值的，是一个能够端到端运行的清洗流水线。</p>
-
-        <p>2024年 HuggingFace 发布 FineWeb 数据集时，除了报告数据和基准分数，他们还做了一件对整个社区极有价值的事：<strong>开源了 DataTrove 框架</strong>。FineWeb 从 15 万亿 token 的 Common Crawl 原始数据中清洗出高质量语料，这背后支撑整个流程的就是 DataTrove。在 FineWeb 论文中，作者明确指出他们的流水线分为 8 个主要阶段、35 个具体步骤，全部用 DataTrove 实现。</p>
-
-        <p>这意味着什么？意味着我们不需要从零搭建一套清洗框架——DataTrove 已经为你准备好了所有基础组件，你只需要像搭积木一样把它们拼装起来，再针对自己的场景做一些定制化调整。这是我们进入实战阶段的第一章，也是整个课程中你真正动手写代码的开始。</p>
-
-        <h2>DataTrove 是什么</h2>
-
-        <p>DataTrove 是 HuggingFace 开源的大规模数据清洗框架，采用 Python 编写，设计上追求极致的模块化和可组合性。它的核心理念很简单：<strong>每一个数据处理步骤都是一个独立的模块</strong>，你可以自由地选择和排列这些模块来构建自己的清洗流水线。</p>
-
-        <p>DataTrove 的诞生背景非常务实。HuggingFace 团队在构建 FineWeb 数据集时，发现市场上没有一个现成的工具能满足他们的需求。已有的框架要么过于针对特定数据集（如 CCNet 的工具链），要么缺乏可扩展性。于是他们自己开发了一套内部工具，在 FineWeb 项目成功之后，决定将其开源。</p>
-
-        <p>DataTrove 有几个关键特性值得关注。首先，它支持两种运行模式：本地模式和 Spark 分布式模式。在本地模式下，你可以用笔记本电脑处理小规模数据做实验；切换到 Spark 模式后，同样的代码无需修改就可以扩展到 TB 级数据。其次，它的模块化设计意味着每个模块只做一件事——比如 <code>URLFilter</code> 只负责 URL 过滤，<code>MinHashDedup</code> 只负责近邻去重——这种设计让调试和替换都变得非常容易。最后，DataTrove 与 HuggingFace 的生态系统深度集成，支持直接从 Hub 读取和写入数据。</p>
-
-        <div class="highlight">
-            <strong>工程洞察：</strong> DataTrove 最巧妙的设计是"文档即数据单元"。整个流水线中，每个文档都是一个字典（dict），包含 text、metadata 等字段。模块之间通过统一的文档流传递数据，这让流水线的每一步都可审计、可追踪——你可以在任意节点插入一个 logging 模块来检查数据状态。
-        </div>
-
-        <h2>安装和配置</h2>
-
-        <p>安装 DataTrove 非常简单。它是标准的 Python 包，直接通过 pip 安装即可。需要注意的是，DataTrove 有一些可选依赖——如果你只需要本地运行，基础版本就够了；如果要跑 Spark 模式，需要额外安装 PySpark。</p>
-
-        <pre><code># 基础安装（本地模式）
-pip install datatrove
-
-# 完整安装（含 Spark 支持）
-pip install "datatrove[all]"
-
-# 验证安装
-datatrove --help
-
-# 查看可用模块列表
-datatrove list</code></pre>
-
-        <p>安装完成后，你可以通过命令行动手试试 DataTrove 的基本功能。DataTrove 的 CLI 设计得非常清晰——<code>datatrove run</code> 是主入口，后面跟你的流水线配置。你也可以通过 Python API 直接调用，这也是更常见的用法。</p>
-
-        <pre><code># 使用命令行运行一个简单的流水线
-datatrove run \
-    --reader "warc" \
-    --filter "url_filter" \
-    --filter "language_filter" \
-    --executor "local" \
-    --logging_dir ./logs
-
-# Python API 方式（推荐）
-from datatrove.pipeline.readers import WarcReader
-from datatrove.pipeline.filters import URLFilter, LanguageFilter
-from datatrove.executor import LocalPipelineExecutor
-
-pipeline = LocalPipelineExecutor(
-    reader=WarcReader("s3://commoncrawl/cc-main-2024-50/"),
-    pipeline=[
-        URLFilter(),
-        LanguageFilter(),
-    ],
-    logging_dir="./logs",
+executor = LocalPipelineExecutor(
+    pipeline=pipeline,
+    logging_dir="logs/gopher-filter-v1/",
+    tasks=8,
+    workers=4,
 )
-pipeline.run()</code></pre>
-
-        <h2>构建完整的清洗流水线</h2>
-
-        <p>现在让我们来构建一个 FineWeb 风格的完整清洗流水线。这个流水线将从 Common Crawl 的 WARC 文件出发，经过 7 个主要步骤，最终输出清洗后的高质量文档。</p>
-
-        <p>下面是这个流水线的完整 Python 配置。注意每一步都是一个独立的模块，你可以自由插入、移除或替换任意步骤：</p>
-
-        <pre><code>from datatrove.pipeline.readers import WarcReader
-from datatrove.pipeline.filters import (
-    URLFilter,
-    LanguageFilter,
-    FineWebQualityFilter,
-)
-from datatrove.pipeline.extractors import TrafilaturaExtractor
-from datatrove.pipeline.dedup import MinHashDedup
-from datatrove.pipeline.writers import JsonlWriter
-from datatrove.pipeline.quality import EducationalQualityClassifier
-from datatrove.executor import LocalPipelineExecutor
-
-pipeline = LocalPipelineExecutor(
-    # 步骤1: WARC 读取器——读取 Common Crawl 原始数据
-    reader=WarcReader("s3://commoncrawl/cc-main-2024-50/"),
-
-    # 步骤2-7: 处理流水线
-    pipeline=[
-        # 步骤2: URL 过滤——剔除垃圾域名
-        URLFilter(
-            excluded_domains=["porn", "spam", "malware"],
-            keep_www=True,
-        ),
-        # 步骤3: 正文提取——用 trafilatura 提取主内容
-        TrafilaturaExtractor(
-            min_length=256,
-            output_mode="markdown",
-        ),
-        # 步骤4: 语言过滤——仅保留英文文档
-        LanguageFilter(
-            language="en",
-            threshold=0.5,
-        ),
-        # 步骤5: 启发式质量过滤——剔除低质量文本
-        FineWebQualityFilter(
-            min_words=50,
-            max_short_lines_ratio=0.3,
-            max_bullet_lines_ratio=0.9,
-        ),
-        # 步骤6: MinHash 去重——移除近似重复
-        MinHashDedup(
-            ngrams=5,
-            permutations=128,
-            threshold=0.7,
-        ),
-        # 步骤7: 教育质量分类器——保留高质量文档
-        EducationalQualityClassifier(
-            model_path="path/to/fasttext_model",
-            threshold=0.3,
-        ),
-    ],
-
-    # 输出: JSONL 格式
-    writer=JsonlWriter("s3://output-bucket/cleaned-data/"),
-
-    # 日志和监控
-    logging_dir="./logs/fineweb-pipeline",
-    tasks=100,  # 分区数
-)
-
-pipeline.run()</code></pre>
-
-        <div class="highlight">
-            <strong>核心优势：</strong> 模块可组合性是 DataTrove 最强大的特性。你可以把 `FineWebQualityFilter` 替换为自己的过滤器，也可以在 URL 过滤和正文提取之间插入一个自定义的打分模块——只需要修改 pipeline 列表的顺序。这种"搭积木"式的开发方式，让数据清洗流水线的构建变得前所未有的灵活。
-        </div>
-
-        <h2>自定义过滤器</h2>
-
-        <p>内置模块虽然丰富，但真实场景中总有一些定制需求是现有模块无法满足的。比如你可能需要一个针对代码文档的特殊过滤器，或者一个基于特定领域词汇密度的评分器。DataTrove 为此设计了简洁的扩展接口。</p>
-
-        <p>自定义过滤器通常继承 <code>StatFilter</code> 基类。你需要实现的核心方法是 <code>filter()</code>，它接收一个文档对象，返回布尔值——<code>True</code> 表示保留，<code>False</code> 表示丢弃。同时你还可以在 <code>statistics()</code> 方法中返回统计指标，DataTrove 会自动为你汇总这些统计信息。</p>
-
-        <pre><code>import re
-from datatrove.pipeline.filters import StatFilter
-from datatrove.data import DocumentsPipeline
-
-class CodeContentFilter(StatFilter):
-    """自定义过滤器：保留代码含量高的文档"""
-
-    def __init__(self, min_code_ratio: float = 0.2):
-        super().__init__()
-        self.min_code_ratio = min_code_ratio
-        # 代码行检测模式：包含代码关键字的行
-        self.code_pattern = re.compile(
-            r'(def |class |import |function |return |if __name__)',
-            re.IGNORECASE
-        )
-
-    def filter(self, doc: DocumentsPipeline) -> bool:
-        text = doc.text
-        if not text:
-            return False
-
-        lines = text.split('\n')
-        if len(lines) &lt; 10:
-            return False
-
-        # 计算代码行占比
-        code_lines = sum(
-            1 for line in lines
-            if self.code_pattern.search(line)
-        )
-        code_ratio = code_lines / len(lines)
-
-        # 记录统计信息
-        doc.metadata["code_ratio"] = code_ratio
-
-        return code_ratio >= self.min_code_ratio
-
-    def statistics(self):
-        return {
-            "min_code_ratio": self.min_code_ratio,
-            "filter_name": "CodeContentFilter",
-        }</code></pre>
-
-        <div class="tip">
-            <strong>实用提示：</strong> DataTrove 内置了 FineWeb 的完整配置——你可以直接从 HuggingFace Hub 下载 FineWeb 的数据处理配置作为起点。在 <code>datatrove/pipeline/filters/fineweb.py</code> 中可以找到 FineWeb 使用的所有过滤器实现。这意味着即使你完全不懂数据清洗，也可以直接用 FineWeb 的配置跑一遍，然后逐步调整参数。
-        </div>
-
-        <h2>在 Spark 集群上运行</h2>
-
-        <p>DataTrove 的真正威力体现在大规模分布式处理上。当数据量达到 TB 级时，单机处理显然不现实——你需要 Spark 集群。DataTrove 的 <code>SparkPipelineExecutor</code> 让你可以用完全相同的代码切换到分布式模式。</p>
-
-        <p>从本地模式切换到 Spark 模式只需要改一行代码：把 <code>LocalPipelineExecutor</code> 换成 <code>SparkPipelineExecutor</code>，然后配置好 Spark 参数。DataTrove 会自动将流水线的每个阶段转换成 Spark 的转换操作（transformation），并利用 Spark 的容错机制保障任务的可靠性。</p>
-
-        <pre><code>from datatrove.executor import SparkPipelineExecutor
-
-# 只需要替换 LocalPipelineExecutor 为 SparkPipelineExecutor
-pipeline = SparkPipelineExecutor(
-    reader=...,
-    pipeline=[...],
-    writer=...,
-    logging_dir="./logs",
-
-    # Spark 配置
-    spark_master="yarn",
-    spark_conf={
-        "spark.executor.instances": 50,
-        "spark.executor.cores": 8,
-        "spark.executor.memory": "64g",
-        "spark.driver.memory": "32g",
-        "spark.shuffle.service.enabled": "true",
-        "spark.sql.shuffle.partitions": 2000,
-    },
-)
-
-pipeline.run()</code></pre>
-
-        <p>不同资源配置下的处理速度差异非常显著。下表总结了我们在实际项目中不同配置下的经验数据（处理 1TB Common Crawl 快照）：</p>
-
-        <table>
-            <thead>
-                <tr><th>资源配置</th><th>Executor 数量</th><th>内存/Executor</th><th>处理时间</th><th>成本估算</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>单机（32 核）</td><td>1</td><td>64 GB</td><td>~72 小时</td><td>免费</td></tr>
-                <tr><td>小集群</td><td>10</td><td>32 GB</td><td>~8 小时</td><td>~$20</td></tr>
-                <tr><td>中等集群</td><td>50</td><td>64 GB</td><td>~1.5 小时</td><td>~$75</td></tr>
-                <tr><td>大规模集群</td><td>200</td><td>64 GB</td><td>~20 分钟</td><td>~$300</td></tr>
-            </tbody>
-        </table>
-
-        <p>需要注意的是，从 S3 直接读取 Common Crawl WARC 文件时，I/O 往往是瓶颈。建议将 Spark 的 executor 部署在与 S3 相同的区域（如 us-east-1）以减少网络延迟。另外，DataTrove 提供了内置的监控仪表盘，你可以在 <code>logging_dir</code> 目录下查看每个模块的处理进度、吞吐量和保留率。</p>
-
-        <h2>实战踩坑</h2>
-
-        <p>我在构建第一个 DataTrove 流水线时犯了一个经典的错误。本地测试 1000 条数据一切正常，结果上集群跑 1TB 快照时，跑了 6 个小时后 MinHash 去重阶段直接 OOM（内存溢出）。原因是 MinHash 去重需要将所有文档的签名同时载入内存做比较——当数据量大了之后，签名表的大小远远超出了单机内存的承载能力。</p>
-
-        <p>这个问题的解决方案是分批处理。不要试图一次处理整个 Common Crawl 快照。将快照按时间范围或者按分片（shard）切分成多个批次，每批数据量控制在 100-200GB 之间，分批完成后如果需要全局去重再做一个跨批次的去重步骤。</p>
-
-        <div class="warning">
-            <strong>常见陷阱：</strong> 本地跑小规模测试没问题，上集群时最常见的坑就是内存不足——MinHash 去重需要将所有签名载入内存。另一个容易被忽视的问题是磁盘空间：正文提取阶段会产生大量中间数据，确保你的临时目录有足够的空间（至少是输入数据的 2-3 倍）。
-        </div>
-
-        <p>最后分享一个调试技巧。在构建流水线时，我强烈建议你在每个模块后面插入一个 <code>SampleWriter</code> 来记录该模块输入输出的样本数据。这样你可以逐模块检查数据变换的效果——比如 URL 过滤掉了哪些文档、正文提取后的文本质量如何、质量评分阈值是否合理。用小样本（1000 条）做这种调试成本极低，但能帮你避免跑了 6 小时才发现过滤逻辑有 bug 的噩梦。</p>
-
-        <p>DataTrove 让清洗流水线的构建变得前所未有的简单，但它并非唯一的方案。另一个同样值得深入学习的开源实现是 AI2 的 Dolma 工具链。Dolma 采用了不同的设计哲学——它更强调透明性和可复现性，将整个 3 万亿 token 数据集的处理过程完全公开。下一章我们将深入 Dolma 的内部架构，看看它和 DataTrove 在哪些方面异曲同工，在哪些方面各有所长。</p>
-
-        <div class="footer-nav">
-            <a href="22.html">← 上一章</a>
-            <a href="index.html">📖 返回目录</a>
-            <a href="24.html">下一章 →</a>
-        </div>
-    </div>
-</div>
-</div>
-</body>
-</html>
+executor.run()</code></pre>
+<p>本地运行不意味着数据天然可复现。应同时保存输入 manifest、文件 checksum、代码 commit、依赖锁、过滤器参数、任务数、日志目录和输出 checksum。DataTrove 的 completion markers 用于跳过已完成任务；重跑失败任务时不要随意改变任务总数，否则输入文件分配可能改变。</p></section>
+<section id="commoncrawl"><h2>从 Common Crawl WARC 到训练文本</h2>
+<p>DataTrove v0.10.1 的官方 <code>process_common_crawl_dump.py</code> 示例展示了一条更完整的流程：<code>WarcReader</code> 读取指定 crawl dump，<code>URLFilter</code> 过滤 URL，<code>Trafilatura</code> 抽取正文，<code>LanguageFilter</code> 做语言筛选，再用 <code>GopherRepetitionFilter</code> 和 <code>GopherQualityFilter</code> 处理重复与质量，最后通过 <code>JsonlWriter</code> 写出。示例运行于 Slurm，并将排除样本分别写入独立目录，便于审计。</p>
+<p>这是一份官方示例的组件顺序，不是对任意 Common Crawl snapshot 的通用最优 recipe。URL 过滤、正文抽取器、语言识别模型和质量规则都需要按语言、来源和目标任务做抽样校准。</p></section>
+<section id="dedup"><h2>MinHash 去重为什么是多阶段作业</h2>
+<p>DataTrove 官方 MinHash 示例将去重拆成签名、分桶、聚类和过滤四个阶段：先为文档计算签名；再根据 bucket 找到候选相似对；随后构造重复簇；最后重新读取原始数据，按重复 ID 过滤并输出。这个结构避免把全部文档两两比较，但近似候选仍需理解其哈希、分桶和阈值参数。</p>
+<div class="callout warning"><strong>可复现性约束：</strong>官方示例明确要求最后的过滤阶段使用与签名阶段一致的输入和任务分配。改变输入快照、任务数或分片规则，会让 ID 与签名对应关系失效。MinHash 是近似候选检索机制，不等于语义等价判断。</div></section>
+<section id="operations"><h2>生产运行前的检查表</h2>
+<ul><li>锁定 DataTrove release、Python 版本、extras 和 tokenizer / language model 版本。</li><li>检查每个输入文件是否能被独立处理；官方文档提醒，一个文件通常由一个 task 处理，单个超大文件可能限制并行度。</li><li>任务数不应盲目超过文件数；同时评估每个 task 的数据量、内存、失败重试成本和日志空间。</li><li>将排除样本、运行日志、统计指标和最终产物分目录保存。</li><li>定义幂等写出策略，防止重跑造成重复输出或覆盖已有产物。</li><li>报告每阶段输入/输出文档数、token 数、丢弃原因、耗时和资源消耗。</li></ul></section>
+<section id="references"><h2>版本与参考资料</h2><ol class="references"><li><a href="https://github.com/huggingface/datatrove/tree/v0.10.1" target="_blank" rel="noopener noreferrer">DataTrove v0.10.1 release source</a>；版本与依赖要求见 <a href="https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml" target="_blank" rel="noopener noreferrer">pyproject.toml</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/README.md" target="_blank" rel="noopener noreferrer">Official README: Document, pipeline blocks, executors and logging</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/process_common_crawl_dump.py" target="_blank" rel="noopener noreferrer">Official Common Crawl pipeline example</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py" target="_blank" rel="noopener noreferrer">Official MinHash deduplication example</a>.</li></ol></section><footer class="article-footer"><a href="22.html">← 22 · 领域适配数据策略</a><a href="index.html">返回课程总览</a><a href="24.html">24 · Dolma 工具链全解析 →</a></footer></article></main></div></div></body></html>
