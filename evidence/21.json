@@ -51,7 +51,7 @@
     {
       "id": "CH21-C06",
       "claim": "A synthetic-data release should preserve generator version, prompt, sampling parameters, provenance, rejection reasons and slice-level quality checks.",
-      "kind": "editorial-recommendation",
+      "kind": "derived",
       "source_url": "https://arxiv.org/abs/2412.08905",
       "locator": "Training-recipe and data-generation discussion; tutorial governance recommendation",
       "status": "derived",
