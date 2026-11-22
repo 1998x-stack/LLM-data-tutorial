@@ -21,4 +21,23 @@
 <ul><li><strong>领域能力：</strong>专业术语、事实检索、推理、格式遵循、领域任务和校准。</li><li><strong>通用能力：</strong>常识、通用指令、基础推理、多语言、拒答、安全和输出风格。</li></ul>
 <p>还应按来源、时间、语言、专业子领域和难度做切片。若领域能力提高但通用能力下降，优先检查混合比例、训练日程、数据重复和领域语料偏差；不要直接把“继续训练更多步”当作修复方法。</p></section>
 <section id="workflow"><h2>领域语料构建的八步流程</h2><ol><li>写清目标任务和目标用户，区分预训练、继续预训练、SFT 与偏好数据。</li><li>建立来源清单：来源所有者、版本、许可、更新时间、获取方式和使用限制。</li><li>定义领域质量 rubric：专业准确、完整、时效、引用、格式、隐私和安全。</li><li>采集后保留原始快照与内容 hash，不要只保留清洗后的文本。</li><li>做领域专属抽取、语言识别、PII/秘密检测和重复处理。</li><li>用专家抽样验证规则误杀与漏检，报告各切片保留率。</li><li>设计 token 级混合与训练日程，记录实际 token exposure。</li><li>使用领域与通用双轨评测，版本化数据、模型、配置和结果。</li></ol></section>
-<section id="references"><h2>参考资料</h2><ol class="references"><li>Gururangan et al. <a href="https://aclanthology.org/2020.acl-main.740/" target="_blank" rel="noopener noreferrer">Don’t Stop Pretraining: Adapt Language Models to Domains and Tasks</a>, ACL 2020.</li><li>Rozière et al. <a href="https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/" target="_blank" rel="noopener noreferrer">Code Llama: Open Foundation Models for Code</a>, Meta AI, 2023.</li></ol></section><footer class="article-footer"><a href="21.html">← 21 · 合成数据生成</a><a href="index.html">返回课程总览</a><a href="23.html">23 · DataTrove 流水线实战 →</a></footer></article></main></div></div></body></html>
+<section id="calculator"><h2>交互计算器：给定 token budget，领域与通用数据各占多少？</h2>
+<p>此计算器把配置的 token share 转成理论 token 数。它不代表实际有效训练 token；生产中需要从 tokenizer、packing 与 sampler 日志重新统计。</p>
+<div class="demo-panel">
+<label class="range-label" for="domain-total"><span>本阶段 token budget</span><strong id="domain-total-value">100B</strong></label><input id="domain-total" type="range" min="1000000000" max="500000000000" step="1000000000" value="100000000000">
+<label class="range-label" for="domain-share"><span>领域 token 权重 λ</span><strong id="domain-share-value">30%</strong></label><input id="domain-share" type="range" min="0" max="100" step="1" value="30">
+<div id="domain-output" class="interactive-output" aria-live="polite">领域数据 30B tokens；通用 replay 70B tokens。</div></div>
+<pre><code># scripts/domain_mix.py
+from scripts.domain_mix import token_exposure
+
+plan = token_exposure(total_tokens=100_000_000_000, domain_share=0.30)
+print(plan)  # domain=30B, general=70B</code></pre>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Gururangan et al. <a href="https://aclanthology.org/2020.acl-main.740/" target="_blank" rel="noopener noreferrer">Don’t Stop Pretraining: Adapt Language Models to Domains and Tasks</a>, ACL 2020.</li><li>Rozière et al. <a href="https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/" target="_blank" rel="noopener noreferrer">Code Llama: Open Foundation Models for Code</a>, Meta AI, 2023.</li></ol></section><footer class="article-footer"><a href="21.html">← 21 · 合成数据生成</a><a href="index.html">返回课程总览</a><a href="23.html">23 · DataTrove 流水线实战 →</a></footer></article></main></div></div><script>(()=>{
+const total=document.getElementById("domain-total"),share=document.getElementById("domain-share");
+const tv=document.getElementById("domain-total-value"),sv=document.getElementById("domain-share-value"),out=document.getElementById("domain-output");
+function fmt(x){if(x>=1e12)return (x/1e12).toFixed(2)+"T";if(x>=1e9)return (x/1e9).toFixed(1)+"B";if(x>=1e6)return (x/1e6).toFixed(1)+"M";return Math.round(x).toLocaleString("en-US");}
+function render(){const n=Number(total.value),p=Number(share.value)/100,d=n*p,g=n-d;tv.textContent=fmt(n);sv.textContent=share.value+"%";out.textContent="领域数据 "+fmt(d)+" tokens；通用 replay "+fmt(g)+" tokens。配置比例不是实测曝光比例；请在 tokenization / packing 后复核。";}
+total.addEventListener("input",render);share.addEventListener("input",render);render();
+})();</script>
+</body></html>
