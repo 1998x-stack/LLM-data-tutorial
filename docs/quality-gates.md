@@ -13,7 +13,7 @@
 - SVG files parse as XML, have viewBox/title/desc and unique IDs.
 - MathML is not nested inside SVG; fractions/scripts have correct child arity; display formulas have accessible scroll regions.
 - Interactive algorithm calculators use the stated paper parameters and distinguish theoretical probabilities from empirical accuracy.
-- Evidence ledger JSON parses and every verified claim has a source and locator.
+- Evidence ledger JSON parses; every claim has a unique ID, non-empty claim/kind/source_url/locator/status/notes, a supported kind/status, and an absolute HTTPS source. Verified claims require a source and locator.
 - No external CDN is required for page rendering.
 
 ## Browser gates
@@ -43,6 +43,6 @@ Report each check as passed, failed or not verified. Static validation does not 
 - Articles 21–25 include source-located evidence for Self-Instruct / Evol-Instruct, DAPT / TAPT / TiC-LM, DataTrove implementation behavior, Dolma Toolkit / Dolma 3 and six cleaning evidence families.
 - Synthetic-data examples distinguish generated candidates from validated accepted samples; verifier rates are sequential conditional rates and model-collapse claims are scoped to recursive replacement settings.
 - Domain adaptation examples distinguish unlabeled DAPT / TAPT from SFT and measure token exposure after tokenization / packing; no universal replay ratio is asserted.
-- DataTrove examples preserve task count and input shard mapping across retries; task markers are not claimed to provide exactly-once external side effects.
-- Dolma pages distinguish dataset, CLI toolkit and Dolma 3 recipe repository; Bloom-filter hits are not treated as exact duplicate proof.
+- DataTrove examples pin CLI/API/defaults to a release tag or commit; v0.10.1 examples must not silently cite moving `main` source. Preserve task count and input shard mapping across retries; task markers are not claimed to provide exactly-once external side effects.
+- Dolma pages distinguish dataset snapshot, CLI toolkit release and Dolma 3 recipe repository; Toolkit CLI examples are pinned to v1.2.1, Dolma 3 statistics to a commit, and Bloom-filter hits are not treated as exact duplicate proof.
 - Cleaning comparisons separate governance hard gates from quality scoring and report precision / recall alongside retained-distribution shifts.
