@@ -8,7 +8,7 @@
 <div class="lead-note"><strong>本章问题</strong><p>当数据规模从几万条增长到数十亿文档时，清洗代码不能只是一串本地 Python 循环。我们需要把“处理什么”与“在哪里、如何并行执行”分离，并让每一步可以组合、统计、恢复和审计。DataTrove 的核心抽象正是 PipelineStep + Executor。</p></div>
 <section id="model"><h2>先建立正确的心智模型：数据流与执行器分离</h2>
 <figure class="diagram"><img src="assets/diagrams/ch23-pipeline-architecture.svg" alt="DataTrove 将 Reader、Extractor、Filter、Dedup、Stats 和 Writer 组合成 pipeline，再由 Local、Slurm 或 Ray executor 执行"><figcaption>图 1 · Pipeline 描述数据如何变换；Executor 决定任务如何分片、并发、记录日志和恢复。</figcaption></figure>
-<p><a href="https://github.com/huggingface/datatrove">DataTrove</a> 是 Hugging Face 维护的可组合大规模文本处理库。它不是一个固定的“Common Crawl 清洗配方”，而是一套可以在本地、Slurm 或 Ray 环境中运行的 pipeline block 和 executor 抽象。</p>
+<p><a href="https://github.com/huggingface/datatrove/tree/v0.10.1">DataTrove v0.10.1</a> 是 Hugging Face 维护的可组合大规模文本处理库。它不是一个固定的“Common Crawl 清洗配方”，而是一套可以在本地、Slurm 或 Ray 环境中运行的 pipeline block 和 executor 抽象。</p>
 <p>一条 pipeline 通常由以下类型的步骤组成：</p>
 <table><thead><tr><th>Block</th><th>职责</th><th>典型输入 / 输出</th></tr></thead><tbody>
 <tr><td>Reader</td><td>读取源文件并构造统一 Document</td><td>WARC / JSONL / CSV → Document 流</td></tr>
@@ -79,7 +79,7 @@ class WordCount(PipelineStep):
 </section>
 <section id="dedup"><h2>MinHash 去重不是一个 block：它是一个多阶段作业</h2>
 <figure class="diagram"><img src="assets/diagrams/ch23-minhash-stages.svg" alt="DataTrove MinHash 去重分成 signature、bucket matching、cluster 和最终 filter 四阶段"><figcaption>图 3 · 大规模 MinHash 需要先生成签名，再按 bucket 找候选、聚类，最后回到原始数据过滤。</figcaption></figure>
-<p>DataTrove 官方 <a href="https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py">MinHash 示例</a>将流程拆成四个 executor 阶段：</p>
+<p>DataTrove 官方 <a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py">MinHash 示例</a>将流程拆成四个 executor 阶段：</p>
 <ol><li><strong>Signature：</strong>对每个文档计算 MinHash 签名并写到中间存储。</li><li><strong>Buckets：</strong>按 LSH bucket 汇总签名并寻找候选重复。</li><li><strong>Cluster：</strong>将候选关系整理为重复簇，输出待删除 ID。</li><li><strong>Filter：</strong>重新读取与第一阶段完全一致的输入分片，保留每个簇的代表文档。</li></ol>
 <p>这四个阶段不是可随意交换的步骤。最终过滤阶段需要与签名阶段使用相同的输入、文件分布和 task 配置，否则 ID 映射可能失配。签名参数、规范化配置、语言 tokenizer 与随机 seed 也必须被版本化。</p>
 </section>
@@ -97,15 +97,16 @@ print(plan_tasks(file_count=10_000, tasks=1_000, workers=100))</code></pre>
 </section>
 <section id="production"><h2>从 Demo 到生产：六个必须显式化的工程约束</h2>
 <ol><li><strong>输入 manifest：</strong>冻结文件清单、大小、checksum、source snapshot 和解析器版本。</li><li><strong>输出隔离：</strong>每个 task 写独立 shard，文件名包含 rank；先写临时路径，验证后再发布 manifest。</li><li><strong>重试语义：</strong>完成 marker 只能说明 task 成功结束，不自动保证外部 side effect exactly-once。</li><li><strong>资源画像：</strong>记录 docs/s、tokens/s、CPU、RSS、I/O、过滤率和 task p50/p95。</li><li><strong>失败样本：</strong>exclusion writer 或 quarantine stream 保存被拒绝数据与原因，便于抽检。</li><li><strong>版本固定：</strong>锁定 DataTrove 版本、Python、依赖 extras、配置与输入清单。</li></ol>
-<div class="callout"><strong>版本提示：</strong>当前 DataTrove 仓库的 <code>pyproject.toml</code> 标记版本为 0.10.1，并要求 Python 3.11 或更高。README 中的 API 和可选 extras 会随版本演进；运行时请以你锁定版本的文档和源码为准。</div>
+<div class="callout"><strong>版本基线：</strong>本章 API、默认值与示例绑定 <code>v0.10.1</code> tag（2026-09-30 发布）。该 tag 的 <code>pyproject.toml</code> 声明 Python <code>&gt;=3.10.0</code>。当前 <code>main</code> 分支即使仍显示包版本 0.10.1，Python 要求已变为 3.11+；因此不能只看 package version 推断 API 一致，必须锁定 tag / commit。</div>
+<pre><code>python -m pip install "datatrove[io,processing]==0.10.1"</code></pre>
 </section>
 <section id="references"><h2>参考资料</h2><ol class="references">
 <li><a href="https://github.com/huggingface/datatrove">Hugging Face DataTrove repository / README</a>：pipeline、Document、Executor、任务恢复和合成生成。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/base.py">PipelineStep source</a>：run(data, rank, world_size) 接口与统计。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/filters/base_filter.py">BaseFilter source</a>：true 表示保留、false 表示过滤及 exclusion writer。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/examples/fineweb.py">FineWeb reproduction example</a>：网页处理与三阶段 MinHash 后过滤。</li>
+<li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/base.py">PipelineStep source</a>：run(data, rank, world_size) 接口与统计。</li>
+<li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/filters/base_filter.py">BaseFilter source</a>：true 表示保留、false 表示过滤及 exclusion writer。</li>
+<li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/fineweb.py">FineWeb reproduction example</a>：网页处理与三阶段 MinHash 后过滤。</li>
 <li><a href="https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py">MinHash deduplication example</a>：signature、buckets、cluster、filter 四阶段。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/pyproject.toml">DataTrove pyproject.toml</a>：当前版本与 Python 依赖约束。</li>
+<li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml">DataTrove pyproject.toml</a>：当前版本与 Python 依赖约束。</li>
 </ol></section>
 <footer class="article-footer"><a href="22.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="24.html">下一章 →</a></footer>
 </article></main></div></div><script>(()=>{
