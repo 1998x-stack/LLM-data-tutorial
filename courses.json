@@ -729,15 +729,19 @@
       "file": "21.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "研究 Self-Play、数据增强、合成语料过滤和模型坍缩风险。",
+      "summary": "从 Self-Instruct、Evol-Instruct 与 Phi-4 理解合成数据生成，并建立验证、去重、覆盖与分布监控闭环。",
       "tags": [
         "synthetic-data",
-        "self-play",
-        "data-augmentation",
-        "model-collapse"
+        "self-instruct",
+        "evol-instruct",
+        "phi-4",
+        "model-collapse",
+        "verification"
       ],
       "tools": [
-        "LLM"
+        "LLM",
+        "Python",
+        "unit tests"
       ],
       "level": "研究",
       "prerequisites": [
@@ -750,7 +754,7 @@
         "设计多样性约束",
         "分析模型自我训练风险"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "22",
@@ -758,15 +762,20 @@
       "file": "22.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "针对代码、科学、医学等领域设计来源、过滤和混合策略。",
+      "summary": "用 DAPT/TAPT、token 级混合与双轨评测设计代码、科学、医学和多语言领域语料。",
       "tags": [
         "domain-adaptation",
+        "dapt",
+        "tapt",
         "code-data",
         "scientific-text",
-        "multilingual"
+        "multilingual",
+        "data-mixture",
+        "catastrophic-forgetting"
       ],
       "tools": [
         "The Stack",
+        "Code Llama",
         "Dolma"
       ],
       "level": "研究",
@@ -780,7 +789,7 @@
         "识别领域特有噪声",
         "设计领域与通用语料混合"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "23",
@@ -788,15 +797,19 @@
       "file": "23.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "使用模块化算子构建可配置、可追踪的网页数据清洗流水线。",
+      "summary": "基于 DataTrove v0.10.1 组合 Reader、Extractor、Filter、Dedup、Stats 与 Executor，构建可追踪离线流水线。",
       "tags": [
         "datatrove",
         "pipeline",
         "filtering",
-        "deduplication"
+        "deduplication",
+        "slurm",
+        "data-lineage"
       ],
       "tools": [
-        "DataTrove"
+        "DataTrove 0.10.1",
+        "Python",
+        "Slurm"
       ],
       "level": "实战",
       "prerequisites": [
@@ -810,7 +823,7 @@
         "复现过滤和去重步骤",
         "输出可审计运行元数据"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "24",
@@ -818,16 +831,20 @@
       "file": "24.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "分析 Dolma 语料、数据处理设计与开源工具链。",
+      "summary": "区分 Dolma 三万亿 token 语料与 v1.2.1 工具包，理解 tag、dedupe、mix、stat、tokens 及 Bloom filter 边界。",
       "tags": [
         "dolma",
         "open-corpus",
         "data-curation",
-        "pipeline"
+        "taggers",
+        "bloom-filter",
+        "data-mixing",
+        "provenance"
       ],
       "tools": [
-        "Dolma",
-        "OLMo"
+        "Dolma Toolkit 1.2.1",
+        "OLMo",
+        "Hugging Face"
       ],
       "level": "研究",
       "prerequisites": [
@@ -841,27 +858,34 @@
         "定位数据处理步骤",
         "复用公开工具链"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "25",
-      "title": "六大清洗范式对比",
+      "title": "七类预训练数据构建范式对比",
       "file": "25.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "比较规则、语言模型、分类器、人工标注与混合质量策略。",
+      "summary": "对比 C4、CCNet、The Pile、RefinedWeb、FineWeb、Dolma 与 FLUX 的数据范围、清洗机制和证据边界。",
       "tags": [
         "curation-paradigms",
         "heuristics",
-        "classifier",
         "perplexity",
-        "ablation"
+        "classifier",
+        "multi-source",
+        "web-corpus",
+        "fineweb",
+        "dolma",
+        "flux"
       ],
       "tools": [
         "C4",
         "CCNet",
+        "The Pile",
+        "RefinedWeb",
         "FineWeb",
-        "DCLM"
+        "Dolma",
+        "FLUX"
       ],
       "level": "研究",
       "prerequisites": [
@@ -875,7 +899,7 @@
         "匹配方法与资源约束",
         "识别跨论文不可比因素"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "26",
