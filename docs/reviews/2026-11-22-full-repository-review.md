@@ -17,6 +17,7 @@ Reviewed surface: all 28 article paths, catalog, homepage, AGENTS, README, docs,
 | P1 | Catalog and homepage still reflected 25 deeply revised chapters | Updated all 28 statuses, prerequisites, tags, generated local catalog, homepage, README, taxonomy and AGENTS |
 | P1 | Site validator only enforced the semantic/evidence rules through chapter 25 | Extended static gating through chapter 28 and added a repository-wide audit script |
 | P2 | A data-preparation agent could be confused with a privileged auto-publisher | Explicit independent human-approval gate, immutable checksums, audit trail, and no remote publishing action |
+| P2 | Repository-wide scan identified 15 SVG files no longer referenced by any of the 28 chapters (old batch 05 variants plus ch14-mixture-optimization) | Removed 15 unreferenced SVG files from the active tree, preserving their history in Git; added a test enforcing zero unused diagrams |
 
 ## Review method
 
@@ -30,7 +31,10 @@ Reviewed surface: all 28 article paths, catalog, homepage, AGENTS, README, docs,
 
 ## Acceptance outcomes
 
-Static CI, PR merge and Pages status will be recorded following the actual checks. Do not infer that passing static HTML checks means actual Chromium/mobile/print QA passed.
+- **Initial successful feature-branch static workflow:** [run 45000502072](https://github.com/1998x-stack/LLM-data-tutorial/actions/runs/45000502072), 83 Python tests and 14 Node tests passed; 28 article paths and 62 SVGs parsed. Full static review reported 0 errors / 1 warning: 15 orphan SVGs, which have since been identified and removed in a follow-up change.
+- **After orphan cleanup:** expected 47 referenced SVGs and zero orphan assets; verify in the latest feature-branch workflow before merge.
+- **Evidence scope:** 30 new source-located claims in chapters 26–28, 206 distinct topic tags in the total catalog. These are catalog / ledger counts, not a claim of independent benchmark replication.
+- **PR / Pages:** verify merge and latest main Pages jobs separately. Static source inspection does not prove Chromium rendering or live page deployment.
 
 ## Residual risks / out-of-scope
 
@@ -39,4 +43,4 @@ Static CI, PR merge and Pages status will be recorded following the actual check
 - **External links may drift:** reference URLs are source-located but not all were browser-opened.
 - **Production rights/PII:** teaching flags do not prove real-world permission, privacy clearance or benchmark decontamination.
 - **Scale:** the capstone reads entire small fixtures into memory; production requires WARC parsing, streaming, sharding, retry-safe sinks, cross-crawl dedup and downstream evaluations.
-- **Visual SVG QA:** static XML checking is necessary but does not replace independent browser rendering and human topology inspection.
+- **Visual SVG QA:** static XML checking is necessary but does not replace independent browser rendering and human topology inspection. A dedicated Chromium workflow will be pursued if available.

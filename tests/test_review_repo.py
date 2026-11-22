@@ -10,7 +10,8 @@ class FullRepositoryReviewTests(unittest.TestCase):
 
     def test_evidence_and_diagrams_coverage(self):
         result = review()
-        self.assertGreaterEqual(result["diagrams"], 50)
+        self.assertGreaterEqual(result["diagrams"], 40)
+        self.assertEqual(result["unreferenced_diagrams"], [])
         self.assertGreaterEqual(result["referenced_diagrams"], 40)
         for number in range(1, 29):
             page = result["pages"][f"{number:02d}"]
