@@ -57,7 +57,7 @@ dolma tag --documents "data/v0/documents/*.jsonl.gz" \
   --taggers random_number_v1 char_length_with_paragraphs_v1 \
   --experiment audit --processes 8
 
-dolma dedupe --documents "data/v0/documents/*.json.gz" \
+dolma dedupe --documents "data/v0/documents/*.jsonl.gz" \
   --dedupe.paragraphs.attribute_name bff_duplicate_paragraph_spans \
   --bloom_filter.file /tmp/dolma_bloom_filter.bin \
   --no-bloom_filter.read_only \
