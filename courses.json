@@ -729,28 +729,19 @@
       "file": "21.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "以 Self-Instruct、Evol-Instruct、Orca 与 Phi-4 为研究锚点，设计种子扩展、独立验证、去重、来源追踪和下游效用评估的合成数据闭环。",
+      "summary": "从 Self-Instruct、Evol-Instruct 与 Phi-4 理解合成数据生成，并建立验证、去重、覆盖与分布监控闭环。",
       "tags": [
         "synthetic-data",
         "self-instruct",
         "evol-instruct",
-        "instruction-generation",
-        "teacher-model",
-        "data-augmentation",
-        "verifier",
-        "execution-feedback",
-        "data-diversity",
+        "phi-4",
         "model-collapse",
-        "provenance",
-        "data-quality",
-        "privacy"
+        "verification"
       ],
       "tools": [
-        "Self-Instruct",
-        "WizardLM",
-        "DataTrove",
-        "vLLM",
-        "SymPy"
+        "LLM",
+        "Python",
+        "unit tests"
       ],
       "level": "研究",
       "prerequisites": [
@@ -759,9 +750,9 @@
         "18"
       ],
       "learningOutcomes": [
-        "区分 Self-Instruct、Evol-Instruct、teacher trace 与领域合成数据的生成目标",
-        "为候选样本设计结构、事实、执行、去重和治理验证器",
-        "建立带 provenance、长尾覆盖审计和下游消融的合成数据闭环"
+        "区分合成数据生成范式与训练阶段",
+        "设计独立验证、去重、覆盖和来源记录闭环",
+        "解释递归合成数据可能造成的分布尾部损失及其适用边界"
       ],
       "status": "refined"
     },
@@ -771,38 +762,32 @@
       "file": "22.html",
       "category": "composition",
       "categoryLabel": "数据组成与表示",
-      "summary": "系统比较 DAPT、TAPT 与 Continual Pretraining，使用领域语料与通用 replay 控制知识注入和遗忘，并设计时间分层评测。",
+      "summary": "用 DAPT/TAPT、token 级混合与双轨评测设计代码、科学、医学和多语言领域语料。",
       "tags": [
         "domain-adaptation",
         "dapt",
         "tapt",
-        "continual-pretraining",
-        "catastrophic-forgetting",
-        "replay",
-        "domain-mixture",
-        "token-exposure",
-        "temporal-drift",
-        "evaluation",
         "code-data",
         "scientific-text",
-        "medical-text",
-        "licensing"
+        "multilingual",
+        "data-mixture",
+        "catastrophic-forgetting"
       ],
       "tools": [
-        "Hugging Face Transformers",
-        "TiC-LM",
-        "OLMo"
+        "The Stack",
+        "Code Llama",
+        "Dolma"
       ],
-      "level": "进阶",
+      "level": "研究",
       "prerequisites": [
         "14",
         "18",
-        "20"
+        "19"
       ],
       "learningOutcomes": [
-        "区分 DAPT、TAPT、SFT 与时间连续预训练",
-        "按实际 token exposure 设计领域数据与通用 replay 配比",
-        "同时评估领域收益、通用能力保持和时间分布漂移"
+        "区分 DAPT、TAPT 与有监督微调",
+        "按 token 暴露量设计通用/领域语料混合",
+        "建立领域能力与通用能力双轨评测"
       ],
       "status": "refined"
     },
@@ -812,39 +797,31 @@
       "file": "23.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "从 Document、PipelineStep 到 Local、Slurm 和 Ray Executor，掌握 DataTrove 的任务分片、过滤、四阶段 MinHash、恢复与可观测性。",
+      "summary": "基于 DataTrove v0.10.1 组合 Reader、Extractor、Filter、Dedup、Stats 与 Executor，构建可追踪离线流水线。",
       "tags": [
         "datatrove",
         "pipeline",
-        "pipeline-step",
-        "executor",
-        "task-sharding",
+        "filtering",
+        "deduplication",
         "slurm",
-        "ray",
-        "local-executor",
-        "resumability",
-        "idempotency",
-        "minhash",
-        "fsspec",
-        "jsonl",
-        "fineweb"
+        "data-lineage"
       ],
       "tools": [
-        "DataTrove",
-        "Slurm",
-        "Ray",
-        "Hugging Face"
+        "DataTrove 0.10.1",
+        "Python",
+        "Slurm"
       ],
-      "level": "进阶",
+      "level": "实战",
       "prerequisites": [
+        "05",
+        "08",
         "15",
-        "16",
         "17"
       ],
       "learningOutcomes": [
-        "解释 DataTrove Document、PipelineStep、task、worker 与 executor 的职责边界",
-        "构建 JSONL 读取、过滤、统计与写出流水线",
-        "设计可恢复的分片任务、MinHash 阶段依赖和幂等输出"
+        "在 DataTrove v0.10.1 中组合 Reader、Filter、Dedup 与 Writer",
+        "解释 Local/Slurm executor、任务分片和完成标记",
+        "为输入、配置、日志与输出建立可复现 manifest"
       ],
       "status": "refined"
     },
@@ -854,89 +831,73 @@
       "file": "24.html",
       "category": "systems",
       "categoryLabel": "系统与工具链",
-      "summary": "拆解 Dolma Dataset、Dolma Toolkit 与 Dolma 3，掌握统一文档格式、属性 sidecar、Bloom Filter 去重、Mixer 和 token 索引。",
+      "summary": "区分 Dolma 三万亿 token 语料与 v1.2.1 工具包，理解 tag、dedupe、mix、stat、tokens 及 Bloom filter 边界。",
       "tags": [
         "dolma",
-        "dolma-toolkit",
-        "dolma3",
         "open-corpus",
-        "data-format",
-        "attribute-sidecar",
-        "tagger",
+        "data-curation",
+        "taggers",
         "bloom-filter",
-        "mixer",
-        "tokenization",
-        "odc-by",
-        "olmo"
+        "data-mixing",
+        "source-provenance"
       ],
       "tools": [
-        "Dolma Toolkit",
-        "Dolma 3",
+        "Dolma Toolkit 1.2.1",
         "OLMo",
-        "Hugging Face Datasets"
+        "Hugging Face"
       ],
-      "level": "进阶",
+      "level": "研究",
       "prerequisites": [
-        "16",
+        "09",
+        "14",
         "17",
-        "18",
         "23"
       ],
       "learningOutcomes": [
-        "区分原始 Dolma 语料、dolma CLI 工具包与 Dolma 3 配方仓库",
-        "解释 documents 与 attributes sidecar 的对齐方式及 tag-dedupe-mix-tokenize 流程",
-        "追踪 token IDs 到源文档的索引，并审查数据版本和使用条件"
+        "区分 Dolma corpus snapshot 与 Toolkit package release",
+        "解释 tag、dedupe、mix、stat、tokens 的职责与限制",
+        "识别 Bloom filter false positives、token share 与来源许可风险"
       ],
       "status": "refined"
     },
     {
       "num": "25",
-      "title": "六大清洗范式对比",
+      "title": "七类预训练数据构建范式对比",
       "file": "25.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "系统比较规则、统计、去重、监督分类器、LLM 语义评估和人工下游验证，建立分层治理与可审计的组合式清洗策略。",
+      "summary": "对比 C4、CCNet、The Pile、RefinedWeb、FineWeb、Dolma 与 FLUX 的数据范围、清洗机制和证据边界。",
       "tags": [
         "curation-paradigms",
         "heuristics",
-        "statistical-filtering",
         "perplexity",
-        "deduplication",
         "classifier",
-        "llm-as-judge",
-        "human-audit",
-        "precision",
-        "recall",
-        "f1",
-        "data-governance",
-        "ablation",
-        "downstream-evaluation",
-        "data-retention",
-        "false-positive"
+        "multi-source",
+        "web-corpus",
+        "fineweb",
+        "dolma",
+        "flux"
       ],
       "tools": [
-        "DataTrove",
-        "Dolma Toolkit",
-        "DCLM",
-        "Python"
+        "C4",
+        "CCNet",
+        "The Pile",
+        "RefinedWeb",
+        "FineWeb",
+        "Dolma",
+        "FLUX"
       ],
       "level": "研究",
       "prerequisites": [
         "05",
-        "07",
-        "08",
         "10",
         "11",
-        "12",
-        "13",
-        "18",
-        "23",
-        "24"
+        "18"
       ],
       "learningOutcomes": [
-        "区分六种清洗范式的证据来源、成本和误差结构",
-        "用人工抽检混淆矩阵计算 precision、recall 与 F1",
-        "组合治理硬门、质量筛选和固定配方下游消融"
+        "比较七类代表性语料构建策略及其设计目标",
+        "解释数据来源、过滤、去重、混合与评测的不同层次",
+        "识别跨论文 benchmark 结果不可直接比较的条件"
       ],
       "status": "refined"
     },

@@ -1,50 +1,35 @@
-<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="从 Self-Instruct 与 Evol-Instruct 到独立验证、来源追踪和模型坍缩风险，构建可审计的合成数据生产线。"><title>21 · 合成数据生成 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
-<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
-<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
-<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" aria-current="page" class="active"><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
-<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 21 / LLM DATA ENGINEERING</p><h1>合成数据生成</h1><p class="dek">从 Self-Instruct 与 Evol-Instruct 到独立验证、来源追踪和模型坍缩风险，构建可审计的合成数据生产线。</p><div class="article-meta"><span>研究证据 · 数据机制 · 工程实践</span><span>研究</span></div></header>
-
-<div class="lead-note"><strong>本章问题</strong><p>当高质量真实样本稀缺、标注昂贵或长尾任务覆盖不足时，能否让模型生成候选训练样本？可以，但“生成出来”不等于“真实、正确、独立、值得训练”。本章把合成数据视为一条需要来源追踪、验证、去重、风险审查和下游实验的生产线，而不是一个 prompt。</p></div>
-<section id="why"><h2>合成数据不是一种数据格式，而是一种来源属性</h2>
-<figure class="diagram"><img src="assets/diagrams/ch21-synthetic-loop.svg" alt="合成数据从任务与种子出发，经过生成、验证、筛选与训练评估，再将结果反馈到下一轮生成"><figcaption>图 1 · 合成数据的闭环：模型负责提出候选，独立验证和下游评估决定它是否进入训练集。</figcaption></figure>
-<p>真实数据与合成数据的区别首先在 <strong>provenance（来源）</strong>，不是文本长相。模型生成的数学题可以有标准答案，也可能有隐藏前提错误；人工撰写的网页也可能低质。生产系统必须记录来源类型、教师模型、模型 revision、prompt 版本、采样参数、种子样本、验证器版本和最终审核状态。</p>
-<table><thead><tr><th>用途</th><th>典型样本</th><th>主要验证</th></tr></thead><tbody>
-<tr><td>指令跟随</td><td>instruction / input / response</td><td>指令有效性、回答相关性、重复度</td></tr>
-<tr><td>推理与数学</td><td>题目、解答步骤、最终答案</td><td>符号检查、独立求解器、数值回代</td></tr>
-<tr><td>代码</td><td>需求、实现、测试</td><td>编译、单元测试、隐藏测试与安全沙箱</td></tr>
-<tr><td>领域知识</td><td>文档 grounded QA、摘要、术语解释</td><td>证据 span、检索一致性、专家抽检</td></tr>
-<tr><td>偏好与对比</td><td>同一 prompt 的候选回答与排序</td><td>盲评、标注协议、位置偏差审计</td></tr>
-</tbody></table>
-<div class="callout"><strong>先分清训练阶段。</strong> 预训练合成文本、指令微调样本、偏好数据、评测题和数据增强样本的目标函数与风险并不相同。不能把“某种合成数据有用”直接推广成“把它混进任意预训练语料都有效”。</div>
-</section>
-<section id="self-instruct"><h2>Self-Instruct：从少量种子扩展任务空间</h2>
-<figure class="diagram"><img src="assets/diagrams/ch21-self-instruct.svg" alt="Self-Instruct 先从种子任务池抽取示例，再生成新指令和实例，过滤无效与相似样本后形成训练集"><figcaption>图 2 · Self-Instruct 的关键是“生成—过滤”循环，而不是无约束地批量采样。</figcaption></figure>
-<p><a href="https://aclanthology.org/2023.acl-long.754/">Self-Instruct（ACL 2023）</a>提出用模型自身生成的指令数据改善指令跟随。其流程可拆成四个动作：</p>
-<ol><li><strong>种子任务池：</strong>准备少量人工编写、任务边界清晰的 instruction 示例。</li><li><strong>指令扩展：</strong>从池中抽取若干示例作为 in-context demonstrations，让模型提出新任务指令。</li><li><strong>实例生成：</strong>对新指令生成 input / output。对于分类任务，论文采用 output-first 思路先枚举可能标签，再条件生成输入，减少标签空间失控。</li><li><strong>过滤与迭代：</strong>检查格式、无效指令、答案质量和与已有任务的相似性；通过样本加入任务池，供后续轮次使用。</li></ol>
-<p>论文报告，在其 GPT-3 设置中，Self-Instruct 微调相对原始 GPT-3 在 Super-NaturalInstructions 上取得 33 个百分点的绝对提升，并接近论文比较的 InstructGPT-001。这个结果属于论文的模型、数据和评测协议，不代表所有模型都能获得相同收益。</p>
-<h3>Evol-Instruct：沿着“深度”和“广度”演化指令</h3>
-<p><a href="https://arxiv.org/abs/2304.12244">WizardLM / Evol-Instruct（2023）</a>从一组初始指令出发，逐步把问题改写得更复杂。深度演化可以增加推理步骤、约束、条件或多阶段任务；广度演化则扩展到新的主题和任务类型。它适合扩展能力覆盖，但复杂度并不等于质量：如果演化操作只增加冗长约束、模糊措辞或不可验证的要求，数据集会变难读而不是变有价值。</p>
-<p><a href="https://www.microsoft.com/en-us/research/publication/orca-progressive-learning-from-complex-explanation-traces-of-gpt-4/">Orca</a>使用更强模型的解释轨迹和复杂指令作为监督信号；<a href="https://www.microsoft.com/en-us/research/publication/phi-4-technical-report/">Phi-4 技术报告</a>也明确说明其训练过程在多个阶段策略性地使用合成数据。两者说明合成数据可以成为精心设计的训练配方的一部分，不证明“教师输出天然正确”。</section>
-<section id="verification"><h2>真正的瓶颈：如何证明一条样本值得保留？</h2>
-<figure class="diagram"><img src="assets/diagrams/ch21-verification.svg" alt="一条候选样本经过结构、事实、执行、重复、安全和人工等多路验证，再按任务风险决定是否接收"><figcaption>图 3 · 验证器应与任务类型匹配；一个通用 LLM judge 不能替代所有验证。</figcaption></figure>
-<p>验证器应尽量与生成器独立。让同一个模型生成答案、再让它自评“答案是否正确”，容易出现共同偏差。可以把验证拆成多条互补证据：</p>
-<table><thead><tr><th>验证层</th><th>方法</th><th>适合发现</th><th>盲点</th></tr></thead><tbody>
-<tr><td>结构</td><td>JSON Schema、必填字段、长度和类型</td><td>格式损坏、字段缺失</td><td>结构合法不等于内容正确</td></tr>
-<tr><td>事实</td><td>检索证据、引用 span、知识库校验</td><td>无来源断言、证据不支持</td><td>检索库本身可能缺失或过时</td></tr>
-<tr><td>可执行</td><td>代码编译、测试、数学求解器、约束检查</td><td>可运行性和可验证答案</td><td>测试覆盖有限，沙箱需隔离</td></tr>
-<tr><td>分布</td><td>精确哈希、MinHash、embedding 邻居</td><td>重复和模板化变体</td><td>近似相似不等于语义无效</td></tr>
-<tr><td>安全与治理</td><td>PII、危险内容、授权与来源规则</td><td>隐私、滥用、授权风险</td><td>自动检测存在漏检和误报</td></tr>
-<tr><td>人工与下游</td><td>分层抽检、盲评、固定配方消融</td><td>模型无法可靠判定的边界质量</td><td>成本较高，需记录抽样设计</td></tr>
-</tbody></table>
-<h3>质量不是一个分数</h3>
-<p>至少分别报告四个维度：<strong>fidelity</strong>（与证据或目标任务一致）、<strong>diversity</strong>（任务与表达覆盖）、<strong>utility</strong>（是否改善目标能力）、<strong>trustworthiness</strong>（隐私、偏差、来源与可追溯性）。2026 年的 <a href="https://arxiv.org/abs/2601.17717">LLM Data Auditor</a> 综述也强调从质量与可信度两个方向评估合成数据。不要把多维度简单压成一个不可解释的总分。</p>
-</section>
-<section id="collapse"><h2>模型坍缩：风险来自递归替代，不是“出现合成数据”本身</h2>
-<p><a href="https://www.nature.com/articles/s41586-024-07566-y">Shumailov 等人在 Nature 2024</a>研究模型生成内容被后续模型反复采集和训练的情形，发现无差别地用模型生成数据替代原始分布，会逐代丢失长尾样本信息。早期表现可能是低频模式先消失，后期则可能出现更明显的分布退化。</p>
-<p>但要避免另一个过度简化：模型坍缩并不意味着“所有合成数据都会让模型坍缩”。<a href="https://arxiv.org/abs/2404.01413">Is Model Collapse Inevitable?</a> 的实验显示，在其设置中持续保留并累积原始真实数据、而不是每一代都用新合成数据完全替换旧数据，可以避免所研究的坍缩现象。可执行的工程策略是保留真实来源锚点、分层跟踪合成比例、监控长尾覆盖，并对不同混合方案做受控下游评估；不要设定一个脱离任务与配方的通用“安全占比”。</p>
-<div class="callout warning"><strong>不要把生成数据回灌当成自动正反馈。</strong>每轮回灌都要保留来源 lineage、生成模型版本、去重簇、验证结果和真实数据基线。对长尾、低资源语言、少数主题与罕见表达单独做覆盖审计。</div>
-</section>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="合成数据不是“凭空制造更多文本”，而是把目标任务、生成器、验证器和分布监控组成一条可审计的数据生产线。"><title>21 · 合成数据生成 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head><body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell"><header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header><div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" aria-current="page" class="active"><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>七类预训练数据构建范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav><main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 21 / LLM DATA ENGINEERING</p><h1>合成数据生成</h1><p class="dek">合成数据不是“凭空制造更多文本”，而是把目标任务、生成器、验证器和分布监控组成一条可审计的数据生产线。</p><div class="article-meta"><span>研究证据 · 系统机制 · 工程实践</span><span>研究生进阶</span><span>来源与版本见文末</span></div></header><div class="lead-note"><strong>本章问题</strong><p>当真实语料稀缺、标签昂贵或长尾任务覆盖不足时，模型生成的数据能否补足训练分布？生成只是候选样本的来源；只有经过任务约束、独立验证、去重、覆盖审计和来源记录，候选数据才可能成为可用训练数据。</p></div>
+<section id="definition"><h2>先区分合成数据的几种来源</h2>
+<p><strong>合成数据（synthetic data）</strong>是由程序、模拟器、规则系统或生成模型构造出来的数据。它与“数据增强”有交集，但不完全相同：增强通常从已有样本出发做受约束变换；合成数据也可以从任务规格、知识库、形式化规则或模拟环境直接构造新样本。</p>
+<ul>
+<li><strong>指令自举：</strong>从少量种子任务出发，让模型生成新指令、输入与回答。Self-Instruct 的流程包含生成、无效样本过滤和相似样本过滤，再用筛选结果微调原模型。</li>
+<li><strong>指令演化：</strong>逐步改写已有指令，提高约束数量、推理深度或任务复杂度。WizardLM 的 Evol-Instruct 是代表；“更复杂”并不自动等于“更正确”。</li>
+<li><strong>教师生成与蒸馏：</strong>由能力更强或经过专门训练的教师模型生成候选答案，再用规则、执行器、专家或独立模型筛选。</li>
+<li><strong>环境交互与自博弈：</strong>在有明确状态、动作和奖励的环境中生成轨迹。只有环境反馈可验证时，轨迹才具有比自由文本自评更强的监督信号。</li>
+<li><strong>程序化合成：</strong>通过语法、约束求解器、仿真器或模板构造可控样本，适合边界条件、结构化输出和可执行任务。</li>
+</ul>
+<p>这些方法的目标和训练阶段必须分开记录：预训练/继续预训练的合成语料、监督微调指令、偏好比较样本和强化学习轨迹不是同一种数据，也不能共享一套未经区分的质量指标。</p></section>
+<section id="loop"><h2>把生成变成可审计的闭环</h2>
+<figure class="diagram"><img src="assets/diagrams/ch21-synthetic-data-loop.svg" alt="合成数据闭环：目标与种子、生成器、结构校验、事实或执行验证、去重覆盖审计、训练与分布监控，监控结果反馈到下一轮生成" loading="lazy"><figcaption>图 1 · 生成器负责提出候选样本；验证器负责拒绝不满足任务契约的样本；训练后的分布监控负责检查筛选规则是否遗漏长尾。</figcaption></figure>
+<ol><li><strong>定义目标：</strong>明确目标能力、目标人群、输入输出 schema、允许的来源和禁止生成的内容。</li><li><strong>准备种子：</strong>记录种子样本来源、许可、覆盖范围和难度；不要只用模型自己生成的样本启动闭环。</li><li><strong>生成候选：</strong>保存模型版本、系统提示、采样参数、时间、随机种子和原始响应。</li><li><strong>结构验证：</strong>检查 JSON/schema、字段类型、长度、必需字段和格式约束。</li><li><strong>独立验证：</strong>数学题做独立求解或数值检验；代码运行编译、单元测试和边界测试；事实问答回到原始资料或可追溯知识库；不能让生成器自己给自己打分并把它当成真值。</li><li><strong>去重、覆盖与抽检：</strong>同时检查精确重复、近似重复、任务覆盖、难度切片、语言切片和人工抽样；保存拒绝原因码，而不是只保留通过的数据。</li></ol>
+<div class="callout"><strong>实践边界：</strong>“第二个模型同意第一个模型”只是额外信号，不是独立事实证明。验证器应尽量使用不同的信息源或不同的失败机制，例如执行结果、形式化约束、专家标注和原始来源。</div></section>
+<section id="metrics"><h2>用可解释的指标描述通过率</h2>
+<p>设生成器产生候选集合 <math aria-label="D"><mi>D</mi></math>。对每个样本 <math aria-label="x 下标 i"><msub><mi>x</mi><mi>i</mi></msub></math>，定义结构有效、内容可验证和新颖性三个布尔条件。保留数量应按逐样本联合条件计算，而不是假设各个通过率相互独立后简单相乘。</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="合成样本保留数量的指示函数表达式，可横向滚动"><math display="block" aria-label="N keep 等于对所有候选样本求和，若结构有效、可验证且新颖则计一，否则计零"><mrow><msub><mi>N</mi><mtext>keep</mtext></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mi mathvariant="normal">I</mi><mo>(</mo><msub><mi>V</mi><mi>i</mi></msub><mo>∧</mo><msub><mi>G</mi><mi>i</mi></msub><mo>∧</mo><msub><mi>U</mi><mi>i</mi></msub><mo>)</mo></mrow></math></div>
+<p>其中 <math aria-label="V 下标 i"><msub><mi>V</mi><mi>i</mi></msub></math> 表示结构有效，<math aria-label="G 下标 i"><msub><mi>G</mi><mi>i</mi></msub></math> 表示通过任务相关验证，<math aria-label="U 下标 i"><msub><mi>U</mi><mi>i</mi></msub></math> 表示满足新颖性策略。保留率只是产量指标，还应报告：</p>
+<ul><li><strong>有效性：</strong>抽样人工复核后真正正确的样本比例及置信区间。</li><li><strong>覆盖：</strong>任务、主题、难度、语言和边界情况的分布是否接近目标规格。</li><li><strong>新颖性：</strong>与种子集、训练集和评测集的精确/近似重复率。</li><li><strong>效用：</strong>固定训练预算、模型和评测协议下，加入样本后的下游增益与回归。</li></ul></section>
+<section id="research"><h2>研究案例：Self-Instruct、Evol-Instruct 与 Phi-4</h2>
+<div class="research-grid">
+<div class="research-card"><span>ACL 2023 · 指令自举</span><h3>Self-Instruct</h3><p>从模型生成的指令、输入和输出样本出发，再过滤无效或相似样本。论文报告的是其特定 GPT-3 微调设置和 Super-NaturalInstructions 评测，不应外推为所有任务都能获得同样收益。</p><a href="https://aclanthology.org/2023.acl-long.754/" target="_blank" rel="noopener noreferrer">阅读原论文 ↗</a></div>
+<div class="research-card"><span>arXiv 2023 · 指令演化</span><h3>WizardLM / Evol-Instruct</h3><p>从种子指令出发，逐步增加复杂度，再将生成样本用于微调。复杂度扩展仍需正确性和可执行性验证，否则只是把错误包装得更复杂。</p><a href="https://arxiv.org/abs/2304.12244" target="_blank" rel="noopener noreferrer">阅读原论文 ↗</a></div>
+<div class="research-card"><span>Microsoft Research · 2024</span><h3>Phi-4 Technical Report</h3><p>报告描述了 14B 参数 Phi-4，并明确称合成数据构成其训练数据的主体，生成方法包括多智能体提示、自我修订和指令反转。报告同时讨论了经过筛选的网页、代码和其他来源；不能将其简化成“只靠合成数据训练”。</p><a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">arXiv 技术报告 ↗</a> · <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2024/12/P4TechReport.pdf" target="_blank" rel="noopener noreferrer">Microsoft Research PDF ↗</a></div>
+</div></section>
+<section id="collapse"><h2>模型坍缩：风险真实，但不要编造安全比例</h2>
+<p>Shumailov 等人在 Nature 2024 研究了递归使用模型生成数据训练后续模型的情形，指出模型可能逐代丢失原始分布的尾部信息，最终偏离真实数据分布。论文分析了统计近似、函数表达能力和学习过程误差等来源。</p>
+<p>这不等于“所有合成数据都会导致模型坍缩”，也不支持一个对所有模型、语料和任务都适用的合成数据占比上限。风险取决于生成数据是否替代真实分布、尾部样本是否被保留、筛选器是否放大偏差，以及训练和评测是否持续监控分布变化。</p>
+<div class="callout warning"><strong>不要沿用未经证实的百分比：</strong>本章删除了旧稿中“行业合成数据占比从 2% 增至 15%”“五轮后多样性下降 40%”和“合成数据不得超过 15–20%”等缺少可追溯来源或适用条件的数字。任何比例都必须绑定具体模型、数据、训练阶段和实验协议。</div>
+<p>较稳妥的治理方式是保留真实来源与原始分布快照、记录每一代数据的来源链、监控稀有主题和语言切片、对生成数据做来源去重，并用独立的真实数据评测集检查能力回归。</p></section>
+<section id="checklist"><h2>上线前的合成数据验收清单</h2><ul><li>生成目标是否写成可测试的任务契约？</li><li>提示词、模型版本、采样参数和种子是否留档？</li><li>是否有独立于生成器的事实或执行验证？</li><li>是否检查重复、覆盖、长尾和训练/评测泄漏？</li><li>人工抽检是否按风险分层，而不是只随机抽取容易样本？</li><li>数据集版本、拒绝原因、来源许可和隐私审查是否可追溯？</li><li>是否在固定训练预算下做消融，并报告负向结果？</li></ul></section>
 <section id="calculator"><h2>交互实验：候选样本经过多道门后还剩多少？</h2>
 <p>下面的通过率是教学输入，不是论文统计。每个百分比表示该阶段对上一阶段输出的条件保留率，因此按顺序相乘，而不是假设所有过滤器相互独立。</p>
 <div class="demo-panel">
@@ -62,39 +47,9 @@ accepted = estimate_accepted_records(
     generated=10_000,
     stage_retention_rates=[0.95, 0.75, 0.85, 0.98],
 )
-print(accepted)  # 5926.125 (expected-value estimate, not an observed count)</code></pre>
+print(accepted)  # 5935.125 (expected-value estimate, not an observed count)</code></pre>
 </section>
-<section id="contract"><h2>把 provenance 写进每一条样本</h2>
-<pre><code>{
-  "id": "synthetic:math:000042",
-  "instruction": "求解并验证方程 ...",
-  "response": "先移项 ...",
-  "provenance": {
-    "kind": "synthetic",
-    "seed_document_id": "seed:algebra:0012",
-    "teacher_model": "provider/model@revision",
-    "prompt_version": "math-evolution-v3",
-    "generation_config_hash": "sha256:...",
-    "verifier": "sympy-check-v2",
-    "verifier_result": "pass",
-    "dedup_cluster": "cluster-...",
-    "review_status": "sampled-approved"
-  }
-}</code></pre>
-<p>生产系统还应记录生成时间、原始证据、license / usage constraints、数据 split、tokenizer revision、过滤理由和人工审核者/协议。不要把教师模型的私有训练数据、用户对话或无权再分发的材料悄悄包装成“合成数据”。</p>
-</section>
-<section id="references"><h2>参考资料</h2><ol class="references">
-<li>Wang et al. (2023), <a href="https://aclanthology.org/2023.acl-long.754/">Self-Instruct: Aligning Language Models with Self-Generated Instructions</a>，ACL 2023。</li>
-<li>Xu et al. (2023), <a href="https://arxiv.org/abs/2304.12244">WizardLM: Empowering Large Language Models to Follow Complex Instructions</a>，Evol-Instruct。</li>
-<li>Mukherjee et al. (2023), <a href="https://www.microsoft.com/en-us/research/publication/orca-progressive-learning-from-complex-explanation-traces-of-gpt-4/">Orca: Progressive Learning from Complex Explanation Traces of GPT-4</a>。</li>
-<li>Abdin et al. (2024), <a href="https://www.microsoft.com/en-us/research/publication/phi-4-technical-report/">Phi-4 Technical Report</a>。</li>
-<li>Long et al. (2024), <a href="https://aclanthology.org/2024.findings-acl.658/">On LLMs-Driven Synthetic Data Generation, Curation, and Evaluation: A Survey</a>。</li>
-<li>Shumailov et al. (2024), <a href="https://www.nature.com/articles/s41586-024-07566-y">AI models collapse when trained on recursively generated data</a>，Nature。</li>
-<li>Gerstgrasser et al. (2024), <a href="https://arxiv.org/abs/2404.01413">Is Model Collapse Inevitable?</a>。</li>
-<li>Zhang et al. (2026), <a href="https://arxiv.org/abs/2601.17717">The LLM Data Auditor</a>。</li>
-</ol></section>
-<footer class="article-footer"><a href="20.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="22.html">下一章 →</a></footer>
-</article></main></div></div><script>(()=>{
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Wang et al. <a href="https://aclanthology.org/2023.acl-long.754/" target="_blank" rel="noopener noreferrer">Self-Instruct: Aligning Language Models with Self-Generated Instructions</a>, ACL 2023.</li><li>Xu et al. <a href="https://arxiv.org/abs/2304.12244" target="_blank" rel="noopener noreferrer">WizardLM: Empowering Large Language Models to Follow Complex Instructions</a>, 2023.</li><li>Abdin et al. <a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">Phi-4 Technical Report</a>, 2024.</li><li>Shumailov et al. <a href="https://doi.org/10.1038/s41586-024-07566-y" target="_blank" rel="noopener noreferrer">AI models collapse when trained on recursively generated data</a>, Nature 631, 755–759, 2024.</li></ol></section><footer class="article-footer"><a href="20.html">← 20 · 词表设计与优化</a><a href="index.html">返回课程总览</a><a href="22.html">22 · 领域适配数据策略 →</a></footer></article></main></div></div><script>(()=>{
 const ids=["syn-count","syn-schema","syn-verify","syn-unique","syn-safe"];
 const els=ids.map(id=>document.getElementById(id));
 const out=document.getElementById("syn-output");
@@ -107,4 +62,5 @@ function render(){
  out.textContent="预计保留约 "+Math.round(accepted).toLocaleString("en-US")+" 条；最终保留率 "+(accepted/n*100).toFixed(1)+"%。这是按各阶段条件通过率相乘的期望值，不是实际观测量。";
 }
 els.forEach(x=>x.addEventListener("input",render));render();
-})();</script></body></html>
+})();</script>
+</body></html>

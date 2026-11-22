@@ -4,76 +4,49 @@
   "updated": "2026-11-22",
   "claims": [
     {
-      "id": "22-C1",
-      "claim": "Domain-adaptive pretraining continues language-model pretraining on unlabeled text from a target domain.",
-      "kind": "paper-method",
-      "source_url": "https://aclanthology.org/2020.acl-main.740/",
-      "locator": "§3 Domain-Adaptive Pretraining",
-      "status": "verified",
-      "notes": "The original study evaluates RoBERTa in biomedical, computer-science, news and review domains."
-    },
-    {
-      "id": "22-C2",
-      "claim": "Task-adaptive pretraining continues pretraining on unlabeled text associated with the target task.",
-      "kind": "paper-method",
-      "source_url": "https://aclanthology.org/2020.acl-main.740/",
-      "locator": "§4 Task-Adaptive Pretraining",
-      "status": "verified",
-      "notes": "TAPT is not supervised fine-tuning; its corpus is task-associated but unlabeled."
-    },
-    {
-      "id": "22-C3",
-      "claim": "The Don’t Stop Pretraining study reports that combining DAPT followed by TAPT achieved the best results among the compared adaptation settings on its evaluated tasks.",
+      "id": "CH22-C01",
+      "claim": "DAPT and TAPT improved downstream task performance in the four-domain, eight-classification-task study described by Gururangan et al.",
       "kind": "paper-result",
       "source_url": "https://aclanthology.org/2020.acl-main.740/",
-      "locator": "Combined DAPT and TAPT; Table 5",
+      "locator": "Abstract; experiments across biomedical, computer-science, news and reviews domains",
       "status": "verified",
-      "notes": "This ordering is an empirical result under the paper's task and model setup, not a universal training schedule."
+      "notes": "Keep the result scoped to the study's models, corpora and classification tasks; it is not a universal guarantee for every domain-adaptation setup."
     },
     {
-      "id": "22-C4",
-      "claim": "TiC-LM introduces a time-continual pretraining benchmark built from 114 Common Crawl dumps and evaluates general web data as well as domains including Wikipedia, StackExchange and code documentation.",
-      "kind": "paper-method",
-      "source_url": "https://aclanthology.org/2025.acl-long.1551/",
-      "locator": "Abstract; dataset and evaluation design",
+      "id": "CH22-C02",
+      "claim": "Code Llama is a family of code-focused foundation models based on Llama 2, with base, Python-specialized and instruction-following variants.",
+      "kind": "official-doc",
+      "source_url": "https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/",
+      "locator": "Meta AI research publication abstract",
       "status": "verified",
-      "notes": "The benchmark is designed for temporal adaptation and retention, not only static domain specialization."
+      "notes": "This citation supports the model-family framing only; it does not support blanket claims about licensing or quality of arbitrary code corpora."
     },
     {
-      "id": "22-C5",
-      "claim": "TiC-LM reports that autoregressive meta-schedules with fixed-ratio replay can approach the held-out loss of retraining from scratch while using 2.6 times less computation in its general Common Crawl setting.",
-      "kind": "paper-result",
-      "source_url": "https://aclanthology.org/2025.acl-long.1551/",
-      "locator": "Abstract; main continual-pretraining results",
-      "status": "verified",
-      "notes": "The compute ratio and result are scoped to the paper's model, data, evaluation and training protocol."
-    },
-    {
-      "id": "22-C6",
-      "claim": "TiC-LM finds replay is important for avoiding forgetting on general web data, while the optimal balance between new and old data differs across specific domains.",
-      "kind": "paper-result",
-      "source_url": "https://aclanthology.org/2025.acl-long.1551/",
-      "locator": "Abstract; domain-specific replay findings",
-      "status": "verified",
-      "notes": "The study argues against assuming one universal replay ratio across all domains."
-    },
-    {
-      "id": "22-C7",
-      "claim": "A 2025 ACM Computing Surveys review organizes continual learning for LLMs around vertical and horizontal continuity and discusses rehearsal, regularization and architecture expansion strategies.",
-      "kind": "paper-method",
-      "source_url": "https://doi.org/10.1145/3735633",
-      "locator": "Abstract; Sections 3–4 and Table 2",
-      "status": "verified",
-      "notes": "This is a survey taxonomy; methods have different compute and retention trade-offs."
-    },
-    {
-      "id": "22-C8",
-      "claim": "A two-source token mixture can be represented as a weighted sum of domain and general-data language-model losses, with the coefficient interpreted as a target token-exposure weight.",
+      "id": "CH22-C03",
+      "claim": "The weighted general/domain loss is a conceptual expression for mixing objectives, with lambda interpreted here as a token-exposure design variable.",
       "kind": "derived",
-      "source_url": "https://aclanthology.org/2025.acl-long.1551/",
-      "locator": "TiC-LM replay mixture experiments; simplified mixture-objective derivation",
+      "source_url": "https://aclanthology.org/2020.acl-main.740/",
+      "locator": "Editorial derivation in this chapter; related to multi-phase adaptive pretraining",
       "status": "derived",
-      "notes": "The coefficient is a planning abstraction; actual token exposure depends on filtering, tokenization, packing, sampling and repeated draws."
+      "notes": "This equation is a simplified teaching abstraction, not the exact training objective or a recommended fixed mixture ratio from the cited paper."
+    },
+    {
+      "id": "CH22-C04",
+      "claim": "Domain-adaptation evaluations should track both target-domain performance and retained general capabilities.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2020.acl-main.740/",
+      "locator": "Experimental framing across domain/task settings; tutorial recommendation",
+      "status": "derived",
+      "notes": "The dual-track evaluation checklist is an editorial quality recommendation; no universal benchmark suite or fixed forgetting threshold is asserted."
+    },
+    {
+      "id": "CH22-C05",
+      "claim": "Code, scientific/medical and multilingual corpora require source-specific provenance, privacy, format and language-slice checks.",
+      "kind": "derived",
+      "source_url": "https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/",
+      "locator": "Domain-specific curation guidance in this chapter",
+      "status": "derived",
+      "notes": "This combines general data-governance practice with the cited code-model context; it is not presented as a measured claim from Code Llama."
     }
   ]
 }

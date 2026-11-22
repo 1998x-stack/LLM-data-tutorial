@@ -1,77 +1,61 @@
-<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="区分开放语料与工具包，深入 Tagger、Bloom Filter、Mixer、Tokenization，并追踪 Dolma 3 数据家族的演进。"><title>24 · Dolma 工具链全解析 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
-<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
-<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
-<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" aria-current="page" class="active"><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
-<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 24 / LLM DATA ENGINEERING</p><h1>Dolma 工具链全解析</h1><p class="dek">区分开放语料与工具包，深入 Tagger、Bloom Filter、Mixer、Tokenization，并追踪 Dolma 3 数据家族的演进。</p><div class="article-meta"><span>研究证据 · 数据机制 · 工程实践</span><span>进阶</span></div></header>
-
-<div class="lead-note"><strong>本章问题</strong><p>Dolma 经常同时指一个开放预训练语料和一套数据整理工具。它们相关，但不是同一个东西。本章先拆清 dataset 与 toolkit，再从文档格式、tagger sidecar、Bloom Filter 去重、mixer、tokenization 追踪一条真实的数据整理路径，最后补充 2025–2026 年 Dolma 3 家族的演进。</p></div>
-<section id="two-dolmas"><h2>先拆开两个 Dolma：数据集与工具包</h2>
-<figure class="diagram"><img src="assets/diagrams/ch24-dolma-ecosystem.svg" alt="Dolma Dataset 是训练语料，Dolma Toolkit 是执行 tag、dedupe、mix、tokenize 的工具；Dolma 3 是更新的数据集家族与重建配方"><figcaption>图 1 · 名称相同不代表产物相同：数据集是被处理的数据，工具包是处理数据的程序。</figcaption></figure>
-<table><thead><tr><th>名称</th><th>是什么</th><th>关键定位</th></tr></thead><tbody>
-<tr><td>Dolma Dataset（原始家族）</td><td>面向 OLMo 训练的开放英文语料</td><td>ACL 2024 论文介绍约 3T tokens，多源包含网页、科学论文、代码、书籍、社交媒体和百科。</td></tr>
-<tr><td>Dolma Toolkit</td><td>可扩展的数据整理工具包</td><td>Python 库与 <code>dolma</code> CLI，支持 tagging、dedupe、mix、stats、tokens。</td></tr>
-<tr><td>Dolma 3</td><td>OLMo 3 家族的数据集与重建配方</td><td>官方仓库描述 5.9T 预训练、100B mid-training、50B long-context 三类数据集。</td></tr>
-</tbody></table>
-<p><a href="https://aclanthology.org/2024.acl-long.840/">Dolma 论文（ACL 2024）</a>强调开放语料、构建过程文档和工具链透明度。官方 <a href="https://github.com/allenai/dolma">allenai/dolma</a> 仓库同时包含原始数据集说明和 Dolma Toolkit 源码。当前 AI2 文档把 Dolma 3 描述为最新数据版本，并指出它用于 OLMo 3。</p>
-<div class="callout warning"><strong>不要混淆接口：</strong><code>pip install dolma</code> 安装的是原始 Dolma Toolkit 的 Python / CLI 工具；<a href="https://github.com/allenai/dolma3">allenai/dolma3</a> 是 Dolma 3 数据集及重建配方仓库，不等于旧 CLI 的一个新命令。</div>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="先区分 Dolma 三万亿 token 研究语料与 Dolma Toolkit 软件，再按 v1.2.1 官方文档理解 tag、dedupe、mix、stat 和 tokens 命令。"><title>24 · Dolma 工具链全解析 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head><body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell"><header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header><div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" ><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" aria-current="page" class="active"><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>七类预训练数据构建范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav><main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 24 / LLM DATA ENGINEERING</p><h1>Dolma 工具链全解析</h1><p class="dek">先区分 Dolma 三万亿 token 研究语料与 Dolma Toolkit 软件，再按 v1.2.1 官方文档理解 tag、dedupe、mix、stat 和 tokens 命令。</p><div class="article-meta"><span>研究证据 · 系统机制 · 工程实践</span><span>研究生进阶</span><span>工具版本 v1.2.1</span></div></header><div class="lead-note"><strong>本章的两个 Dolma</strong><p>Dolma Dataset 是用于 OLMo 研究的开放预训练语料；Dolma Toolkit 是处理文档、标注属性、去重、混合和 tokenization 的软件包。两者有关联，但版本号、交付物和使用许可不能混为一谈。</p></div>
+<section id="dataset"><h2>Dolma Dataset：公开语料是研究对象，不是工具版本</h2>
+<figure class="diagram"><img src="assets/diagrams/ch24-dolma-dataset-toolkit.svg" alt="左侧是由网页、科学论文、代码、公共领域书籍、社交媒体和百科内容构成的 Dolma Dataset；右侧是 v1.2.1 Toolkit 的 tag、dedupe、mix、stat 和 tokens 命令" loading="lazy"><figcaption>图 1 · 数据集回答“使用什么语料”；工具包回答“如何处理文档”。引用时必须写清楚讨论的是哪一个。</figcaption></figure>
+<p>Dolma 论文介绍了一个约三万亿 token 的英文语料，来源包括网页、科学论文、代码、公共领域书籍、社交媒体和百科内容。它的目标之一是为 OLMo 训练和预训练数据研究提供可检查的语料与中间处理信息。</p>
+<p>Hugging Face 数据卡列出 v1、v1_5、v1_6、v1_6-sample、v1_5-sample 和 v1_7 等版本；当前默认版本为 <code>v1_7</code>，于 2024-04-15 发布并用于训练 OLMo 7B-v1.7。数据卡也明确区分全量数据 token 计数与考虑采样比例后实际用于训练的 token 数：不能把全量语料规模直接当作某个模型的训练 token exposure。</p>
 </section>
-<section id="workflow"><h2>Toolkit 的四段式整理流程</h2>
-<figure class="diagram"><img src="assets/diagrams/ch24-toolkit-flow.svg" alt="Dolma Toolkit 先用 taggers 生成属性，再执行 dedupe，接着 mix 过滤与重组文档，最后 tokens 转换为 token ids"><figcaption>图 2 · Tagger 先产生可审计属性，Mixer 再按属性做选择；这让打标和删除决策分离。</figcaption></figure>
-<ol><li><strong>Tag：</strong>给文档或文本 span 打标签，例如语言、毒性、困惑度、长度、随机 split 标识。</li><li><strong>Dedupe：</strong>按文档 key 或段落内容产生重复属性；它可以是文档级，也可以是段落级。</li><li><strong>Mix：</strong>读取文档与属性 sidecar，按 JSONPath include / exclude 条件筛选，必要时做 span replacement，并将多个 stream 合并。</li><li><strong>Tokens：</strong>使用 Hugging Face-compatible tokenizer，将保留的文本转换为 token IDs 与文档索引元数据。</li></ol>
-<p>关键架构是 <strong>先标记，再决定是否删除</strong>。Tagger 输出属性文件，不直接改写原始文档；Mixer 在之后读取属性并应用策略。这样可以复用同一批标签比较不同筛选规则，也可以保存被过滤样本的原因。</p>
+<section id="toolkit"><h2>Dolma Toolkit：v1.2.1 的命令边界</h2>
+<p>本章软件示例固定在 <code>dolma==1.2.1</code>。该 release 的 CLI 包含六类命令：<code>tag</code>、<code>dedupe</code>、<code>mix</code>、<code>list</code>、<code>stat</code> 和 <code>tokens</code>。先用 <code>dolma --help</code> 与子命令的 <code>--help</code> 检查当前安装版本的参数，不要把其他版本的博客命令直接复制过来。</p>
+<pre><code>python -m pip install "dolma==1.2.1"
+dolma --help
+dolma list</code></pre>
+<div class="table-wrap"><table><thead><tr><th>命令</th><th>职责</th><th>产物 / 注意事项</th></tr></thead><tbody>
+<tr><td><code>tag</code></td><td>运行语言、长度、PII、质量等 tagger</td><td>写出文档或文本 span 的 attributes；tagger 输出是信号，不自动等于最终 keep/drop 决策。</td></tr>
+<tr><td><code>dedupe</code></td><td>按文档键或段落标记重复</td><td>使用 Bloom filter；存在 false positives，需要记录参数和误报权衡。</td></tr>
+<tr><td><code>mix</code></td><td>合并 streams、应用 include/exclude 条件和 span 替换</td><td>输出新的文档集合；必须保存配置文件和输入版本。</td></tr>
+<tr><td><code>stat</code></td><td>分析数据属性分布</td><td>用于检查来源、语言、长度或 tag 分布。</td></tr>
+<tr><td><code>tokens</code></td><td>按指定 tokenizer 统计或写出 token 数据</td><td>tokenizer 名称与 revision 必须固定，才能比较 token budget。</td></tr>
+<tr><td><code>list</code></td><td>列出可用 tagger</td><td>实际可用 tagger 取决于安装版本与可选依赖。</td></tr>
+</tbody></table></div>
 </section>
-<section id="format"><h2>Dolma Document 与属性 sidecar</h2>
-<figure class="diagram"><img src="assets/diagrams/ch24-document-format.svg" alt="documents 目录保存 gzipped JSONL 主文档，attributes 目录按原文件结构保存 tagger 和 dedupe 生成的并行属性文件"><figcaption>图 3 · 主文档与属性 sidecar 分离：分析结果可版本化、重用，而不必破坏原始文本。</figcaption></figure>
-<p>官方数据格式要求每条文档至少有：</p>
-<pre><code>{
-  "id": "source-specific-document-id",
-  "text": "document body",
-  "source": "common-crawl",
-  "added": "2024-01-01T00:00:00Z",
-  "created": "2023-12-20T00:00:00Z",
-  "metadata": {
-    "url": "https://example.org/article",
-    "language": "en"
-  }
-}</code></pre>
-<p><code>id</code>、<code>text</code>、<code>source</code> 是核心字段；<code>added</code>、<code>created</code> 与 <code>metadata</code> 是可选字段。实际字段要与来源和 data card 对齐，不应为了通过 schema 而虚构时间戳或 source。</p>
-<p>Tagger / deduper 将结果写到 <code>attributes/&lt;attribute-name&gt;</code>，并尽量保持与 <code>documents</code> 对应的目录结构和文件名。这个约定使同一个文档文件可以与多个属性文件稳定对齐。</p>
-</section>
-<section id="dedupe"><h2>Bloom Filter 去重：快，但不是零误差</h2>
-<p>Dolma 的 <code>dedupe</code> 命令可按文档 key 或段落内容做标记，底层使用内存 Bloom Filter。Bloom Filter 用位数组与多个哈希函数表达“某元素可能出现过”；它允许 false positive（把未出现的项目误判为可能存在），但在标准插入/查询模型下不会因为空间不足而产生 false negative。</p>
-<div class="math-scroll" tabindex="0" role="region" aria-label="Bloom Filter 位数组与哈希函数数量估算公式"><math display="block" aria-label="m 等于负 n ln p 除以 ln 2 的平方；k 等于 m 除以 n 乘 ln 2"><mrow><mi>m</mi><mo>≈</mo><mo>−</mo><mfrac><mrow><mi>n</mi><mi>ln</mi><mi>p</mi></mrow><msup><mrow><mi>ln</mi><mn>2</mn></mrow><mn>2</mn></msup></mfrac><mo>,</mo><mspace width="1em"/><mi>k</mi><mo>≈</mo><mfrac><mi>m</mi><mi>n</mi></mfrac><mi>ln</mi><mn>2</mn></mrow></math></div>
-<p><math aria-label="n"><mi>n</mi></math> 是预计插入元素数，<math aria-label="p"><mi>p</mi></math> 是目标 false-positive rate，<math aria-label="m"><mi>m</mi></math> 是位数组位数，<math aria-label="k"><mi>k</mi></math> 是哈希函数数。这个经典近似可用于规划内存；具体实现的哈希、持久化和并发行为仍要看所用版本。</p>
-<p>Dolma 文档的示例使用 <code>estimated_doc_count</code> 和 <code>desired_false_positive_rate</code> 配置 Bloom Filter，并把重复段落位置写成属性；随后由 <code>mix</code> 决定是否移除。不要把“可能重复”误说成精确重复证明。</p>
-</section>
-<section id="mix-tokenize"><h2>Mixer 与 Tokenizer：从标签决策到训练文件</h2>
-<p><code>dolma mix</code> 可以组合多个 streams，合并指定属性，使用 JSONPath include / exclude 条件筛选文档，也能按带分数的 span 替换文本。它更像一个可配置的“物化视图”步骤：原文与属性不变，输出一个新的 curated corpus。</p>
-<p><code>dolma tokens</code> 使用兼容的 tokenizer。官方文档描述输出包括：</p>
-<ul><li><code>.npy</code>：拼接后的 token ID 数组；</li><li><code>.csv.gz</code>：每段 token 的索引元数据，包含 <code>start</code>、<code>end</code>、<code>id</code>、<code>src</code> 和 <code>loc</code>。</li></ul>
-<p>索引文件让训练端能够从连续 token 数组追溯回原始文档 ID、源文件路径和行位置。若只保留 token IDs 而丢掉这些映射，后续数据审计、去污染和删除请求都会更困难。</p>
-<pre><code># 典型 CLI 流程（路径和配置需替换为自己的数据）
-dolma tag --documents "data/v0/documents/*.json.gz" \
+<section id="pipeline"><h2>按“标注 → 去重 → 混合 → tokenization”组织流程</h2>
+<p>官方 v1.2.1 getting-started 文档用 Wikipedia 演示了一个可复现的命令序列。先准备固定日期的输入快照，再运行 taggers，随后计算重复段落属性，最后由 mixer 根据属性过滤并输出文档，最后按指定 tokenizer 处理 token。</p>
+<pre><code># 1. 为文档和段落生成属性
+dolma tag \
+  --documents "wikipedia/v0/documents/*" \
+  --experiment audit \
   --taggers random_number_v1 char_length_with_paragraphs_v1 \
-  --experiment audit --processes 8
-
-dolma dedupe --documents "data/v0/documents/*.json.gz" \
-  --dedupe.paragraphs.attribute_name bff_duplicate_paragraph_spans \
-  --bloom_filter.file /tmp/dolma_bloom_filter.bin \
-  --no-bloom_filter.read_only \
-  --bloom_filter.estimated_doc_count 6000000 \
-  --bloom_filter.desired_false_positive_rate 0.0001 \
   --processes 8
 
-dolma -c config/mixer.yaml mix --processes 8
+# 2. 标记重复段落（Bloom filter 可能产生 false positives）
+dolma dedupe \
+  --documents "wikipedia/v0/documents/*" \
+  --dedupe.paragraphs.attribute_name "bff_duplicate_paragraph_spans" \
+  --bloom_filter.file "/tmp/dedupe.bin" \
+  --bloom_filter.estimated_doc_count "6000000" \
+  --bloom_filter.desired_false_positive_rate "0.0001" \
+  --processes 8
 
-dolma tokens --documents "data/curated/documents/*.gz" \
-  --tokenizer.name_or_path "your-pinned-tokenizer" \
-  --destination "data/curated/tokens" --processes 8</code></pre>
+# 3. 用配置文件混合并过滤
+dolma -c examples/wikipedia-mixer.json mix --processes 8
+
+# 4. 固定 tokenizer 后统计 / 输出 token
+dolma tokens \
+  --documents "wikipedia/example0/documents/*.gz" \
+  --tokenizer.name_or_path "EleutherAI/gpt-neox-20b" \
+  --destination "wikipedia/example0/tokens" \
+  --processes 8</code></pre>
+<p>以上命令是官方 v1.2.1 文档中的参数模式示例，输入路径、并行进程数和 Bloom filter 规模只是该示例的运行配置，不是生产集群的通用默认值。实际运行应先用 <code>--dryrun</code> 或小样本验证配置，再扩大规模。</p>
 </section>
-<section id="dolma3"><h2>Dolma 3：从公开语料走向可重建的数据配方</h2>
-<p>截至当前官方仓库，Dolma 3 描述了三个面向 OLMo 3 的数据集合：Dolma 3 Mix（约 5.9T tokens 的预训练 mix）、Dolma 3 Dolmino Mix（约 100B tokens 的 mid-training 数据，面向数学、代码、QA、指令与思考能力）、Dolma 3 Longmino Mix（约 50B tokens 的长上下文数据）。这些规模是仓库当前 README 对数据集的描述，不应与原始 Dolma 3T 语料或 OLMo3 技术报告中其他阶段的 token 统计混为一谈。</p>
-<p>Dolma 3 仓库主要公开数据集说明与重建配方；OLMo 3 技术报告还提到 <code>datamap-rs</code>、<code>duplodocus</code> 和 <code>dolma3</code> 等数据处理 / 去重 / 配方组件。这说明大规模数据系统会随版本演进，阅读时应先确认你在看的是哪一代 dataset、toolkit、recipe 与 license。</p>
-<div class="callout warning"><strong>许可不等于来源审查已结束。</strong>原始 Dolma dataset 使用 ODC-BY 发布；实际使用仍需阅读对应版本的数据说明、来源条件、归属要求与删除 / 隐私政策。工具能处理某个文件，不代表你自动拥有再分发权。</div>
+<section id="bloom"><h2>Bloom filter 的“可能重复”不是精确事实</h2>
+<p>Dolma 文档明确说明其去重使用内存 Bloom filter，因此存在 false positives：某个从未出现过的项目也可能被误判为已出现。Bloom filter 适合高吞吐地标记候选重复，但不能把一次命中解释为数学上确定的重复关系。</p>
+<p>因此，设计去重策略时要保存预计文档数、目标 false-positive rate、key 定义、输入顺序、Bloom filter 文件和处理配置。对误删成本很高的语料，应加入精确二次校验或人工抽样，估计误报带来的数据损失。</p></section>
+<section id="mixing"><h2>文档采样比例不等于 token 暴露比例</h2>
+<p>多源混合时，stream 的文档数、字节数和 token 数可能相差很大。若第 <math aria-label="i"><mi>i</mi></math> 个来源实际贡献 <math aria-label="T i"><msub><mi>T</mi><mi>i</mi></msub></math> 个 token，则其 token share 为：</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="来源 token share 公式，可横向滚动"><math display="block" aria-label="第 i 个来源的 token share 等于该来源 token 数除以所有来源 token 数之和"><mrow><msub><mi>p</mi><mi>i</mi></msub><mo>=</mo><mfrac><msub><mi>T</mi><mi>i</mi></msub><mrow><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>T</mi><mi>j</mi></msub></mrow></mfrac></mrow></math></div>
+<p>文档采样概率只有在长度分布、截断、重复曝光和 packing 等条件得到控制时，才可能近似目标 token share。应从目标语料版本和实际 tokenizer 重新计算，不要把某个示例的固定来源百分比写成通用配方。</p></section>
+<section id="license"><h2>版本、许可与来源边界</h2>
+<ul><li><strong>论文：</strong>Dolma corpus 论文发表于 ACL 2024，描述的是数据集设计和研究结果。</li><li><strong>工具包：</strong>本章 CLI 与配置说明绑定 Dolma Toolkit v1.2.1（release 日期 2025-07-07）。</li><li><strong>数据卡：</strong>当前默认语料版本为 v1_7；使用时记录确切 snapshot / version。</li><li><strong>许可：</strong>数据卡标注 ODC-BY，并明确要求同时遵守原始数据来源的许可与使用条款。公开可下载不等于所有来源都可无限制再分发。</li></ul>
 </section>
 <section id="calculator"><h2>交互实验：Bloom Filter 需要多少内存？</h2>
 <p>按标准 Bloom Filter 近似公式估算位数组大小与哈希函数数。该结果不等于 Dolma 实际运行时的全部内存；还未包括对象、索引、缓冲区与进程开销。</p>
@@ -84,16 +68,7 @@ from scripts.dolma_bloom import bloom_filter_size
 
 print(bloom_filter_size(6_000_000, 0.0001))</code></pre>
 </section>
-<section id="references"><h2>参考资料</h2><ol class="references">
-<li>Soldaini et al. (2024), <a href="https://aclanthology.org/2024.acl-long.840/">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>，ACL 2024。</li>
-<li><a href="https://github.com/allenai/dolma">allenai/dolma</a>：原始 Dolma Dataset 与 Toolkit。</li>
-<li><a href="https://github.com/allenai/dolma/tree/main/docs">Dolma Toolkit docs</a>：Getting Started、Data Format、Taggers、Deduplication、Mixer、Tokenization。</li>
-<li><a href="https://docs.allenai.org/training_data/dolma/">AI2 Dolma documentation</a>：当前 Dolma / Dolma 3 版本说明。</li>
-<li><a href="https://github.com/allenai/dolma3">allenai/dolma3</a>：Dolma 3 datasets 与 reconstruction recipes。</li>
-<li><a href="https://www.datocms-assets.com/64837/1763646865-olmo_3_technical_report-1.pdf">OLMo 3 Technical Report</a>：Dolma 3 Mix、数据阶段与工具链说明。</li>
-</ol></section>
-<footer class="article-footer"><a href="23.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="25.html">下一章 →</a></footer>
-</article></main></div></div><script>(()=>{
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Soldaini et al. <a href="https://aclanthology.org/2024.acl-long.840/" target="_blank" rel="noopener noreferrer">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>, ACL 2024.</li><li><a href="https://github.com/allenai/dolma/tree/v1.2.1" target="_blank" rel="noopener noreferrer">Dolma Toolkit v1.2.1 source</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md" target="_blank" rel="noopener noreferrer">Deduplication</a>.</li><li><a href="https://huggingface.co/datasets/allenai/dolma" target="_blank" rel="noopener noreferrer">Dolma dataset card, versions, token statistics and license</a>.</li></ol></section><footer class="article-footer"><a href="23.html">← 23 · DataTrove 流水线实战</a><a href="index.html">返回课程总览</a><a href="25.html">25 · 七类预训练数据构建范式对比 →</a></footer></article></main></div></div><script>(()=>{
 const n=document.getElementById("bloom-n"),p=document.getElementById("bloom-p");
 const nv=document.getElementById("bloom-n-value"),pv=document.getElementById("bloom-p-value"),out=document.getElementById("bloom-output");
 function render(){
@@ -102,4 +77,5 @@ function render(){
  out.textContent="约 "+(m/1e6).toFixed(1)+"M bits，"+mib.toFixed(1)+" MiB；理论最佳哈希函数数约 "+Math.round(k)+"。这是位数组下界近似，不包括运行时开销。";
 }
 n.addEventListener("input",render);p.addEventListener("input",render);render();
-})();</script></body></html>
+})();</script>
+</body></html>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 510" role="img" aria-labelledby="title desc">
+<title id="title">七类预训练数据构建范式时间线</title><desc id="desc">时间线展示 C4 规则过滤、CCNet 语言模型评分、The Pile 多源混合、RefinedWeb 纯网页精细清洗、FineWeb 数据集消融与教育子集、Dolma 多源透明语料和工具包、FLUX 高保留率过滤预印本。</desc>
+<rect x="18" y="18" width="1164" height="474" rx="24" fill="#f7faf8" stroke="#dce5e3"/>
+<g font-family="system-ui,sans-serif">
+<path d="M100 220 H1100" stroke="#9bb7b1" stroke-width="5" stroke-linecap="round"/>
+<g>
+<circle cx="110" cy="220" r="13" fill="#087e80"/><circle cx="270" cy="220" r="13" fill="#087e80"/><circle cx="430" cy="220" r="13" fill="#6e62a8"/><circle cx="590" cy="220" r="13" fill="#087e80"/><circle cx="750" cy="220" r="13" fill="#b67b19"/><circle cx="910" cy="220" r="13" fill="#6e62a8"/><circle cx="1070" cy="220" r="13" fill="#c65e42"/>
+</g>
+<g text-anchor="middle">
+<g fill="#17343b" font-size="20" font-weight="700"><text x="110" y="104">C4</text><text x="270" y="104">CCNet</text><text x="430" y="104">The Pile</text><text x="590" y="104">RefinedWeb</text><text x="750" y="104">FineWeb</text><text x="910" y="104">Dolma</text><text x="1070" y="104">FLUX</text></g>
+<g fill="#526773" font-size="15"><text x="110" y="133">2019 / 2020</text><text x="270" y="133">2020</text><text x="430" y="133">2020</text><text x="590" y="133">2023</text><text x="750" y="133">2024</text><text x="910" y="133">2023–24</text><text x="1070" y="133">2026 preprint</text></g>
+<g fill="#526773" font-size="15"><text x="110" y="270">规则过滤</text><text x="270" y="270">语言模型评分</text><text x="430" y="270">多源混合</text><text x="590" y="270">纯网页 + 去重</text><text x="750" y="270">过滤消融 / 教育分级</text><text x="910" y="270">透明多源语料</text><text x="1070" y="270">高保留率流程</text></g>
+</g>
+<g fill="#fff" stroke="#dce5e3" stroke-width="1.5">
+<rect x="50" y="315" width="120" height="100" rx="12"/><rect x="210" y="315" width="120" height="100" rx="12"/><rect x="370" y="315" width="120" height="100" rx="12"/><rect x="530" y="315" width="120" height="100" rx="12"/><rect x="690" y="315" width="120" height="100" rx="12"/><rect x="850" y="315" width="120" height="100" rx="12"/><rect x="1010" y="315" width="120" height="100" rx="12"/>
+</g>
+<g text-anchor="middle" fill="#30434b" font-size="14"><text x="110" y="350">T5 / C4</text><text x="110" y="375">Common Crawl</text><text x="270" y="350">Wikipedia</text><text x="270" y="375">LM perplexity</text><text x="430" y="350">22 subsets</text><text x="430" y="375">825 GiB</text><text x="590" y="350">Web only</text><text x="590" y="375">600B released</text><text x="750" y="350">96 snapshots</text><text x="750" y="375">15T / 1.3T Edu</text><text x="910" y="350">3T tokens</text><text x="910" y="375">corpus + toolkit</text><text x="1070" y="350">3B / 60B</text><text x="1070" y="375">paper-specific eval</text></g>
+<text x="600" y="455" text-anchor="middle" fill="#713e2e" font-size="16">时间线表示研究与数据集的不同设计取舍，不表示后者在所有任务上必然优于前者</text>
+</g></svg>

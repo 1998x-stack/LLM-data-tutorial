@@ -4,94 +4,67 @@
   "updated": "2026-11-22",
   "claims": [
     {
-      "id": "24-C1",
-      "claim": "The original Dolma dataset is an open three-trillion-token English corpus built from web content, scientific papers, code, public-domain books, social media and encyclopedic materials.",
-      "kind": "paper-method",
-      "source_url": "https://aclanthology.org/2024.acl-long.840/",
-      "locator": "Abstract; corpus composition",
-      "status": "verified",
-      "notes": "This describes the original Dolma dataset, not every later Dolma-family release."
-    },
-    {
-      "id": "24-C2",
-      "claim": "The original Dolma Toolkit curation workflow consists of tagging documents, optional deduplication, mixing and filtering, and tokenization.",
+      "id": "CH24-C01",
+      "claim": "The Dolma dataset card describes a three-trillion-token English corpus built from web content, academic publications, code, books and encyclopedic materials, among other sources.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/README.md",
-      "locator": "Dataset curation with the Dolma toolkit usually happens in four steps",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Dataset overview; dataset description",
       "status": "verified",
-      "notes": "The steps can be rerun and recombined; taggers and dedupe can produce attributes before the mixer makes retention decisions."
+      "notes": "Three trillion tokens describes the corpus-level release framing, not the exact token count consumed by every model trained on a Dolma version."
     },
     {
-      "id": "24-C3",
-      "claim": "The Dolma document format requires id, text and source fields, with added, created and metadata fields optional.",
+      "id": "CH24-C02",
+      "claim": "The dataset card marks v1_7 as the default version and says it was released on 2024-04-15 for OLMo 7B-v1.7; its summary distinguishes full-corpus token counts from sampled training exposure.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/data-format.md",
-      "locator": "Dolma Document Format",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Versions table; Summary Statistics (v1.7); lines describing 1.715T tokens after sampling",
       "status": "verified",
-      "notes": "Source-specific adapters should preserve real provenance rather than fabricating missing values."
+      "notes": "The chapter explicitly distinguishes dataset version v1_7 from the Dolma Toolkit package version 1.2.1."
     },
     {
-      "id": "24-C4",
-      "claim": "Dolma stores tagger and deduplication outputs under attributes subdirectories while preserving the source document directory structure for alignment.",
+      "id": "CH24-C03",
+      "claim": "Dolma Toolkit v1.2.1 is the latest tagged release in the inspected repository release history and was published on 2025-07-07.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/data-format.md",
-      "locator": "Directory Structure; attributes/<attribute-name>",
+      "source_url": "https://github.com/allenai/dolma/releases/tag/v1.2.1",
+      "locator": "Release tag v1.2.1 metadata",
       "status": "verified",
-      "notes": "The sidecar convention allows multiple attribute sets to be reused with the same document files."
+      "notes": "This is a software release version, not a corpus snapshot version."
     },
     {
-      "id": "24-C5",
-      "claim": "Dolma's documented dedupe command uses an in-memory Bloom Filter and can produce false positives; duplicate decisions are represented as attributes for later mixing.",
+      "id": "CH24-C04",
+      "claim": "The v1.2.1 CLI documents tag, dedupe, mix, list, stat and tokens commands, and the getting-started guide demonstrates the processing sequence.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/deduplication.md",
-      "locator": "Deduplication overview; Bloom Filter behavior",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md",
+      "locator": "CLI help output; Process Wikipedia steps 1–4",
       "status": "verified",
-      "notes": "A Bloom-filter hit means possibly present, not a mathematically exact duplicate proof."
+      "notes": "The commands and example flags are tied to the v1.2.1 documentation; input paths and process counts are illustrative environment-specific values."
     },
     {
-      "id": "24-C6",
-      "claim": "Dolma Mixer combines streams, merges named attributes, and supports include/exclude filters expressed with JSONPath as well as span replacement.",
+      "id": "CH24-C05",
+      "claim": "Dolma's dedupe command uses an in-memory Bloom filter and can produce false positives.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/mixer.md",
-      "locator": "Overview; streams[].filter.include; streams[].filter.exclude; span_replacement",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md",
+      "locator": "Deduplication overview",
       "status": "verified",
-      "notes": "Mixer configuration is versioned and should be reviewed before destructive output generation."
+      "notes": "The chapter warns that a positive Bloom-filter match is not an exact duplicate proof."
     },
     {
-      "id": "24-C7",
-      "claim": "The Dolma tokenizer writes concatenated token IDs to .npy files and per-document index metadata to .csv.gz files with start, end, id, src and loc columns.",
+      "id": "CH24-C06",
+      "claim": "The dataset card states ODC-BY licensing and requires users to also observe original source licenses and terms.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/tokenize.md",
-      "locator": "Output Format",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Licensing Information",
       "status": "verified",
-      "notes": "The index metadata preserves traceability from token spans back to source documents."
+      "notes": "Do not summarize this as unrestricted reuse; downstream use must account for source-level terms and applicable law."
     },
     {
-      "id": "24-C8",
-      "claim": "The current allenai/dolma3 README describes Dolma 3 Mix as a 5.9T-token pretraining dataset, Dolma 3 Dolmino Mix as 100B tokens, and Dolma 3 Longmino Mix as 50B tokens.",
-      "kind": "implementation",
-      "source_url": "https://github.com/allenai/dolma3",
-      "locator": "README → Dolma 3 datasets",
-      "status": "verified",
-      "notes": "These are current repository descriptions; do not combine them into a single corpus or confuse them with the original Dolma 3T dataset."
-    },
-    {
-      "id": "24-C9",
-      "claim": "The Dolma Toolkit repository and the Dolma 3 repository are separate software/data artifacts: the former documents the dolma CLI, while the latter publishes Dolma 3 dataset descriptions and reconstruction recipes.",
+      "id": "CH24-C07",
+      "claim": "The token-share expression is a bookkeeping definition based on per-source token counts.",
       "kind": "derived",
-      "source_url": "https://github.com/allenai/dolma3",
-      "locator": "Repository README; compared with https://github.com/allenai/dolma/docs/getting-started.md",
+      "source_url": "https://huggingface.co/datasets/allenai/dolma",
+      "locator": "Editorial formula in this chapter; related to dataset summary token statistics",
       "status": "derived",
-      "notes": "Check each repository and version before copying command examples; a dataset recipe repository is not automatically the same CLI package."
-    },
-    {
-      "id": "24-C10",
-      "claim": "The original Dolma dataset release uses the ODC-BY license according to the official repository and dataset card.",
-      "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma",
-      "locator": "README → Dolma Dataset license statement",
-      "status": "verified",
-      "notes": "A dataset-level license statement does not replace source-specific rights, attribution, privacy or removal review."
+      "notes": "This formula is a tutorial definition and does not claim that Dolma's mixer directly guarantees an exact token share."
     }
   ]
 }

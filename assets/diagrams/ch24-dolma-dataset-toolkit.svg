@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+<title id="title">Dolma 数据集与工具包的区别</title><desc id="desc">左侧表示 Dolma 语料由网页、论文、代码、书籍、社交媒体和百科等来源组成；右侧表示 Dolma Toolkit 通过 tag、dedupe、mix、stat、tokens 等命令处理用户自己的文档。</desc>
+<rect x="18" y="18" width="1164" height="434" rx="24" fill="#f7faf8" stroke="#dce5e3"/>
+<g font-family="system-ui,sans-serif">
+<rect x="55" y="55" width="510" height="355" rx="20" fill="#e4f3f1" stroke="#087e80" stroke-width="2"/>
+<text x="310" y="96" text-anchor="middle" fill="#17343b" font-size="26" font-weight="700">Dolma Dataset</text>
+<text x="310" y="124" text-anchor="middle" fill="#526773" font-size="16">3T-token English corpus · research artifact</text>
+<g fill="#fff" stroke="#9acfc6" stroke-width="1.5">
+<rect x="95" y="160" width="185" height="58" rx="10"/><rect x="335" y="160" width="185" height="58" rx="10"/>
+<rect x="95" y="237" width="185" height="58" rx="10"/><rect x="335" y="237" width="185" height="58" rx="10"/>
+<rect x="95" y="314" width="185" height="58" rx="10"/><rect x="335" y="314" width="185" height="58" rx="10"/>
+</g>
+<g fill="#17343b" text-anchor="middle" font-size="18" font-weight="650"><text x="187" y="196">Web</text><text x="427" y="196">Scientific papers</text><text x="187" y="273">Code</text><text x="427" y="273">Public-domain books</text><text x="187" y="350">Social media</text><text x="427" y="350">Encyclopedic text</text></g>
+<rect x="635" y="55" width="510" height="355" rx="20" fill="#f0eef9" stroke="#6e62a8" stroke-width="2"/>
+<text x="890" y="96" text-anchor="middle" fill="#302a55" font-size="26" font-weight="700">Dolma Toolkit</text>
+<text x="890" y="124" text-anchor="middle" fill="#526773" font-size="16">v1.2.1 · processing software</text>
+<g fill="#fff" stroke="#b8b0de" stroke-width="1.5"><rect x="690" y="160" width="180" height="58" rx="10"/><rect x="890" y="160" width="180" height="58" rx="10"/><rect x="690" y="237" width="180" height="58" rx="10"/><rect x="890" y="237" width="180" height="58" rx="10"/><rect x="790" y="314" width="180" height="58" rx="10"/></g>
+<g fill="#302a55" text-anchor="middle" font-size="18" font-weight="650"><text x="780" y="196">tag</text><text x="980" y="196">dedupe</text><text x="780" y="273">mix</text><text x="980" y="273">stat</text><text x="880" y="350">tokens</text></g>
+<path d="M575 230 H625" stroke="#b67b19" stroke-width="3" stroke-dasharray="7 6"/>
+<text x="600" y="215" text-anchor="middle" fill="#8a6218" font-size="13">概念区分</text>
+</g></svg>

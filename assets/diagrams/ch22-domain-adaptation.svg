@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+<title id="title">领域适配的数据与评估双轨</title><desc id="desc">通用语料和领域语料按 token 级配比进入继续预训练，随后分别在领域任务和通用能力评测集上检查专业收益与遗忘。</desc>
+<defs><marker id="a22" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6" fill="none" stroke="#087e80" stroke-width="1.5"/></marker></defs>
+<rect x="18" y="18" width="1164" height="434" rx="24" fill="#f7faf8" stroke="#dce5e3"/>
+<g font-family="system-ui,sans-serif" text-anchor="middle">
+<rect x="65" y="90" width="260" height="105" rx="16" fill="#e4f3f1" stroke="#087e80" stroke-width="2"/><text x="195" y="132" font-size="24" font-weight="700" fill="#17343b">通用语料</text><text x="195" y="164" font-size="16" fill="#526773">能力回放 / 语言覆盖</text>
+<rect x="65" y="270" width="260" height="105" rx="16" fill="#f0eef9" stroke="#6e62a8" stroke-width="2"/><text x="195" y="312" font-size="24" font-weight="700" fill="#302a55">领域语料</text><text x="195" y="344" font-size="16" fill="#526773">专业术语 / 任务相关分布</text>
+<rect x="465" y="165" width="270" height="135" rx="18" fill="#fff" stroke="#b67b19" stroke-width="2"/><text x="600" y="210" font-size="24" font-weight="700" fill="#17343b">继续预训练</text><text x="600" y="243" font-size="17" fill="#526773">DAPT / TAPT</text><text x="600" y="271" font-size="15" fill="#526773">按 token 计量 λ，不按文档数猜测</text>
+<path d="M325 142 H430 V205 H460" stroke="#087e80" stroke-width="3" fill="none" marker-end="url(#a22)"/><path d="M325 322 H430 V260 H460" stroke="#6e62a8" stroke-width="3" fill="none" marker-end="url(#a22)"/>
+<rect x="865" y="75" width="270" height="110" rx="16" fill="#e4f3f1" stroke="#087e80" stroke-width="2"/><text x="1000" y="119" font-size="23" font-weight="700" fill="#17343b">领域评测</text><text x="1000" y="151" font-size="16" fill="#526773">专业准确率 / 校准 / 切片</text>
+<rect x="865" y="285" width="270" height="110" rx="16" fill="#fff0e9" stroke="#c65e42" stroke-width="2"/><text x="1000" y="329" font-size="23" font-weight="700" fill="#713e2e">通用能力回归</text><text x="1000" y="361" font-size="16" fill="#713e2e">遗忘 / 安全 / 多语言 / 指令</text>
+<path d="M735 210 H815 V130 H860" stroke="#087e80" stroke-width="3" fill="none" marker-end="url(#a22)"/><path d="M735 255 H815 V340 H860" stroke="#c65e42" stroke-width="3" fill="none" marker-end="url(#a22)"/>
+<text x="600" y="430" font-size="16" fill="#526773">λ 是训练 token 暴露比例的设计变量；最佳值依任务、语料、模型与训练预算而变</text>
+</g></svg>

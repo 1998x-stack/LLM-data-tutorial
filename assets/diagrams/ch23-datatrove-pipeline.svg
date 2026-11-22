@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+<title id="title">DataTrove 文档处理流水线与任务分片</title><desc id="desc">Readers 将文件转为 Document，依次经过 extractor、filter、dedup、stats 和 writer；executor 将输入文件分配给多个任务并记录完成状态。</desc>
+<defs><marker id="a23" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6" fill="none" stroke="#087e80" stroke-width="1.5"/></marker></defs>
+<rect x="18" y="18" width="1164" height="434" rx="24" fill="#f7faf8" stroke="#dce5e3"/>
+<g font-family="system-ui,sans-serif" text-anchor="middle">
+<g fill="#e4f3f1" stroke="#087e80" stroke-width="2"><rect x="55" y="105" width="150" height="95" rx="14"/><rect x="250" y="105" width="150" height="95" rx="14"/><rect x="445" y="105" width="150" height="95" rx="14"/><rect x="640" y="105" width="150" height="95" rx="14"/><rect x="835" y="105" width="150" height="95" rx="14"/><rect x="1030" y="105" width="120" height="95" rx="14"/></g>
+<g fill="#17343b" font-size="21" font-weight="700"><text x="130" y="145">Reader</text><text x="325" y="145">Extractor</text><text x="520" y="145">Filter</text><text x="715" y="145">Dedup</text><text x="910" y="145">Stats</text><text x="1090" y="145">Writer</text></g>
+<g fill="#526773" font-size="15"><text x="130" y="173">WARC / JSONL</text><text x="325" y="173">HTML → text</text><text x="520" y="173">quality / language</text><text x="715" y="173">MinHash stages</text><text x="910" y="173">counts / slices</text><text x="1090" y="173">JSONL / Parquet</text></g>
+<g stroke="#087e80" stroke-width="3" fill="none" marker-end="url(#a23)"><path d="M205 152 H245"/><path d="M400 152 H440"/><path d="M595 152 H635"/><path d="M790 152 H830"/><path d="M985 152 H1025"/></g>
+<rect x="150" y="275" width="900" height="115" rx="16" fill="#fff" stroke="#b67b19" stroke-width="2"/>
+<text x="600" y="310" fill="#17343b" font-size="23" font-weight="700">Executor：Local / Slurm / Ray / Jobs</text>
+<g fill="#f0eef9" stroke="#6e62a8" stroke-width="1.5"><rect x="210" y="332" width="170" height="40" rx="8"/><rect x="515" y="332" width="170" height="40" rx="8"/><rect x="820" y="332" width="170" height="40" rx="8"/></g>
+<g fill="#302a55" font-size="16"><text x="295" y="358">Task / Shard 01</text><text x="600" y="358">Task / Shard 02</text><text x="905" y="358">Task / Shard N</text></g>
+<text x="600" y="425" fill="#526773" font-size="16">任务完成标记写入 logging_dir；重跑时保持输入与 tasks 分配不变</text>
+</g></svg>
