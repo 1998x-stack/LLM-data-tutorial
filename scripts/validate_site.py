@@ -7,6 +7,7 @@ import sys
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTERNAL = re.compile(r"^(?:https?:|mailto:|tel:|data:|javascript:)", re.I)
@@ -92,12 +93,46 @@ def validate():
             if parser.nav < 1: errors.append(f"{chapter['file']}: missing nav")
             if parser.figures < 1: errors.append(f"{chapter['file']}: missing figure")
             evidence_path = ROOT / "evidence" / f"{chapter['num']}.json"
-            if not evidence_path.is_file(): errors.append(f"{chapter['file']}: missing evidence ledger")
+            if not evidence_path.is_file():
+                errors.append(f"{chapter['file']}: missing evidence ledger")
             else:
                 evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-                for claim in evidence.get("claims", []):
+                claims = evidence.get("claims") if isinstance(evidence, dict) else None
+                if not isinstance(claims, list) or not claims:
+                    errors.append(f"{chapter['file']}: evidence ledger must contain a non-empty claims list")
+                    claims = []
+                allowed_kinds = {"paper-result", "paper-method", "official-doc", "implementation", "derived", "illustrative", "standard"}
+                allowed_statuses = {"verified", "derived", "illustrative", "unverified"}
+                required_fields = ("id", "claim", "kind", "source_url", "locator", "status", "notes")
+                seen_claim_ids = set()
+                for claim in claims:
+                    if not isinstance(claim, dict):
+                        errors.append(f"{chapter['file']}: evidence claim must be an object")
+                        continue
+                    missing = [field for field in required_fields if not isinstance(claim.get(field), str) or not claim[field].strip()]
+                    if missing:
+                        errors.append(f"{chapter['file']}: evidence claim missing {', '.join(missing)}")
+                    claim_id = claim.get("id")
+                    if isinstance(claim_id, str) and claim_id:
+                        if claim_id in seen_claim_ids:
+                            errors.append(f"{chapter['file']}: duplicate evidence claim id {claim_id}")
+                        seen_claim_ids.add(claim_id)
+                    if claim.get("kind") not in allowed_kinds:
+                        errors.append(f"{chapter['file']}: unsupported evidence kind {claim.get('kind')!r}")
+                    if claim.get("status") not in allowed_statuses:
+                        errors.append(f"{chapter['file']}: unsupported evidence status {claim.get('status')!r}")
+                    source_url = claim.get("source_url", "")
+                    parsed = urlparse(source_url) if isinstance(source_url, str) else None
+                    if not parsed or parsed.scheme != "https" or not parsed.netloc:
+                        errors.append(f"{chapter['file']}: evidence source_url must be absolute HTTPS ({claim_id})")
                     if claim.get("status") == "verified" and not (claim.get("source_url") and claim.get("locator")):
-                        errors.append(f"{chapter['file']}: verified claim missing source/locator: {claim.get('id')}")
+                        errors.append(f"{chapter['file']}: verified claim missing source/locator: {claim_id}")
+            if chapter["num"] in {f"{n:02d}" for n in range(21, 26)}:
+                if parser.figures != parser.figcaptions:
+                    errors.append(f"{chapter['file']}: every figure must have a figcaption")
+                for tag, attrs in parser.tags:
+                    if tag == "math" and not attrs.get("aria-label"):
+                        errors.append(f"{chapter['file']}: MathML element missing aria-label")
     svg_dir = ROOT / "assets" / "diagrams"
     for svg_path in sorted(svg_dir.glob("*.svg")):
         try:
