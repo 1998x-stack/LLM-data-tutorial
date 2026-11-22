@@ -8,8 +8,8 @@
 
 - 28 个课程模块，保留原有 01.html–28.html 章节入口。
 - 首页支持全文搜索、知识分类筛选与标签筛选。
-- 已深度重构：01–20，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
-- 01–20 每篇重构文章维护独立 evidence/NN.json 证据清单。
+- 已深度重构：01–25，采用渐进式叙事、原创 SVG、交互练习、MathML 公式、可运行算法示例、单元测试和论文证据账本。
+- 01–25 每篇重构文章维护独立 evidence/NN.json 证据清单。
 - courses.json 是唯一课程元数据源；courses-data.js 是离线首页使用的生成文件。
 - 纯静态站点，直接打开 index.html 即可浏览，无需构建服务或第三方 CDN。
 
@@ -65,11 +65,11 @@
 | 18 | 数据质量评估体系 | DCLM / Dolma、质量维度、分层抽样、置信区间、受控下游评测 |
 | 19 | Tokenization 与 BPE | pair frequency、merge ranks、byte-level BPE、SentencePiece、tiktoken |
 | 20 | 词表设计与优化 | vocabulary × hidden size、embedding / softmax 成本、多语言 token premium |
-| 21 | 合成数据生成 | Self-Play、数据增强、模型坍缩 |
+| 21 | 合成数据生成 | Self-Instruct、Evol-Instruct、Phi-4、验证闭环与模型坍缩风险 |
 | 22 | 领域适配数据策略 | 代码、科学、医学与多语言 |
-| 23 | DataTrove 流水线实战 | 模块化数据处理与可复现配置 |
-| 24 | Dolma 工具链全解析 | 开放语料、数据整理与工具链 |
-| 25 | 数据清洗范式比较 | 规则、模型、混合与数据选择 |
+| 23 | DataTrove 流水线实战 | DataTrove v0.10.1：模块化数据处理与可复现配置 |
+| 24 | Dolma 工具链全解析 | Dolma 3T-token 语料与 Toolkit v1.2.1 |
+| 25 | 七类预训练数据构建范式对比 | 规则、模型、混合与数据选择 |
 | 26 | 自动化数据准备系统 | Agent 编排、质量反馈与治理 |
 | 27 | 在线数据选择与动态配比 | 课程学习、在线采样与动态调度 |
 | 28 | 端到端综合实战 | 数据契约、流水线、验收与排障 |
@@ -80,7 +80,7 @@
     ├── AGENTS.md                 # 代理协作与质量门禁
     ├── README.md
     ├── index.html                # 可搜索、可筛选的课程首页
-    ├── 01.html ... 28.html       # 章节入口；01–20 已深度重构；其余章节按四至五篇一批迁移
+    ├── 01.html ... 28.html       # 章节入口；01–25 已深度重构；26–28 按批次继续完善
     ├── courses.json              # 课程元数据唯一事实源
     ├── courses-data.js           # 离线首页生成数据
     ├── theme.css                 # 首页与章节共享设计系统
