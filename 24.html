@@ -57,4 +57,25 @@ dolma tokens \
 <section id="license"><h2>版本、许可与来源边界</h2>
 <ul><li><strong>论文：</strong>Dolma corpus 论文发表于 ACL 2024，描述的是数据集设计和研究结果。</li><li><strong>工具包：</strong>本章 CLI 与配置说明绑定 Dolma Toolkit v1.2.1（release 日期 2025-07-07）。</li><li><strong>数据卡：</strong>当前默认语料版本为 v1_7；使用时记录确切 snapshot / version。</li><li><strong>许可：</strong>数据卡标注 ODC-BY，并明确要求同时遵守原始数据来源的许可与使用条款。公开可下载不等于所有来源都可无限制再分发。</li></ul>
 </section>
-<section id="references"><h2>参考资料</h2><ol class="references"><li>Soldaini et al. <a href="https://aclanthology.org/2024.acl-long.840/" target="_blank" rel="noopener noreferrer">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>, ACL 2024.</li><li><a href="https://github.com/allenai/dolma/tree/v1.2.1" target="_blank" rel="noopener noreferrer">Dolma Toolkit v1.2.1 source</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md" target="_blank" rel="noopener noreferrer">Deduplication</a>.</li><li><a href="https://huggingface.co/datasets/allenai/dolma" target="_blank" rel="noopener noreferrer">Dolma dataset card, versions, token statistics and license</a>.</li></ol></section><footer class="article-footer"><a href="23.html">← 23 · DataTrove 流水线实战</a><a href="index.html">返回课程总览</a><a href="25.html">25 · 七类预训练数据构建范式对比 →</a></footer></article></main></div></div></body></html>
+<section id="calculator"><h2>交互实验：Bloom Filter 需要多少内存？</h2>
+<p>按标准 Bloom Filter 近似公式估算位数组大小与哈希函数数。该结果不等于 Dolma 实际运行时的全部内存；还未包括对象、索引、缓冲区与进程开销。</p>
+<div class="demo-panel">
+<label class="range-label" for="bloom-n"><span>预计元素数 n</span><strong id="bloom-n-value">6,000,000</strong></label><input id="bloom-n" type="range" min="100000" max="50000000" step="100000" value="6000000">
+<label class="range-label" for="bloom-p"><span>目标 false-positive rate</span><strong id="bloom-p-value">0.01%</strong></label><input id="bloom-p" type="range" min="0.0001" max="0.05" step="0.0001" value="0.0001">
+<div id="bloom-output" class="interactive-output" aria-live="polite">约 115.0M bits，13.7 MiB；最佳哈希函数数约 13。</div></div>
+<pre><code># scripts/dolma_bloom.py
+from scripts.dolma_bloom import bloom_filter_size
+
+print(bloom_filter_size(6_000_000, 0.0001))</code></pre>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Soldaini et al. <a href="https://aclanthology.org/2024.acl-long.840/" target="_blank" rel="noopener noreferrer">Dolma: an Open Corpus of Three Trillion Tokens for Language Model Pretraining Research</a>, ACL 2024.</li><li><a href="https://github.com/allenai/dolma/tree/v1.2.1" target="_blank" rel="noopener noreferrer">Dolma Toolkit v1.2.1 source</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>；<a href="https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md" target="_blank" rel="noopener noreferrer">Deduplication</a>.</li><li><a href="https://huggingface.co/datasets/allenai/dolma" target="_blank" rel="noopener noreferrer">Dolma dataset card, versions, token statistics and license</a>.</li></ol></section><footer class="article-footer"><a href="23.html">← 23 · DataTrove 流水线实战</a><a href="index.html">返回课程总览</a><a href="25.html">25 · 七类预训练数据构建范式对比 →</a></footer></article></main></div></div><script>(()=>{
+const n=document.getElementById("bloom-n"),p=document.getElementById("bloom-p");
+const nv=document.getElementById("bloom-n-value"),pv=document.getElementById("bloom-p-value"),out=document.getElementById("bloom-output");
+function render(){
+ const count=Number(n.value),rate=Number(p.value),m=-count*Math.log(rate)/(Math.LN2*Math.LN2),k=(m/count)*Math.LN2,bytes=m/8,mib=bytes/(1024*1024);
+ nv.textContent=count.toLocaleString("en-US");pv.textContent=(rate*100).toFixed(3).replace(/0+$/,"").replace(/\.$/,"")+"%";
+ out.textContent="约 "+(m/1e6).toFixed(1)+"M bits，"+mib.toFixed(1)+" MiB；理论最佳哈希函数数约 "+Math.round(k)+"。这是位数组下界近似，不包括运行时开销。";
+}
+n.addEventListener("input",render);p.addEventListener("input",render);render();
+})();</script>
+</body></html>
