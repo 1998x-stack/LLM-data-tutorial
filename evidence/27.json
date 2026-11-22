@@ -1,0 +1,97 @@
+{
+  "chapter": "27",
+  "title": "在线数据选择与动态配比",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "27-C1",
+      "claim": "Curriculum Learning studies organizing training examples progressively rather than uniformly sampling all examples from the beginning.",
+      "kind": "paper-method",
+      "source_url": "https://mlanthology.org/icml/2009/bengio2009icml-curriculum/",
+      "locator": "Abstract; curriculum motivation",
+      "status": "verified",
+      "notes": "Curriculum schedules vary; no universal 20/50/30 training-step schedule is asserted."
+    },
+    {
+      "id": "27-C2",
+      "claim": "DoReMi learns domain mixture proportions using a small reference model and proxy model with Group DRO on excess loss, before transferring proportions to a target LM.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/dcba6be91359358c2355cd920da3fcbd-Abstract-Conference.html",
+      "locator": "Abstract; algorithm summary",
+      "status": "verified",
+      "notes": "Proxy-stage adaptive weighting does not mean the target LM continually reoptimizes its mixture."
+    },
+    {
+      "id": "27-C3",
+      "claim": "DoReMi excess loss is measured relative to the reference model, so naively prioritizing raw high loss would not reproduce the DoReMi method.",
+      "kind": "paper-method",
+      "source_url": "https://crfm.stanford.edu/2023/09/14/doremi",
+      "locator": "Under the hood: excess loss and Group DRO optimizer",
+      "status": "verified",
+      "notes": "The Stanford authors' explanation supports the distinction; underlying equation belongs to the cited DoReMi paper."
+    },
+    {
+      "id": "27-C4",
+      "claim": "RegMix trains multiple small models with different mixtures, fits a regression to predict performance of unseen mixtures, and selects a mixture for larger-model pretraining.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/5f67d864aae6115374fed7beddd119e0-Abstract-Conference.html",
+      "locator": "Abstract; regression-based mixture selection",
+      "status": "verified",
+      "notes": "The proxy-to-target transfer is empirical under the paper's model/data/evaluation conditions."
+    },
+    {
+      "id": "27-C5",
+      "claim": "RegMix-D models proxy training trajectories to predict stage-specific mixtures and supports both offline schedule planning and online loss-adaptive variants.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2026.findings-aacl.84/",
+      "locator": "Abstract; offline and online deployment variants",
+      "status": "verified",
+      "notes": "Publication is Findings of IJCNLP-AACL 2026, not a claim about all dynamic data-mixing algorithms."
+    },
+    {
+      "id": "27-C6",
+      "claim": "Efficient Online Data Mixing combines bandit-style online selection with domain data mixture updates during LM pretraining.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/2312.02406",
+      "locator": "Abstract; Online Data Mixing algorithm",
+      "status": "verified",
+      "notes": "Online update reward assumptions and training setup are paper-specific."
+    },
+    {
+      "id": "27-C7",
+      "claim": "AC-ODM develops actor-critic-based dynamic data mixing for language-model pretraining and evaluates it in the paper's reported setup.",
+      "kind": "paper-method",
+      "source_url": "https://proceedings.mlr.press/v306/ma26i.html",
+      "locator": "Abstract; ICML 2026 proceedings",
+      "status": "verified",
+      "notes": "Do not copy paper speedups to untested models or budgets."
+    },
+    {
+      "id": "27-C8",
+      "claim": "The exercise's mixture p_i=(1-epsilon)*softmax(s_i/T)+epsilon/K is normalized and provides a floor of epsilon/K for each of K domains.",
+      "kind": "derived",
+      "source_url": "https://en.wikipedia.org/wiki/Softmax_function",
+      "locator": "Softmax definition; convex mixture with uniform distribution",
+      "status": "derived",
+      "notes": "The expression is original teaching mathematics and NOT an implementation of DoReMi, RegMix-D, ODM or AC-ODM."
+    },
+    {
+      "id": "27-C9",
+      "claim": "The demonstrated stable softmax is implemented with max-shifted exponentials to avoid overflow and returns a probability distribution.",
+      "kind": "implementation",
+      "source_url": "https://github.com/1998x-stack/LLM-data-tutorial/blob/main/scripts/online_mix.py",
+      "locator": "feedback_mixture; tests/test_online_mix.py",
+      "status": "verified",
+      "notes": "Tested utility computes only weights from externally defined scores; no training or reward estimation occurs."
+    },
+    {
+      "id": "27-C10",
+      "claim": "Comparing static, offline and online mixtures requires controlling token budget, tokenizer, model architecture, data snapshot and evaluation protocol.",
+      "kind": "derived",
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/19e4ea30dded58259665db375885e412-Abstract-Datasets_and_Benchmarks_Track.html",
+      "locator": "DataComp-LM standardized model/recipe/evaluation setup",
+      "status": "derived",
+      "notes": "Engineering experimental-design recommendation, not a universal ranking of algorithms."
+    }
+  ]
+}

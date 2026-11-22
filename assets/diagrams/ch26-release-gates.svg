@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" role="img" aria-labelledby="c26gate-title c26gate-desc"><title id="c26gate-title">治理硬门与质量审查决策树</title><desc id="c26gate-desc">先检查未解决的硬门违规，有则阻断；否则检查保留和抽检覆盖，不足则人工复核，满足时只进入待批准状态。</desc><rect x="0" y="0" width="1200" height="480" rx="24" fill="#f7faf9"/><g font-family="Arial,'Microsoft YaHei',sans-serif">
+<rect x="40" y="180" width="222" height="103" rx="15" fill="#e3eff7" stroke="#96b8c8" stroke-width="2"/><text x="151" y="212" font-size="18" fill="#294d55" font-weight="600" text-anchor="middle">Batch candidate</text><text x="151" y="240" font-size="13" fill="#617e86" font-weight="400" text-anchor="middle">counts · evidence</text>
+<path d="M262 230 L330 230" stroke="#688b87" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M320 223 L330 230 L320 237" stroke="#688b87" stroke-width="3" fill="none"/>
+<polygon points="470,135 610,230 470,325 330,230" fill="#fae8e6" stroke="#dba9a4" stroke-width="3"/>
+<text x="470" y="220" font-size="17" fill="#294d55" font-weight="600" text-anchor="middle">Hard violations?</text><text x="470" y="245" font-size="15" fill="#9a615e" font-weight="600" text-anchor="middle">count &gt; 0</text>
+<path d="M470 325 V380 H650" stroke="#ad6963" stroke-width="3" fill="none"/>
+<rect x="650" y="340" width="210" height="84" rx="15" fill="#fae8e6" stroke="#dba9a4" stroke-width="2"/><text x="755" y="372" font-size="18" fill="#294d55" font-weight="600" text-anchor="middle">BLOCK</text><text x="755" y="400" font-size="13" fill="#617e86" font-weight="400" text-anchor="middle">no downstream publish</text>
+<text x="508" y="366" font-size="13" fill="#ad6963" font-weight="700" text-anchor="middle">YES</text>
+<path d="M610 230 L656 230" stroke="#688b87" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M646 223 L656 230 L646 237" stroke="#688b87" stroke-width="3" fill="none"/>
+<rect x="656" y="180" width="210" height="100" rx="15" fill="#fff0df" stroke="#d9be8d" stroke-width="2"/><text x="761" y="212" font-size="18" fill="#294d55" font-weight="600" text-anchor="middle">Coverage gates</text><text x="761" y="240" font-size="13" fill="#617e86" font-weight="400" text-anchor="middle">retention + audit</text>
+<path d="M760 280 V330 H960" stroke="#ad996b" stroke-width="3" fill="none"/>
+<rect x="960" y="323" width="208" height="100" rx="15" fill="#fff0df" stroke="#d9be8d" stroke-width="2"/><text x="1064" y="355" font-size="18" fill="#294d55" font-weight="600" text-anchor="middle">REVIEW</text><text x="1064" y="383" font-size="13" fill="#617e86" font-weight="400" text-anchor="middle">human investigation</text>
+<text x="782" y="312" font-size="13" fill="#ad996b" font-weight="700" text-anchor="middle">FAIL</text>
+<path d="M866 230 L960 230" stroke="#688b87" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M950 223 L960 230 L950 237" stroke="#688b87" stroke-width="3" fill="none"/>
+<rect x="960" y="165" width="208" height="112" rx="15" fill="#dff0e7" stroke="#96c0aa" stroke-width="2"/><text x="1064" y="197" font-size="18" fill="#294d55" font-weight="600" text-anchor="middle">READY</text><text x="1064" y="225" font-size="13" fill="#617e86" font-weight="400" text-anchor="middle">human approval only</text>
+<text x="906" y="215" font-size="13" fill="#6a927b" font-weight="700" text-anchor="middle">PASS</text>
+<text x="600" y="460" font-size="14" fill="#607b73" font-weight="600" text-anchor="middle">硬门不可被质量分抵消 · READY 不代表已发布</text>
+</g></svg>

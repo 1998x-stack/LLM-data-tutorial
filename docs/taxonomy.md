@@ -49,3 +49,11 @@ Prefer stable, reusable lowercase tags. Do not create a new spelling for the sam
 6. Keep method parameters in article text and evidence ledgers; do not encode experimental thresholds as generic tags.
 7. Do not infer a paper's conclusion from a tag.
 8. Update this taxonomy and courses.json together when introducing a new category or namespace.
+
+
+## Batch 06 tags and distinctions
+
+- Automation: operator, orchestration, dag, asset-checks, release-gate, human-approval and sandbox are **operational** concepts, not paper names.
+- Data-mixing methods: distinguish doremi, regmix, regmix-d, online-data-mixing, ac-odm, proxy-training, excess-loss and exploration-floor.
+- Capstone: distinguish data-contract, schema-validation, rights-review, privacy-review, evaluation-holdout, exact-deduplication, manifest and quarantine.
+- "Data quality" can improve while permission to use or distribute remains unavailable. Governance gates remain orthogonal to scoring and sampling.

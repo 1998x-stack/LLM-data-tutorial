@@ -1,0 +1,12 @@
+{"id":"a001","text":"训练数据工程的第一步是确认来源和权利状态，再进入数据清洗流程。","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"a002","text":"高质量数据集应记录版本、抽样框和过滤理由，方便后续复核。","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"a003","text":"高质量数据集应记录版本、抽样框和过滤理由，方便后续复核。","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"b001","text":"使用稳定文档标识和内容哈希可以追踪每一次数据处理后的保留与删除情况。","source":"demo_docs","license":"CC-BY-4.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"b002","text":"采用独立验证集评估过滤策略，必须同时报告训练目标和模型计算预算。","source":"demo_docs","license":"CC-BY-4.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"b003","text":"真正的可复现不仅需要随机种子，也需要锁定输入、代码、配置和依赖版本。","source":"demo_docs","license":"CC-BY-4.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"a004","text":"短句","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"a005","text":"这是未经许可核验的候选文本，必须先经过人工权利审查才能纳入数据集。","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":false,"privacy_reviewed":true}
+{"id":"a006","text":"这条样本没有通过隐私核验，因此即使文字长度符合要求也必须阻止进入数据集。","source":"demo_manual","license":"CC0-1.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":false}
+{"id":"eval:heldout-001","text":"这是一条预先标识为评测保留集的文档，不能混入本轮的训练语料。","source":"demo_docs","license":"CC-BY-4.0","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"b004","text":"This English sample is excluded by the selected language policy.","source":"demo_docs","license":"CC-BY-4.0","lang":"en","rights_reviewed":true,"privacy_reviewed":true}
+{"id":"c001","text":"来自未知来源的数据不得因为文本流畅就自动进入最终语料。","source":"unknown","license":"unknown","lang":"zh","rights_reviewed":true,"privacy_reviewed":true}

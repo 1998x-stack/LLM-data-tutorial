@@ -5,7 +5,7 @@
 - courses.json parses and contains unique chapter numbers and valid category IDs.
 - courses-data.js is reproducibly generated from courses.json.
 - Every chapter file exists and every local chapter link resolves.
-- Articles 01–25 have one H1, semantic main/article/nav, figure captions, accessible MathML where formulas are used, primary references and a structured evidence/NN.json ledger.
+- Articles 01–28 have one H1, semantic main/article/nav, figure captions, accessible MathML where formulas are used, primary references and a structured evidence/NN.json ledger.
 - Algorithm examples have dependency-free unit tests for URL semantics, Bloom parameters, Jaccard, LSH candidate probability, perplexity score conversion, document-to-token mixture math, storage capacity estimates, manifest fingerprints, Wilson intervals, BPE merges and vocabulary parameter costs.
 - Articles 11–15 distinguish synthetic teaching values from empirical paper results and include source locators for verified quantitative claims.
 - Annotation exercises state that LLM labels are noisy measurements; contamination detection separates overlap from task leakage; data-mixture examples distinguish document shares from token shares.
@@ -41,3 +41,13 @@ Report each check as passed, failed or not verified. Static validation does not 
 - Quality audits report sampling frames, strata, weights and confidence assumptions; no universal scalar quality score is asserted.
 - Tokenizer examples label character-BPE as a teaching implementation, not a faithful GPT-2/tiktoken implementation; vocabulary comparisons use matched text and pinned tokenizer revisions.
 - Vocabulary calculators distinguish tied vs untied matrices and weight storage from optimizer state, activations and logits buffers.
+
+
+## Final batch 06 and whole-repository review
+
+- Articles 26–28 contain primary-source evidence ledgers and the same one-H1/main/article/nav/figcaption/MathML standards as 01–25.
+- Chapter 26 separates planner / sandbox execution from release controller, uses hard governance gates and a tested state machine.
+- Chapter 27 distinguishes DoReMi proxy Group DRO, RegMix static proxy regression, RegMix-D offline/online trajectories, ODM and AC-ODM online feedback. The teaching softmax has the same formula and default inputs as the tested Python helper.
+- Chapter 28 must ship executable stdlib Python code, fictional fixtures, policy, repeatable 5/7 result, quarantined rejection reasons without raw text, manifest hashes, idempotency and tamper detection.
+- Whole-repository audit checks all 28 chapters, metadata states, prerequisites, SVG references and evidence files, not just recently modified pages.
+- A successful static validation is **not** Chromium responsive/browser validation; record that gate separately.

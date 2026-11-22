@@ -1,0 +1,19 @@
+{
+  "allowed_sources": [
+    "demo_manual",
+    "demo_docs"
+  ],
+  "allowed_licenses": [
+    "CC0-1.0",
+    "CC-BY-4.0"
+  ],
+  "allowed_languages": [
+    "zh"
+  ],
+  "blocked_ids": [
+    "eval:heldout-001"
+  ],
+  "min_chars": 18,
+  "min_accepted": 2,
+  "max_rejection_fraction": 0.85
+}

@@ -173,3 +173,11 @@ A release report must include:
 - Pin tokenizer revisions when reporting token counts. Compare parallel texts using corpus token count (CTC) / reference-normalized token premium; bytes-per-token alone is not a fair cross-language compression metric because byte premiums differ.
 - Vocabulary costs include embedding and possibly untied LM-head weights, logits width and token-frequency allocation; report tied/untied assumptions and excluded memory terms.
 - Do not infer language complexity from token fertility or claim a single vocabulary size is universally optimal.
+
+
+## Batch 06 final-three production discipline
+- Chapters 26–28 complete the learning graph; maintain 01–28 status and category/tags/prerequisites in courses.json, then regenerate courses-data.js. Update homepage completion count, README and evidence ledgers together.
+- For automated preparation (26), draw explicit boundaries between untrusted source content, planner, sandbox runner, deterministic checks and privileged release controller. Stop on rights/privacy hard gates and require independent approval.
+- For dynamic mixing (27), DoReMi learns proxy-stage weights via excess loss and Group DRO; RegMix selects fixed mixtures by regression; RegMix-D has offline and online variants; ODM and AC-ODM update online. Do not mislabel any as another algorithm or claim universal gain.
+- For capstone (28), keep the stdlib example executable, deterministic and versioned. Distinguish source metadata flags from independently verified legal/privacy clearance; make rejected output omit raw text, compute output checksums, validate idempotent reruns and tampering, and never auto-publish.
+- Full-repository review must inspect existing 01–25 as well as the new 26–28, not merely the changed files. Report CI, branch/PR status, Pages and browser QA separately; archive a findings-and-fixes review record.

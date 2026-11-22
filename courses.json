@@ -907,29 +907,46 @@
       "file": "26.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "设计可观测、可验证、带质量反馈的自动化数据准备工作流。",
+      "summary": "从算子与 DAG 到 DataFlow-Agent、可观测执行、治理硬门与人工发布控制面，建立自动化语料生产的可审计边界。",
       "tags": [
         "automation",
         "agentic-workflow",
+        "dataflow-agent",
+        "operator",
+        "orchestration",
+        "dag",
+        "airflow",
+        "dagster",
+        "asset-checks",
         "data-quality",
-        "governance"
+        "governance",
+        "release-gate",
+        "rollback",
+        "data-lineage",
+        "idempotency",
+        "human-approval",
+        "sandbox"
       ],
       "tools": [
-        "Agents",
+        "DataFlow",
+        "Data-Juicer",
+        "Apache Airflow",
+        "Dagster",
         "DataTrove"
       ],
       "level": "研究",
       "prerequisites": [
         "17",
         "18",
-        "23"
+        "23",
+        "25"
       ],
       "learningOutcomes": [
-        "设计带检查点的编排系统",
-        "设置自动化质量门禁",
-        "处理失败与回滚"
+        "将语料准备建模为带 schema、快照、指标和重试语义的 DAG",
+        "区分 Agent 方案生成、沙箱执行与发布控制面权限",
+        "用硬门/保留率/抽检覆盖定义可测试发布候选门禁"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "27",
@@ -937,28 +954,47 @@
       "file": "27.html",
       "category": "frontier",
       "categoryLabel": "前沿与自动化",
-      "summary": "研究课程学习、在线数据选择与训练过程中的动态采样。",
+      "summary": "厘清静态混合、离线时变调度与真正在线反馈的机制差别，比较 DoReMi、RegMix、RegMix-D、ODM 与 AC-ODM，并实验探索约束。",
       "tags": [
         "online-selection",
         "dynamic-mixture",
         "curriculum-learning",
-        "sampling"
+        "doremi",
+        "regmix",
+        "regmix-d",
+        "online-data-mixing",
+        "ac-odm",
+        "group-dro",
+        "excess-loss",
+        "proxy-training",
+        "feedback-control",
+        "sampling",
+        "exploration-floor",
+        "token-exposure",
+        "distribution-shift",
+        "evaluation"
       ],
       "tools": [
-        "FLUX"
+        "DoReMi",
+        "RegMix",
+        "RegMix-D",
+        "ODM",
+        "AC-ODM",
+        "Python"
       ],
       "level": "研究",
       "prerequisites": [
         "14",
         "18",
-        "21"
+        "22",
+        "26"
       ],
       "learningOutcomes": [
-        "理解静态与动态采样差异",
-        "定义在线质量信号",
-        "评估动态配比的训练影响"
+        "正确区分 proxy 阶段的优化、静态混合与目标模型在线更新",
+        "解释 DoReMi、RegMix、RegMix-D 和 ODM / AC-ODM 的原理及局限",
+        "通过温度 softmax 加探索下界的教学计算器验证归一化和覆盖约束"
       ],
-      "status": "planned"
+      "status": "refined"
     },
     {
       "num": "28",
@@ -966,17 +1002,30 @@
       "file": "28.html",
       "category": "capstone",
       "categoryLabel": "综合实战",
-      "summary": "将来源追踪、正文抽取、清洗、去重、质量评估和数据发布串成完整项目。",
+      "summary": "实际运行零第三方依赖的 JSONL 语料管线：schema、来源与隐私门、NFC、哈希去重、审计流、SHA-256 manifest、幂等构建与验收。",
       "tags": [
         "capstone",
         "end-to-end",
         "reproducibility",
         "data-contract",
-        "quality-gates"
+        "schema-validation",
+        "provenance",
+        "rights-review",
+        "privacy-review",
+        "evaluation-holdout",
+        "exact-deduplication",
+        "sha256",
+        "atomic-publish",
+        "manifest",
+        "quality-report",
+        "quarantine",
+        "quality-gates",
+        "idempotency"
       ],
       "tools": [
-        "Common Crawl",
+        "Python standard library",
         "DataTrove",
+        "Common Crawl",
         "Dolma"
       ],
       "level": "实战",
@@ -985,20 +1034,22 @@
         "02",
         "03",
         "04",
-        "05",
         "07",
         "08",
-        "14",
+        "13",
         "17",
         "18",
-        "23"
+        "23",
+        "24",
+        "26",
+        "27"
       ],
       "learningOutcomes": [
-        "交付端到端语料流水线",
-        "建立质量与可复现验收",
-        "形成数据集说明与风险报告"
+        "运行示例 JSONL 到 curated/rejected/quality-report/manifest 的完整本地流水线",
+        "用 SHA-256 与代码、策略身份验证结果并检测篡改",
+        "区分教学流水线的可靠性范围与真实大规模语料所需的额外清洗、隐私和下游评测"
       ],
-      "status": "planned"
+      "status": "refined"
     }
   ]
 }
