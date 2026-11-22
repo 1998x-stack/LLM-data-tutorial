@@ -36,6 +36,7 @@ Do not copy the reference skill's prose, graphics, CSS, logos, or example assets
 - Prefer primary papers, official documentation, standards, and maintained source repositories.
 - Read the relevant method, experiment setup, appendix and limitations—not only abstracts.
 - For each factual or quantitative claim, record: claim ID, exact statement, source URL, paper version, section/table/figure/line locator, evidence status and notes.
+- For every CLI/API/default/configuration claim, use a release-tagged or commit-pinned official source URL. Do not cite moving `main` as if it were immutable; if a living documentation page is necessary, record its access date and keep it separate from version-specific API evidence.
 - verified means directly supported; derived means transparently calculated; illustrative means synthetic teaching data; unverified must not be presented as fact.
 - Never invent benchmark values, dataset sizes, throughput, percentages, thresholds, author conclusions or API behavior.
 - Separate paper results, implementation behavior, engineering recommendations and teaching simplifications.
