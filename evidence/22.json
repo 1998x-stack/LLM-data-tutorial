@@ -1,0 +1,52 @@
+{
+  "chapter": "22",
+  "title": "领域适配数据策略",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "CH22-C01",
+      "claim": "DAPT and TAPT improved downstream task performance in the four-domain, eight-classification-task study described by Gururangan et al.",
+      "kind": "paper-result",
+      "source_url": "https://aclanthology.org/2020.acl-main.740/",
+      "locator": "Abstract; experiments across biomedical, computer-science, news and reviews domains",
+      "status": "verified",
+      "notes": "Keep the result scoped to the study's models, corpora and classification tasks; it is not a universal guarantee for every domain-adaptation setup."
+    },
+    {
+      "id": "CH22-C02",
+      "claim": "Code Llama is a family of code-focused foundation models based on Llama 2, with base, Python-specialized and instruction-following variants.",
+      "kind": "official-research-summary",
+      "source_url": "https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/",
+      "locator": "Meta AI research publication abstract",
+      "status": "verified",
+      "notes": "This citation supports the model-family framing only; it does not support blanket claims about licensing or quality of arbitrary code corpora."
+    },
+    {
+      "id": "CH22-C03",
+      "claim": "The weighted general/domain loss is a conceptual expression for mixing objectives, with lambda interpreted here as a token-exposure design variable.",
+      "kind": "derived",
+      "source_url": "https://aclanthology.org/2020.acl-main.740/",
+      "locator": "Editorial derivation in this chapter; related to multi-phase adaptive pretraining",
+      "status": "derived",
+      "notes": "This equation is a simplified teaching abstraction, not the exact training objective or a recommended fixed mixture ratio from the cited paper."
+    },
+    {
+      "id": "CH22-C04",
+      "claim": "Domain-adaptation evaluations should track both target-domain performance and retained general capabilities.",
+      "kind": "editorial-recommendation",
+      "source_url": "https://aclanthology.org/2020.acl-main.740/",
+      "locator": "Experimental framing across domain/task settings; tutorial recommendation",
+      "status": "derived",
+      "notes": "The dual-track evaluation checklist is an editorial quality recommendation; no universal benchmark suite or fixed forgetting threshold is asserted."
+    },
+    {
+      "id": "CH22-C05",
+      "claim": "Code, scientific/medical and multilingual corpora require source-specific provenance, privacy, format and language-slice checks.",
+      "kind": "editorial-recommendation",
+      "source_url": "https://ai.meta.com/research/publications/code-llama-open-foundation-models-for-code/",
+      "locator": "Domain-specific curation guidance in this chapter",
+      "status": "derived",
+      "notes": "This combines general data-governance practice with the cited code-model context; it is not presented as a measured claim from Code Llama."
+    }
+  ]
+}
