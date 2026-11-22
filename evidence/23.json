@@ -65,6 +65,15 @@
       "locator": "Release v0.10.1 published_at metadata",
       "status": "verified",
       "notes": "Release date is separate from the pyproject version and Python requirement; it does not imply every current main-branch API matches this tag."
+    },
+    {
+      "id": "CH23-C08",
+      "claim": "In DataTrove v0.10.1, GopherQualityFilter defaults include min_doc_words=50, max_doc_words=100000, min_avg_word_length=3, max_avg_word_length=10, min_stop_words=2 and English language.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/filters/gopher_quality_filter.py",
+      "locator": "GopherQualityFilter.__init__ defaults",
+      "status": "verified",
+      "notes": "These are version-specific implementation defaults, not universal quality thresholds; code, Chinese, multilingual and short-document corpora require separate calibration."
     }
   ]
 }
