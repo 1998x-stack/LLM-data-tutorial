@@ -31,4 +31,30 @@
 <p>若要比较两种清洗策略的下游效果，至少应固定或明确说明：</p>
 <ul><li>模型架构、参数量、初始化和训练配方；</li><li>训练 token budget、tokenizer 与上下文长度；</li><li>语料 snapshot、来源范围、保留量和重复处理；</li><li>benchmark 版本、split、去污染方法和评分方向；</li><li>训练步数、随机种子、评测次数与不确定性。</li></ul>
 <p>如果这些条件不同，正确做法是比较“设计目标、数据范围和方法假设”，而不是按一列 benchmark 数值排序。数据质量也不等于单一分数：覆盖、可靠性、冗余、隐私、许可和下游效用应分别报告。</p></section>
-<section id="references"><h2>参考资料</h2><ol class="references"><li>Raffel et al. <a href="https://arxiv.org/abs/1910.10683" target="_blank" rel="noopener noreferrer">Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer</a> (C4), 2020.</li><li>Wenzek et al. <a href="https://aclanthology.org/2020.lrec-1.494/" target="_blank" rel="noopener noreferrer">CCNet: Extracting High Quality Monolingual Datasets from Web Crawl Data</a>, LREC 2020.</li><li>Gao et al. <a href="https://arxiv.org/abs/2101.00027" target="_blank" rel="noopener noreferrer">The Pile: An 800GB Dataset of Diverse Text for Language Modeling</a>, 2020.</li><li>Penedo et al. <a href="https://arxiv.org/abs/2306.01116" target="_blank" rel="noopener noreferrer">The RefinedWeb Dataset for Falcon LLM</a>, 2023.</li><li>Penedo et al. <a href="https://arxiv.org/abs/2406.17557" target="_blank" rel="noopener noreferrer">The FineWeb Datasets</a>, NeurIPS 2024.</li><li>Soldaini et al. <a href="https://aclanthology.org/2024.acl-long.840/" target="_blank" rel="noopener noreferrer">Dolma: an Open Corpus of Three Trillion Tokens</a>, ACL 2024.</li><li>Gowtham et al. <a href="https://arxiv.org/abs/2603.13972" target="_blank" rel="noopener noreferrer">FLUX: Data Worth Training On</a>, arXiv preprint, 2026.</li></ol></section><footer class="article-footer"><a href="24.html">← 24 · Dolma 工具链全解析</a><a href="index.html">返回课程总览</a><a href="26.html">26 · 自动化数据准备系统 →</a></footer></article></main></div></div></body></html>
+<section id="metrics"><h2>比较过滤器：不要只看 Accuracy</h2>
+<p>对人工抽检的二分类结果，至少报告 precision、recall 和 F1。若过滤器的正类定义为“应该移除”，高 precision 表示移除的样本大多确实应移除；高 recall 表示被判定应移除的样本较少漏掉。实际使用时还要报告被保留数据的分布变化，因为相同 F1 可能造成完全不同的语料偏移。</p>
+<div class="math-scroll" tabindex="0" role="region" aria-label="Precision Recall F1 公式"><math display="block" aria-label="precision 等于 TP 除以 TP 加 FP；recall 等于 TP 除以 TP 加 FN；F1 等于二乘 precision 乘 recall 除以二者之和"><mrow><mi>Precision</mi><mo>=</mo><mfrac><mi>TP</mi><mrow><mi>TP</mi><mo>+</mo><mi>FP</mi></mrow></mfrac><mo>,</mo><mspace width="1em"/><mi>Recall</mi><mo>=</mo><mfrac><mi>TP</mi><mrow><mi>TP</mi><mo>+</mo><mi>FN</mi></mrow></mfrac></mrow></math><math display="block" aria-label="F1 等于二乘 Precision 乘 Recall 除以 Precision 加 Recall"><mrow><msub><mi>F</mi><mn>1</mn></msub><mo>=</mo><mfrac><mrow><mn>2</mn><mo>×</mo><mi>Precision</mi><mo>×</mo><mi>Recall</mi></mrow><mrow><mi>Precision</mi><mo>+</mo><mi>Recall</mi></mrow></mfrac></mrow></math></div>
+<p>其中 TP 是正确识别的待移除样本，FP 是被误判为待移除的好样本，FN 是漏掉的噪声样本。若错误代价不对称，应该按业务损失选择阈值，而不是默认最大化 F1。</p>
+</section>
+<section id="calculator"><h2>交互实验：从抽检混淆矩阵计算 Precision / Recall / F1</h2>
+<div class="demo-panel">
+<label class="range-label" for="clean-tp"><span>TP · 正确移除</span><strong id="clean-tp-value">800</strong></label><input id="clean-tp" type="range" min="0" max="2000" step="10" value="800">
+<label class="range-label" for="clean-fp"><span>FP · 误删好样本</span><strong id="clean-fp-value">100</strong></label><input id="clean-fp" type="range" min="0" max="2000" step="10" value="100">
+<label class="range-label" for="clean-fn"><span>FN · 漏掉噪声</span><strong id="clean-fn-value">200</strong></label><input id="clean-fn" type="range" min="0" max="2000" step="10" value="200">
+<div id="clean-output" class="interactive-output" aria-live="polite">Precision 88.9% · Recall 80.0% · F1 84.2%</div></div>
+<pre><code># scripts/cleaning_metrics.py
+from scripts.cleaning_metrics import precision_recall_f1
+
+print(precision_recall_f1(tp=800, fp=100, fn=200))</code></pre>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Raffel et al. <a href="https://arxiv.org/abs/1910.10683" target="_blank" rel="noopener noreferrer">Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer</a> (C4), 2020.</li><li>Wenzek et al. <a href="https://aclanthology.org/2020.lrec-1.494/" target="_blank" rel="noopener noreferrer">CCNet: Extracting High Quality Monolingual Datasets from Web Crawl Data</a>, LREC 2020.</li><li>Gao et al. <a href="https://arxiv.org/abs/2101.00027" target="_blank" rel="noopener noreferrer">The Pile: An 800GB Dataset of Diverse Text for Language Modeling</a>, 2020.</li><li>Penedo et al. <a href="https://arxiv.org/abs/2306.01116" target="_blank" rel="noopener noreferrer">The RefinedWeb Dataset for Falcon LLM</a>, 2023.</li><li>Penedo et al. <a href="https://arxiv.org/abs/2406.17557" target="_blank" rel="noopener noreferrer">The FineWeb Datasets</a>, NeurIPS 2024.</li><li>Soldaini et al. <a href="https://aclanthology.org/2024.acl-long.840/" target="_blank" rel="noopener noreferrer">Dolma: an Open Corpus of Three Trillion Tokens</a>, ACL 2024.</li><li>Gowtham et al. <a href="https://arxiv.org/abs/2603.13972" target="_blank" rel="noopener noreferrer">FLUX: Data Worth Training On</a>, arXiv preprint, 2026.</li></ol></section><footer class="article-footer"><a href="24.html">← 24 · Dolma 工具链全解析</a><a href="index.html">返回课程总览</a><a href="26.html">26 · 自动化数据准备系统 →</a></footer></article></main></div></div><script>(()=>{
+const ids=["clean-tp","clean-fp","clean-fn"],els=ids.map(id=>document.getElementById(id)),vals=ids.map(id=>document.getElementById(id+"-value")),out=document.getElementById("clean-output");
+function render(){
+ const tp=Number(els[0].value),fp=Number(els[1].value),fn=Number(els[2].value);
+ const p=tp+fp?tp/(tp+fp):0,r=tp+fn?tp/(tp+fn):0,f=p+r?2*p*r/(p+r):0;
+ vals.forEach((v,i)=>v.textContent=Number(els[i].value).toLocaleString("en-US"));
+ out.textContent="Precision "+(p*100).toFixed(1)+"% · Recall "+(r*100).toFixed(1)+"% · F1 "+(f*100).toFixed(1)+"%。注意：应同时报告被保留语料的分布变化与误删切片。";
+}
+els.forEach(x=>x.addEventListener("input",render));render();
+})();</script>
+</body></html>
