@@ -26,7 +26,7 @@ class ReproManifestTests(unittest.TestCase):
             dataset_root_digest([item, item])
         with self.assertRaises(ValueError):
             dataset_root_digest([{**item, "path": "../outside.parquet"}])
-        for unsafe_path in ("..\\outside.parquet", "shards\\part.parquet", "C:/data/part.parquet", "//server/share/part.parquet", "shards/part\\x00.parquet"):
+        for unsafe_path in ("..\\outside.parquet", "shards\\part.parquet", "C:/data/part.parquet", "//server/share/part.parquet", "shards/part\x00.parquet"):
             with self.subTest(path=unsafe_path), self.assertRaises(ValueError):
                 dataset_root_digest([{**item, "path": unsafe_path}])
 
