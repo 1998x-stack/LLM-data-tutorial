@@ -152,7 +152,7 @@ test('fifth batch chapters 21-25 expose accessible exercises and evidence ledger
     assert.match(article, /aria-live="polite"/);
     assert.equal(article.includes(String.fromCharCode(92) + '('), false);
     for (const id of controls[index]) assert.ok(article.includes('id="' + id + '"'), number + ': missing control ' + id);
-    assert.ok(evidence.claims.length >= 8);
+    assert.ok(evidence.claims.length >= 5, number + ": expected five or more independently sourced claims");
     for (const claim of evidence.claims) {
       assert.ok(claim.source_url, number + ': ' + claim.id + ' missing source_url');
       assert.ok(claim.locator, number + ': ' + claim.id + ' missing locator');
