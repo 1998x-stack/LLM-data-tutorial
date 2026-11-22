@@ -6,7 +6,7 @@
     {
       "id": "CH24-C01",
       "claim": "The Dolma dataset card describes a three-trillion-token English corpus built from web content, academic publications, code, books and encyclopedic materials, among other sources.",
-      "kind": "dataset-card",
+      "kind": "official-doc",
       "source_url": "https://huggingface.co/datasets/allenai/dolma",
       "locator": "Dataset overview; dataset description",
       "status": "verified",
@@ -15,7 +15,7 @@
     {
       "id": "CH24-C02",
       "claim": "The dataset card marks v1_7 as the default version and says it was released on 2024-04-15 for OLMo 7B-v1.7; its summary distinguishes full-corpus token counts from sampled training exposure.",
-      "kind": "dataset-card",
+      "kind": "official-doc",
       "source_url": "https://huggingface.co/datasets/allenai/dolma",
       "locator": "Versions table; Summary Statistics (v1.7); lines describing 1.715T tokens after sampling",
       "status": "verified",
@@ -24,7 +24,7 @@
     {
       "id": "CH24-C03",
       "claim": "Dolma Toolkit v1.2.1 is the latest tagged release in the inspected repository release history and was published on 2025-07-07.",
-      "kind": "official-release",
+      "kind": "official-doc",
       "source_url": "https://github.com/allenai/dolma/releases/tag/v1.2.1",
       "locator": "Release tag v1.2.1 metadata",
       "status": "verified",
@@ -33,7 +33,7 @@
     {
       "id": "CH24-C04",
       "claim": "The v1.2.1 CLI documents tag, dedupe, mix, list, stat and tokens commands, and the getting-started guide demonstrates the processing sequence.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md",
       "locator": "CLI help output; Process Wikipedia steps 1–4",
       "status": "verified",
@@ -42,7 +42,7 @@
     {
       "id": "CH24-C05",
       "claim": "Dolma's dedupe command uses an in-memory Bloom filter and can produce false positives.",
-      "kind": "official-documentation",
+      "kind": "official-doc",
       "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md",
       "locator": "Deduplication overview",
       "status": "verified",
@@ -51,7 +51,7 @@
     {
       "id": "CH24-C06",
       "claim": "The dataset card states ODC-BY licensing and requires users to also observe original source licenses and terms.",
-      "kind": "dataset-card",
+      "kind": "official-doc",
       "source_url": "https://huggingface.co/datasets/allenai/dolma",
       "locator": "Licensing Information",
       "status": "verified",
