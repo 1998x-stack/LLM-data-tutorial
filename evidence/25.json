@@ -1,0 +1,79 @@
+{
+  "chapter": "25",
+  "title": "七类预训练数据构建范式对比",
+  "updated": "2026-11-22",
+  "claims": [
+    {
+      "id": "CH25-C01",
+      "claim": "The T5 paper introduces C4 as a cleaned Common Crawl corpus and discusses filtering decisions including deduplication and removal of incomplete or noisy content.",
+      "kind": "paper-method",
+      "source_url": "https://arxiv.org/abs/1910.10683",
+      "locator": "T5 paper; C4 dataset construction discussion",
+      "status": "verified",
+      "notes": "The chapter intentionally avoids unsupported single-number claims about C4 size or a universal set of cleaning rules."
+    },
+    {
+      "id": "CH25-C02",
+      "claim": "CCNet combines document deduplication and language identification with language-model perplexity filtering toward high-quality reference sources such as Wikipedia.",
+      "kind": "paper-method",
+      "source_url": "https://aclanthology.org/2020.lrec-1.494/",
+      "locator": "Abstract; CCNet pipeline description",
+      "status": "verified",
+      "notes": "Perplexity is a source-conditioned signal, not a universal quality score across domains and languages."
+    },
+    {
+      "id": "CH25-C03",
+      "claim": "The Pile paper describes an 825 GiB English text corpus composed of 22 datasets.",
+      "kind": "paper-description",
+      "source_url": "https://arxiv.org/abs/2101.00027",
+      "locator": "Abstract; dataset composition",
+      "status": "verified",
+      "notes": "The corpus is heterogeneous; size and source count do not imply uniform license or quality across subsets."
+    },
+    {
+      "id": "CH25-C04",
+      "claim": "The RefinedWeb paper reports extracting five trillion tokens from Common Crawl and publicly releasing a 600-billion-token extract.",
+      "kind": "paper-result",
+      "source_url": "https://arxiv.org/abs/2306.01116",
+      "locator": "Abstract; dataset description",
+      "status": "verified",
+      "notes": "Attribute figures and performance claims to the paper's own setup and do not generalize its result to every model or task."
+    },
+    {
+      "id": "CH25-C05",
+      "claim": "FineWeb is described as a 15-trillion-token dataset from 96 Common Crawl snapshots, and FineWeb-Edu as a 1.3-trillion-token educational subset.",
+      "kind": "paper-description",
+      "source_url": "https://arxiv.org/abs/2406.17557",
+      "locator": "Abstract; Introduction",
+      "status": "verified",
+      "notes": "FineWeb-Edu's educational-quality signal is task-specific and should not be treated as a universal truth label."
+    },
+    {
+      "id": "CH25-C06",
+      "claim": "The Dolma paper describes a three-trillion-token English corpus from web, scientific papers, code, public-domain books, social media and encyclopedic materials.",
+      "kind": "paper-description",
+      "source_url": "https://aclanthology.org/2024.acl-long.840/",
+      "locator": "Abstract",
+      "status": "verified",
+      "notes": "Distinguish the corpus paper from later dataset snapshots and the separately versioned toolkit."
+    },
+    {
+      "id": "CH25-C07",
+      "claim": "The FLUX preprint reports 32.14% MMLU for a 3B model trained on 60B tokens, compared with 31.98% for DCLM and 29.88% for FineWeb in its described experiment.",
+      "kind": "preprint-result",
+      "source_url": "https://arxiv.org/abs/2603.13972",
+      "locator": "Abstract; 3B / 60B-token comparison",
+      "status": "verified",
+      "notes": "This is an author-reported result in a 2026 arXiv preprint and is valid only within the paper's experimental setup; it is not a cross-paper leaderboard or settled consensus."
+    },
+    {
+      "id": "CH25-C08",
+      "claim": "Cross-paper dataset comparisons should control model, token budget, tokenizer, data snapshots, benchmark version and decontamination protocol.",
+      "kind": "editorial-recommendation",
+      "source_url": "https://arxiv.org/abs/2603.13972",
+      "locator": "Tutorial comparability checklist; FLUX reports a paper-specific controlled comparison",
+      "status": "derived",
+      "notes": "This is a methodological recommendation for fair comparison, not a formula or result attributed to a single cited paper."
+    }
+  ]
+}
