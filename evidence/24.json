@@ -16,82 +16,100 @@
       "id": "24-C2",
       "claim": "The original Dolma Toolkit curation workflow consists of tagging documents, optional deduplication, mixing and filtering, and tokenization.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/README.md",
-      "locator": "Dataset curation with the Dolma toolkit usually happens in four steps",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/getting-started.md",
+      "locator": "CLI help; Example: Process Wikipedia, steps 1–4",
       "status": "verified",
-      "notes": "The steps can be rerun and recombined; taggers and dedupe can produce attributes before the mixer makes retention decisions."
+      "notes": "CLI behavior and command options are pinned to Dolma Toolkit v1.2.1; the dataset snapshot is a separate version dimension."
     },
     {
       "id": "24-C3",
       "claim": "The Dolma document format requires id, text and source fields, with added, created and metadata fields optional.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/data-format.md",
-      "locator": "Dolma Document Format",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/data-format.md",
+      "locator": "Dolma Document Format; Directory Structure; attributes sidecar convention",
       "status": "verified",
-      "notes": "Source-specific adapters should preserve real provenance rather than fabricating missing values."
+      "notes": "This describes the v1.2.1 Toolkit document and sidecar contract; source adapters must preserve real provenance."
     },
     {
       "id": "24-C4",
       "claim": "Dolma stores tagger and deduplication outputs under attributes subdirectories while preserving the source document directory structure for alignment.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/data-format.md",
-      "locator": "Directory Structure; attributes/<attribute-name>",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/data-format.md",
+      "locator": "Dolma Document Format; Directory Structure; attributes sidecar convention",
       "status": "verified",
-      "notes": "The sidecar convention allows multiple attribute sets to be reused with the same document files."
+      "notes": "This describes the v1.2.1 Toolkit document and sidecar contract; source adapters must preserve real provenance."
     },
     {
       "id": "24-C5",
       "claim": "Dolma's documented dedupe command uses an in-memory Bloom Filter and can produce false positives; duplicate decisions are represented as attributes for later mixing.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/deduplication.md",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/deduplication.md",
       "locator": "Deduplication overview; Bloom Filter behavior",
       "status": "verified",
-      "notes": "A Bloom-filter hit means possibly present, not a mathematically exact duplicate proof."
+      "notes": "Pinned to Toolkit v1.2.1; a Bloom-filter hit means possibly present, not an exact duplicate proof."
     },
     {
       "id": "24-C6",
       "claim": "Dolma Mixer combines streams, merges named attributes, and supports include/exclude filters expressed with JSONPath as well as span replacement.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/mixer.md",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/mixer.md",
       "locator": "Overview; streams[].filter.include; streams[].filter.exclude; span_replacement",
       "status": "verified",
-      "notes": "Mixer configuration is versioned and should be reviewed before destructive output generation."
+      "notes": "Mixer config syntax is pinned to v1.2.1; validate config against the installed CLI before large output generation."
     },
     {
       "id": "24-C7",
-      "claim": "The Dolma tokenizer writes concatenated token IDs to .npy files and per-document index metadata to .csv.gz files with start, end, id, src and loc columns.",
+      "claim": "The v1.2.1 tokens command writes a concatenated token array and an index CSV containing start, end, source path and document id.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma/blob/main/docs/tokenize.md",
-      "locator": "Output Format",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/docs/tokenize.md",
+      "locator": "Output format; metadata CSV columns start, end, path and id",
       "status": "verified",
-      "notes": "The index metadata preserves traceability from token spans back to source documents."
+      "notes": "These are the documented v1.2.1 output columns; later toolkit or Dolma 3 formats may differ."
     },
     {
       "id": "24-C8",
       "claim": "The current allenai/dolma3 README describes Dolma 3 Mix as a 5.9T-token pretraining dataset, Dolma 3 Dolmino Mix as 100B tokens, and Dolma 3 Longmino Mix as 50B tokens.",
       "kind": "implementation",
-      "source_url": "https://github.com/allenai/dolma3",
+      "source_url": "https://github.com/allenai/dolma3/blob/1a9daced81670e0fa768e47fbed32af6694a1865/README.md",
       "locator": "README → Dolma 3 datasets",
       "status": "verified",
-      "notes": "These are current repository descriptions; do not combine them into a single corpus or confuse them with the original Dolma 3T dataset."
+      "notes": "Pinned to commit 1a9daced (2026-04-20). These repository descriptions are separate data products, not a single combined corpus."
     },
     {
       "id": "24-C9",
       "claim": "The Dolma Toolkit repository and the Dolma 3 repository are separate software/data artifacts: the former documents the dolma CLI, while the latter publishes Dolma 3 dataset descriptions and reconstruction recipes.",
       "kind": "derived",
-      "source_url": "https://github.com/allenai/dolma3",
-      "locator": "Repository README; compared with https://github.com/allenai/dolma/docs/getting-started.md",
+      "source_url": "https://github.com/allenai/dolma3/blob/1a9daced81670e0fa768e47fbed32af6694a1865/README.md",
+      "locator": "Dolma 3 README compared with Dolma Toolkit v1.2.1 getting-started docs",
       "status": "derived",
-      "notes": "Check each repository and version before copying command examples; a dataset recipe repository is not automatically the same CLI package."
+      "notes": "This is a derived distinction between the recipe/data repository and the separately versioned Toolkit CLI."
     },
     {
       "id": "24-C10",
       "claim": "The original Dolma dataset release uses the ODC-BY license according to the official repository and dataset card.",
       "kind": "official-doc",
-      "source_url": "https://github.com/allenai/dolma",
-      "locator": "README → Dolma Dataset license statement",
+      "source_url": "https://github.com/allenai/dolma/blob/v1.2.1/README.md",
+      "locator": "Dolma Dataset license statement",
       "status": "verified",
-      "notes": "A dataset-level license statement does not replace source-specific rights, attribution, privacy or removal review."
+      "notes": "ODC-BY is the dataset-level statement; original source licenses, attribution, privacy and redistribution restrictions still apply."
+    },
+    {
+      "id": "24-C11",
+      "claim": "Dolma Toolkit v1.2.1 was published on 2025-07-07.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/allenai/dolma/releases/tag/v1.2.1",
+      "locator": "Release v1.2.1 published_at metadata",
+      "status": "verified",
+      "notes": "This is the Python/CLI package release date, not the Dolma Dataset v1_7 snapshot date."
+    },
+    {
+      "id": "24-C12",
+      "claim": "The current AI2 training-data documentation describes Dolma 3 as the current data family for OLMo 3.",
+      "kind": "official-doc",
+      "source_url": "https://docs.allenai.org/training_data/dolma/",
+      "locator": "Dolma 3 section; checked 2026-11-22",
+      "status": "verified",
+      "notes": "This is a living documentation page, not a versioned Toolkit CLI reference; use a release tag for command and API claims."
     }
   ]
 }
