@@ -29,4 +29,4 @@
 - Replaced legacy unsupported market-share / model-collapse percentages, unverified DataEvolver claims and anecdotal domain-adaptation numbers with primary-paper or official-document evidence and explicit scope notes.
 - Added tests for sequential synthetic-data attrition, token-mixture arithmetic, DataTrove task planning, Bloom-filter sizing and precision/recall/F1.
 - Updated the course catalog, homepage count, taxonomy, architecture, AGENTS.md, article-authoring and quality gates.
-- CI, merge, deployment and browser QA status will be appended after verification.
+- **Publication:** PR #7 merged; static CI passed (62 Python tests, 12 Node tests; 28 chapters and 48 SVGs validated); GitHub Pages build and deployment succeeded. Browser screenshot QA was not run in this batch.
