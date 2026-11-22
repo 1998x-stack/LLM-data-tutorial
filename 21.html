@@ -30,4 +30,37 @@
 <div class="callout warning"><strong>不要沿用未经证实的百分比：</strong>本章删除了旧稿中“行业合成数据占比从 2% 增至 15%”“五轮后多样性下降 40%”和“合成数据不得超过 15–20%”等缺少可追溯来源或适用条件的数字。任何比例都必须绑定具体模型、数据、训练阶段和实验协议。</div>
 <p>较稳妥的治理方式是保留真实来源与原始分布快照、记录每一代数据的来源链、监控稀有主题和语言切片、对生成数据做来源去重，并用独立的真实数据评测集检查能力回归。</p></section>
 <section id="checklist"><h2>上线前的合成数据验收清单</h2><ul><li>生成目标是否写成可测试的任务契约？</li><li>提示词、模型版本、采样参数和种子是否留档？</li><li>是否有独立于生成器的事实或执行验证？</li><li>是否检查重复、覆盖、长尾和训练/评测泄漏？</li><li>人工抽检是否按风险分层，而不是只随机抽取容易样本？</li><li>数据集版本、拒绝原因、来源许可和隐私审查是否可追溯？</li><li>是否在固定训练预算下做消融，并报告负向结果？</li></ul></section>
-<section id="references"><h2>参考资料</h2><ol class="references"><li>Wang et al. <a href="https://aclanthology.org/2023.acl-long.754/" target="_blank" rel="noopener noreferrer">Self-Instruct: Aligning Language Models with Self-Generated Instructions</a>, ACL 2023.</li><li>Xu et al. <a href="https://arxiv.org/abs/2304.12244" target="_blank" rel="noopener noreferrer">WizardLM: Empowering Large Language Models to Follow Complex Instructions</a>, 2023.</li><li>Abdin et al. <a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">Phi-4 Technical Report</a>, 2024.</li><li>Shumailov et al. <a href="https://doi.org/10.1038/s41586-024-07566-y" target="_blank" rel="noopener noreferrer">AI models collapse when trained on recursively generated data</a>, Nature 631, 755–759, 2024.</li></ol></section><footer class="article-footer"><a href="20.html">← 20 · 词表设计与优化</a><a href="index.html">返回课程总览</a><a href="22.html">22 · 领域适配数据策略 →</a></footer></article></main></div></div></body></html>
+<section id="calculator"><h2>交互实验：候选样本经过多道门后还剩多少？</h2>
+<p>下面的通过率是教学输入，不是论文统计。每个百分比表示该阶段对上一阶段输出的条件保留率，因此按顺序相乘，而不是假设所有过滤器相互独立。</p>
+<div class="demo-panel">
+<label class="range-label" for="syn-count"><span>初始生成候选数</span><strong id="syn-count-value">10,000</strong></label><input id="syn-count" type="range" min="1000" max="100000" step="1000" value="10000">
+<label class="range-label" for="syn-schema"><span>结构校验通过率</span><strong id="syn-schema-value">95%</strong></label><input id="syn-schema" type="range" min="50" max="100" step="1" value="95">
+<label class="range-label" for="syn-verify"><span>事实 / 执行验证通过率</span><strong id="syn-verify-value">75%</strong></label><input id="syn-verify" type="range" min="10" max="100" step="1" value="75">
+<label class="range-label" for="syn-unique"><span>去重后保留率</span><strong id="syn-unique-value">85%</strong></label><input id="syn-unique" type="range" min="10" max="100" step="1" value="85">
+<label class="range-label" for="syn-safe"><span>治理审查通过率</span><strong id="syn-safe-value">98%</strong></label><input id="syn-safe" type="range" min="50" max="100" step="1" value="98">
+<div id="syn-output" class="interactive-output" aria-live="polite">预计保留 5,935 条；最终保留率 59.4%。</div></div>
+<div class="math-scroll" tabindex="0" role="region" aria-label="分阶段候选样本保留数量公式"><math display="block" aria-label="最终数量等于初始数量乘以每个阶段的条件保留率"><mrow><msub><mi>N</mi><mtext>accepted</mtext></msub><mo>=</mo><msub><mi>N</mi><mn>0</mn></msub><mo>×</mo><msub><mi>r</mi><mtext>schema</mtext></msub><mo>×</mo><msub><mi>r</mi><mtext>verify</mtext></msub><mo>×</mo><msub><mi>r</mi><mtext>unique</mtext></msub><mo>×</mo><msub><mi>r</mi><mtext>governance</mtext></msub></mrow></math></div>
+<pre><code># scripts/synthetic_data.py
+from scripts.synthetic_data import estimate_accepted_records
+
+accepted = estimate_accepted_records(
+    generated=10_000,
+    stage_retention_rates=[0.95, 0.75, 0.85, 0.98],
+)
+print(accepted)  # 5935.125 (expected-value estimate, not an observed count)</code></pre>
+</section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li>Wang et al. <a href="https://aclanthology.org/2023.acl-long.754/" target="_blank" rel="noopener noreferrer">Self-Instruct: Aligning Language Models with Self-Generated Instructions</a>, ACL 2023.</li><li>Xu et al. <a href="https://arxiv.org/abs/2304.12244" target="_blank" rel="noopener noreferrer">WizardLM: Empowering Large Language Models to Follow Complex Instructions</a>, 2023.</li><li>Abdin et al. <a href="https://arxiv.org/abs/2412.08905" target="_blank" rel="noopener noreferrer">Phi-4 Technical Report</a>, 2024.</li><li>Shumailov et al. <a href="https://doi.org/10.1038/s41586-024-07566-y" target="_blank" rel="noopener noreferrer">AI models collapse when trained on recursively generated data</a>, Nature 631, 755–759, 2024.</li></ol></section><footer class="article-footer"><a href="20.html">← 20 · 词表设计与优化</a><a href="index.html">返回课程总览</a><a href="22.html">22 · 领域适配数据策略 →</a></footer></article></main></div></div><script>(()=>{
+const ids=["syn-count","syn-schema","syn-verify","syn-unique","syn-safe"];
+const els=ids.map(id=>document.getElementById(id));
+const out=document.getElementById("syn-output");
+const values=ids.map(id=>document.getElementById(id+"-value"));
+function render(){
+ const n=Number(els[0].value), rates=els.slice(1).map(x=>Number(x.value)/100);
+ const accepted=n*rates.reduce((a,b)=>a*b,1);
+ values[0].textContent=n.toLocaleString("en-US");
+ for(let i=1;i<values.length;i++)values[i].textContent=els[i].value+"%";
+ out.textContent="预计保留约 "+Math.round(accepted).toLocaleString("en-US")+" 条；最终保留率 "+(accepted/n*100).toFixed(1)+"%。这是按各阶段条件通过率相乘的期望值，不是实际观测量。";
+}
+els.forEach(x=>x.addEventListener("input",render));render();
+})();</script>
+</body></html>
