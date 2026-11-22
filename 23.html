@@ -1,121 +1,41 @@
-<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="从 Document 与 PipelineStep 到 Local / Slurm Executor、任务分片、失败恢复和四阶段 MinHash 去重，掌握大规模数据处理工程。"><title>23 · DataTrove 流水线实战 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head>
-<body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell">
-<header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header>
-<div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" aria-current="page" class="active"><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>六大清洗范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav>
-<main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 23 / LLM DATA ENGINEERING</p><h1>DataTrove 流水线实战</h1><p class="dek">从 Document 与 PipelineStep 到 Local / Slurm Executor、任务分片、失败恢复和四阶段 MinHash 去重，掌握大规模数据处理工程。</p><div class="article-meta"><span>研究证据 · 数据机制 · 工程实践</span><span>进阶</span></div></header>
-
-<div class="lead-note"><strong>本章问题</strong><p>当数据规模从几万条增长到数十亿文档时，清洗代码不能只是一串本地 Python 循环。我们需要把“处理什么”与“在哪里、如何并行执行”分离，并让每一步可以组合、统计、恢复和审计。DataTrove 的核心抽象正是 PipelineStep + Executor。</p></div>
-<section id="model"><h2>先建立正确的心智模型：数据流与执行器分离</h2>
-<figure class="diagram"><img src="assets/diagrams/ch23-pipeline-architecture.svg" alt="DataTrove 将 Reader、Extractor、Filter、Dedup、Stats 和 Writer 组合成 pipeline，再由 Local、Slurm 或 Ray executor 执行"><figcaption>图 1 · Pipeline 描述数据如何变换；Executor 决定任务如何分片、并发、记录日志和恢复。</figcaption></figure>
-<p><a href="https://github.com/huggingface/datatrove">DataTrove</a> 是 Hugging Face 维护的可组合大规模文本处理库。它不是一个固定的“Common Crawl 清洗配方”，而是一套可以在本地、Slurm 或 Ray 环境中运行的 pipeline block 和 executor 抽象。</p>
-<p>一条 pipeline 通常由以下类型的步骤组成：</p>
-<table><thead><tr><th>Block</th><th>职责</th><th>典型输入 / 输出</th></tr></thead><tbody>
-<tr><td>Reader</td><td>读取源文件并构造统一 Document</td><td>WARC / JSONL / CSV → Document 流</td></tr>
-<tr><td>Extractor</td><td>从 HTML 等原始格式提取正文</td><td>原始页面 → 正文与元数据</td></tr>
-<tr><td>Filter</td><td>按规则决定文档是否继续流转</td><td>Document → keep / drop</td></tr>
-<tr><td>Tagger / Stats</td><td>添加属性、计算分布与质量指标</td><td>Document → metadata / metrics</td></tr>
-<tr><td>Dedup</td><td>产生重复签名、簇或过滤结果</td><td>文档 / 签名 / 去重索引</td></tr>
-<tr><td>Writer</td><td>将结果写入本地或远程存储</td><td>Document 流 → 分片文件</td></tr>
-</tbody></table>
-<p>统一的数据对象 <code>Document</code> 至少包含 <code>text</code>、唯一 <code>id</code> 和 <code>metadata</code>。PipelineStep 的 <code>run(data, rank, world_size)</code> 接收文档生成器并产出新的文档生成器；filter 可以丢弃文档，reader 可以产生文档，writer 则消费文档并保存结果。</p>
-</section>
-<section id="executor"><h2>Executor：把任务分片映射到计算资源</h2>
-<figure class="diagram"><img src="assets/diagrams/ch23-task-sharding.svg" alt="输入文件分配到多个 task，worker 并发执行 task；完成任务写入 completion marker，失败后重跑未完成任务"><figcaption>图 2 · tasks 控制分片粒度，workers 控制同时运行的任务数；二者不是同一个参数。</figcaption></figure>
-<table><thead><tr><th>概念</th><th>含义</th><th>调优问题</th></tr></thead><tbody>
-<tr><td>Job</td><td>一次 executor 对一条 pipeline 的运行</td><td>日志目录、输入快照和输出路径如何命名？</td></tr>
-<tr><td>Task</td><td>作业中的一个逻辑分片，通常处理一组输入文件</td><td>单个 task 是否过大？失败重跑成本如何？</td></tr>
-<tr><td>Worker</td><td>同时执行 task 的计算槽位</td><td>CPU、内存、I/O 和远程存储是否饱和？</td></tr>
-<tr><td>Rank</td><td>当前 task 的编号</td><td>输出文件名是否包含 rank，避免并发覆盖？</td></tr>
-</tbody></table>
-<p><code>LocalPipelineExecutor</code> 用 <code>tasks</code> 定义总任务数、<code>workers</code> 定义并发数；<code>SlurmPipelineExecutor</code> 使用 Slurm job arrays；<code>RayPipelineExecutor</code> 在 Ray 集群上调度。相同的 pipeline block 可以在不同 executor 上运行，这就是执行环境与数据逻辑解耦的价值。</p>
-<div class="callout warning"><strong>恢复有一个硬约束：</strong>DataTrove 在 <code>logging_dir/completions</code> 下记录已完成 task。重跑失败作业时，应保持输入清单、pipeline 参数和 <code>tasks</code> 数量不变；改变任务总数会改变文件分片映射。若 <code>tasks</code> 大于输入文件数，一部分任务会没有数据可处理。不同 job 不能复用同一个 logging_dir。</div>
-</section>
-<section id="quickstart"><h2>最小可运行流水线：JSONL → 语言过滤 → JSONL</h2>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="以 DataTrove v0.10.1 为版本锚点，理解 Document、pipeline block、executor、任务分片和可恢复运行，搭建一条可追踪的离线文本清洗流水线。"><title>23 · DataTrove 流水线实战 | LLM 数据工程教程</title><link rel="stylesheet" href="theme.css"></head><body class="article-page"><a class="skip-link" href="#content">跳转到正文</a><div class="article-shell"><header class="site-masthead"><a class="brand" href="index.html"><span class="brand-mark">D</span><span>LLM DATA FIELD GUIDE</span></a><span class="masthead-note">从网页到训练语料 · 开放课程</span></header><div class="article-layout"><nav class="article-toc" aria-label="课程章节"><a class="toc-home" href="index.html">← 课程总览</a><p class="toc-label">LEARNING PATH · 28 CHAPTERS</p><ol><li><a href="01.html" ><span>01</span>LLM 数据工程全景</a></li><li><a href="02.html" ><span>02</span>Common Crawl 数据采集</a></li><li><a href="03.html" ><span>03</span>网页正文提取</a></li><li><a href="04.html" ><span>04</span>语言识别与过滤</a></li><li><a href="05.html" ><span>05</span>启发式规则过滤</a></li><li><a href="06.html" ><span>06</span>URL 与域名过滤</a></li><li><a href="07.html" ><span>07</span>精确去重</a></li><li><a href="08.html" ><span>08</span>MinHash 近邻去重</a></li><li><a href="09.html" ><span>09</span>多粒度去重策略</a></li><li><a href="10.html" ><span>10</span>困惑度质量过滤</a></li><li><a href="11.html" ><span>11</span>教育质量分类器</a></li><li><a href="12.html" ><span>12</span>LLM 辅助数据标注</a></li><li><a href="13.html" ><span>13</span>评测集去污染</a></li><li><a href="14.html" ><span>14</span>多源数据混合配比</a></li><li><a href="15.html" ><span>15</span>分布式数据处理架构</a></li><li><a href="16.html" ><span>16</span>大规模数据存储</a></li><li><a href="17.html" ><span>17</span>流水线可复现性</a></li><li><a href="18.html" ><span>18</span>数据质量评估体系</a></li><li><a href="19.html" ><span>19</span>Tokenization 与 BPE</a></li><li><a href="20.html" ><span>20</span>词表设计与优化</a></li><li><a href="21.html" ><span>21</span>合成数据生成</a></li><li><a href="22.html" ><span>22</span>领域适配数据策略</a></li><li><a href="23.html" aria-current="page" class="active"><span>23</span>DataTrove 流水线实战</a></li><li><a href="24.html" ><span>24</span>Dolma 工具链全解析</a></li><li><a href="25.html" ><span>25</span>七类预训练数据构建范式对比</a></li><li><a href="26.html" ><span>26</span>自动化数据准备系统</a></li><li><a href="27.html" ><span>27</span>在线数据选择与动态配比</a></li><li><a href="28.html" ><span>28</span>综合实战项目</a></li></ol></nav><main id="content" class="article-main"><article><header class="article-hero"><p class="eyebrow">MODULE 23 / LLM DATA ENGINEERING</p><h1>DataTrove 流水线实战</h1><p class="dek">以 DataTrove v0.10.1 为版本锚点，理解 Document、pipeline block、executor、任务分片和可恢复运行，搭建一条可追踪的离线文本清洗流水线。</p><div class="article-meta"><span>研究证据 · 系统机制 · 工程实践</span><span>工程实战</span><span>版本绑定 v0.10.1</span></div></header><div class="lead-note"><strong>版本范围</strong><p>本章示例绑定 <code>datatrove==0.10.1</code>（GitHub release 于 2026-09-30 发布），官方项目声明 Python 3.10+。DataTrove API 会随版本变化；复制示例前应核对锁定版本和官方 release，而不是把当前 main 分支的行为当作历史版本承诺。</p></div>
+<section id="mental-model"><h2>DataTrove 的核心抽象：Document 流</h2>
+<p>DataTrove 是用于大规模文本处理、过滤和去重的可组合框架。它把一条流水线拆成若干处理 block：reader 读取数据，extractor 抽取正文，filter 删除不符合规则的文档，stats 收集统计，tokens 处理 token 计数，dedup 执行去重，writer 写出结果。</p>
+<figure class="diagram"><img src="assets/diagrams/ch23-datatrove-pipeline.svg" alt="DataTrove 流水线由 Reader、Extractor、Filter、Dedup、Stats 和 Writer 组成，由 Local、Slurm、Ray 或 Jobs executor 分片运行" loading="lazy"><figcaption>图 1 · 同一条 pipeline 可以交给不同 executor；处理步骤与计算环境解耦，但任务分片和日志目录仍是可复现配置的一部分。</figcaption></figure>
+<p>每个 block 处理统一的 <code>Document</code> 对象，核心字段为 <code>text</code>（文本内容）、<code>id</code>（样本唯一标识）和 <code>metadata</code>（额外元数据字典）。这让不同 reader 和 writer 之间可以用同一种数据契约连接。</p></section>
+<section id="install"><h2>安装时把版本和可选依赖写清楚</h2>
+<pre><code>python -m venv .venv
+. .venv/bin/activate
+python -m pip install "datatrove[processing,io]==0.10.1"</code></pre>
+<p><code>processing</code> extra 提供正文抽取、过滤和 tokenization 相关依赖；<code>io</code> extra 用于 WARC、Parquet 等 I/O 场景。若需要 S3、Ray、推理或其他可选功能，再按 v0.10.1 的 pyproject 配置选择相应 extra。不要为了跑一个 JSONL 过滤例子就默认安装所有依赖。</p></section>
+<section id="local"><h2>最小本地流水线</h2>
+<p>下面示例使用 JSONL 输入、Gopher 质量过滤和 JSONL 输出。它演示的是组件组合，不代表 Gopher 规则适合所有语言或领域；实际阈值与适用语料必须单独验证。</p>
 <pre><code>from datatrove.executor import LocalPipelineExecutor
+from datatrove.pipeline.filters import GopherQualityFilter
 from datatrove.pipeline.readers import JsonlReader
-from datatrove.pipeline.filters import LanguageFilter
-from datatrove.pipeline.writers import JsonlWriter
+from datatrove.pipeline.writers.jsonl import JsonlWriter
 
 pipeline = [
-    JsonlReader(data_folder="data/raw"),
-    LanguageFilter(
-        languages=["en"],
-        language_threshold=0.65,
-    ),
-    JsonlWriter(
-        output_folder="data/clean",
-        output_filename="${rank}.jsonl.gz",
-    ),
+    JsonlReader("data/raw/"),
+    GopherQualityFilter(),
+    JsonlWriter(output_folder="data/filtered/"),
 ]
 
 executor = LocalPipelineExecutor(
     pipeline=pipeline,
-    tasks=4,                 # 逻辑分片数
-    workers=2,               # 同时运行的 task 数
-    logging_dir="logs/lang-filter-v1",
+    logging_dir="logs/gopher-filter-v1/",
+    tasks=8,
+    workers=4,
 )
 executor.run()</code></pre>
-<p>这是一个小型示例，不代表完整的生产语料配方。<code>LanguageFilter</code> 会把预测语言与分数写入 metadata；设置语言列表和阈值后再决定是否保留。DataTrove 当前源码的默认语言阈值为 0.65，但实际阈值应按目标语言、混合文本和误杀成本校准。</p>
-<h3>自定义 PipelineStep</h3>
-<pre><code>from datatrove.data import DocumentsPipeline
-from datatrove.pipeline.base import PipelineStep
-
-class WordCount(PipelineStep):
-    def run(
-        self,
-        data: DocumentsPipeline,
-        rank: int = 0,
-        world_size: int = 1,
-    ) -> DocumentsPipeline:
-        for doc in data:
-            doc.metadata["word_count"] = len(doc.text.split())
-            self.stat_update("documents")
-            yield doc
-
-# 插入到 pipeline：
-# JsonlReader(...), WordCount(), JsonlWriter(...)</code></pre>
-<p>自定义步骤要保持 generator 语义，避免一次性把全量数据装进内存；统计指标要明确单位；任何外部写操作都要设计成可重试或幂等。</p>
-</section>
-<section id="dedup"><h2>MinHash 去重不是一个 block：它是一个多阶段作业</h2>
-<figure class="diagram"><img src="assets/diagrams/ch23-minhash-stages.svg" alt="DataTrove MinHash 去重分成 signature、bucket matching、cluster 和最终 filter 四阶段"><figcaption>图 3 · 大规模 MinHash 需要先生成签名，再按 bucket 找候选、聚类，最后回到原始数据过滤。</figcaption></figure>
-<p>DataTrove 官方 <a href="https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py">MinHash 示例</a>将流程拆成四个 executor 阶段：</p>
-<ol><li><strong>Signature：</strong>对每个文档计算 MinHash 签名并写到中间存储。</li><li><strong>Buckets：</strong>按 LSH bucket 汇总签名并寻找候选重复。</li><li><strong>Cluster：</strong>将候选关系整理为重复簇，输出待删除 ID。</li><li><strong>Filter：</strong>重新读取与第一阶段完全一致的输入分片，保留每个簇的代表文档。</li></ol>
-<p>这四个阶段不是可随意交换的步骤。最终过滤阶段需要与签名阶段使用相同的输入、文件分布和 task 配置，否则 ID 映射可能失配。签名参数、规范化配置、语言 tokenizer 与随机 seed 也必须被版本化。</p>
-</section>
-<section id="planner"><h2>交互实验：task 数、worker 数与输入文件数</h2>
-<p>此规划器只估算文件分片与并发上限。若输入文件数为 <math aria-label="F"><mi>F</mi></math>、逻辑任务数为 <math aria-label="T"><mi>T</mi></math>、worker 数为 <math aria-label="W"><mi>W</mi></math>，非空任务上界与并发上界可粗略写成：</p><div class="math-scroll" tabindex="0" role="region" aria-label="非空 task 与 worker 并发上界"><math display="block" aria-label="active tasks 上界等于 F 与 T 的最小值；concurrent tasks 上界等于 F、T、W 的最小值"><mrow><msub><mi>A</mi><mtext>tasks</mtext></msub><mo>≤</mo><mi>min</mi><mo>(</mo><mi>F</mi><mo>,</mo><mi>T</mi><mo>)</mo><mo>,</mo><mspace width="1em"/><msub><mi>A</mi><mtext>workers</mtext></msub><mo>≤</mo><mi>min</mi><mo>(</mo><mi>F</mi><mo>,</mo><mi>T</mi><mo>,</mo><mi>W</mi><mo>)</mo></mrow></math></div><p>真实负载还取决于文件大小偏斜、单文件处理时间、网络吞吐、过滤比例和内存。</p>
-<div class="demo-panel">
-<label class="range-label" for="dt-files"><span>输入文件数</span><strong id="dt-files-value">10,000</strong></label><input id="dt-files" type="range" min="10" max="50000" step="10" value="10000">
-<label class="range-label" for="dt-tasks"><span>Tasks</span><strong id="dt-tasks-value">1,000</strong></label><input id="dt-tasks" type="range" min="1" max="10000" step="1" value="1000">
-<label class="range-label" for="dt-workers"><span>Workers</span><strong id="dt-workers-value">100</strong></label><input id="dt-workers" type="range" min="1" max="1000" step="1" value="100">
-<div id="dt-output" class="interactive-output" aria-live="polite">约 10 个文件 / task；最多 100 个 task 并发。</div></div>
-<pre><code># scripts/datatrove_planner.py
-from scripts.datatrove_planner import plan_tasks
-
-print(plan_tasks(file_count=10_000, tasks=1_000, workers=100))</code></pre>
-</section>
-<section id="production"><h2>从 Demo 到生产：六个必须显式化的工程约束</h2>
-<ol><li><strong>输入 manifest：</strong>冻结文件清单、大小、checksum、source snapshot 和解析器版本。</li><li><strong>输出隔离：</strong>每个 task 写独立 shard，文件名包含 rank；先写临时路径，验证后再发布 manifest。</li><li><strong>重试语义：</strong>完成 marker 只能说明 task 成功结束，不自动保证外部 side effect exactly-once。</li><li><strong>资源画像：</strong>记录 docs/s、tokens/s、CPU、RSS、I/O、过滤率和 task p50/p95。</li><li><strong>失败样本：</strong>exclusion writer 或 quarantine stream 保存被拒绝数据与原因，便于抽检。</li><li><strong>版本固定：</strong>锁定 DataTrove 版本、Python、依赖 extras、配置与输入清单。</li></ol>
-<div class="callout"><strong>版本提示：</strong>当前 DataTrove 仓库的 <code>pyproject.toml</code> 标记版本为 0.10.1，并要求 Python 3.11 或更高。README 中的 API 和可选 extras 会随版本演进；运行时请以你锁定版本的文档和源码为准。</div>
-</section>
-<section id="references"><h2>参考资料</h2><ol class="references">
-<li><a href="https://github.com/huggingface/datatrove">Hugging Face DataTrove repository / README</a>：pipeline、Document、Executor、任务恢复和合成生成。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/base.py">PipelineStep source</a>：run(data, rank, world_size) 接口与统计。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/filters/base_filter.py">BaseFilter source</a>：true 表示保留、false 表示过滤及 exclusion writer。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/examples/fineweb.py">FineWeb reproduction example</a>：网页处理与三阶段 MinHash 后过滤。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py">MinHash deduplication example</a>：signature、buckets、cluster、filter 四阶段。</li>
-<li><a href="https://github.com/huggingface/datatrove/blob/main/pyproject.toml">DataTrove pyproject.toml</a>：当前版本与 Python 依赖约束。</li>
-</ol></section>
-<footer class="article-footer"><a href="22.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="24.html">下一章 →</a></footer>
-</article></main></div></div><script>(()=>{
-const files=document.getElementById("dt-files"),tasks=document.getElementById("dt-tasks"),workers=document.getElementById("dt-workers");
-const fv=document.getElementById("dt-files-value"),tv=document.getElementById("dt-tasks-value"),wv=document.getElementById("dt-workers-value"),out=document.getElementById("dt-output");
-function render(){
- const f=Number(files.value),t=Number(tasks.value),w=Number(workers.value);
- const active=Math.min(f,t),concurrent=Math.min(active,w),avg=Math.ceil(f/t),idle=Math.max(0,t-f);
- fv.textContent=f.toLocaleString("en-US");tv.textContent=t.toLocaleString("en-US");wv.textContent=w.toLocaleString("en-US");
- out.textContent="粗略约 "+avg.toLocaleString("en-US")+" 个文件 / task；最多 "+concurrent.toLocaleString("en-US")+" 个 task 并发。"+(idle>0?" 注意：tasks 多于 files，至少约 "+idle.toLocaleString("en-US")+" 个 task 没有文件。":"")+"实际分片受文件清单和 executor 版本影响。";
-}
-[files,tasks,workers].forEach(x=>x.addEventListener("input",render));render();
-})();</script></body></html>
+<p>在 v0.10.1 中，<code>GopherQualityFilter()</code> 的默认配置包括最少 50 个词、最多 100,000 个词、平均词长 3–10、至少 2 个 stop words，并默认按英语规则处理。它们是该版本实现的默认值，不是经过你目标语料校准的通用质量阈值；代码、中文、短文本和多语言语料通常需要单独设计过滤器。</p>
+<p>本地运行不意味着数据天然可复现。应同时保存输入 manifest、文件 checksum、代码 commit、依赖锁、过滤器参数、任务数、日志目录和输出 checksum。DataTrove 的 completion markers 用于跳过已完成任务；重跑失败任务时不要随意改变任务总数，否则输入文件分配可能改变。</p></section>
+<section id="commoncrawl"><h2>从 Common Crawl WARC 到训练文本</h2>
+<p>DataTrove v0.10.1 的官方 <code>process_common_crawl_dump.py</code> 示例展示了一条更完整的流程：<code>WarcReader</code> 读取指定 crawl dump，<code>URLFilter</code> 过滤 URL，<code>Trafilatura</code> 抽取正文，<code>LanguageFilter</code> 做语言筛选，再用 <code>GopherRepetitionFilter</code> 和 <code>GopherQualityFilter</code> 处理重复与质量，最后通过 <code>JsonlWriter</code> 写出。示例运行于 Slurm，并将排除样本分别写入独立目录，便于审计。</p>
+<p>这是一份官方示例的组件顺序，不是对任意 Common Crawl snapshot 的通用最优 recipe。URL 过滤、正文抽取器、语言识别模型和质量规则都需要按语言、来源和目标任务做抽样校准。</p></section>
+<section id="dedup"><h2>MinHash 去重为什么是多阶段作业</h2>
+<p>DataTrove 官方 MinHash 示例将去重拆成签名、分桶、聚类和过滤四个阶段：先为文档计算签名；再根据 bucket 找到候选相似对；随后构造重复簇；最后重新读取原始数据，按重复 ID 过滤并输出。这个结构避免把全部文档两两比较，但近似候选仍需理解其哈希、分桶和阈值参数。</p>
+<div class="callout warning"><strong>可复现性约束：</strong>官方示例明确要求最后的过滤阶段使用与签名阶段一致的输入和任务分配。改变输入快照、任务数或分片规则，会让 ID 与签名对应关系失效。MinHash 是近似候选检索机制，不等于语义等价判断。</div></section>
+<section id="operations"><h2>生产运行前的检查表</h2>
+<ul><li>锁定 DataTrove release、Python 版本、extras 和 tokenizer / language model 版本。</li><li>检查每个输入文件是否能被独立处理；官方文档提醒，一个文件通常由一个 task 处理，单个超大文件可能限制并行度。</li><li>任务数不应盲目超过文件数；同时评估每个 task 的数据量、内存、失败重试成本和日志空间。</li><li>将排除样本、运行日志、统计指标和最终产物分目录保存。</li><li>定义幂等写出策略，防止重跑造成重复输出或覆盖已有产物。</li><li>报告每阶段输入/输出文档数、token 数、丢弃原因、耗时和资源消耗。</li></ul></section>
+<section id="references"><h2>版本与参考资料</h2><ol class="references"><li><a href="https://github.com/huggingface/datatrove/releases/tag/v0.10.1" target="_blank" rel="noopener noreferrer">DataTrove v0.10.1 release record</a>；<a href="https://github.com/huggingface/datatrove/tree/v0.10.1" target="_blank" rel="noopener noreferrer">versioned source tree</a>；版本与依赖要求见 <a href="https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml" target="_blank" rel="noopener noreferrer">pyproject.toml</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/README.md" target="_blank" rel="noopener noreferrer">Official README: Document, pipeline blocks, executors and logging</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/process_common_crawl_dump.py" target="_blank" rel="noopener noreferrer">Official Common Crawl pipeline example</a>.</li><li><a href="https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py" target="_blank" rel="noopener noreferrer">Official MinHash deduplication example</a>.</li></ol></section><footer class="article-footer"><a href="22.html">← 22 · 领域适配数据策略</a><a href="index.html">返回课程总览</a><a href="24.html">24 · Dolma 工具链全解析 →</a></footer></article></main></div></div></body></html>

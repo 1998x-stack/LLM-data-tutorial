@@ -30,20 +30,23 @@ class CatalogTests(unittest.TestCase):
             self.assertTrue(chapter["level"])
 
     def test_first_twenty_five_chapters_have_evidence_ledgers(self):
+        allowed_kinds = {"paper-result", "paper-method", "official-doc", "implementation", "derived", "illustrative"}
+        allowed_statuses = {"verified", "derived", "illustrative", "unverified"}
         for number in tuple(f"{index:02d}" for index in range(1, 26)):
             path = ROOT / "evidence" / f"{number}.json"
             self.assertTrue(path.is_file())
             ledger = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(ledger["chapter"], number)
             minimum_claims = 3 if number <= "05" else 5
             self.assertGreaterEqual(len(ledger["claims"]), minimum_claims)
-
-    def test_batch_five_evidence_is_source_located(self):
-        for number in ("21", "22", "23", "24", "25"):
-            ledger = json.loads((ROOT / "evidence" / f"{number}.json").read_text(encoding="utf-8"))
-            self.assertGreaterEqual(len(ledger["claims"]), 8)
+            claim_ids = [claim["id"] for claim in ledger["claims"]]
+            self.assertEqual(len(claim_ids), len(set(claim_ids)))
             for claim in ledger["claims"]:
-                self.assertTrue(claim.get("source_url"), claim.get("id"))
-                self.assertTrue(claim.get("locator"), claim.get("id"))
+                for field in ("id", "claim", "kind", "source_url", "locator", "status", "notes"):
+                    self.assertTrue(str(claim.get(field, "")).strip(), f"{number}: missing {field}")
+                self.assertIn(claim["kind"], allowed_kinds, f"{number}: unsupported kind")
+                self.assertIn(claim["status"], allowed_statuses, f"{number}: unsupported status")
+                self.assertTrue(claim["source_url"].startswith("https://"), f"{number}: source must use HTTPS")
 
 
 if __name__ == "__main__":

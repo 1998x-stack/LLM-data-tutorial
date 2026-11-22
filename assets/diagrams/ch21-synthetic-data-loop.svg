@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+<title id="title">合成数据生成与验证闭环</title><desc id="desc">从真实种子与目标任务出发，经生成、结构验证、事实或执行验证、去重与覆盖审计，再进入训练和分布监控；监控结果反馈到下一轮生成。</desc>
+<defs><marker id="a21" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L9 3 L0 6" fill="none" stroke="#087e80" stroke-width="1.5"/></marker></defs>
+<rect x="18" y="18" width="1164" height="434" rx="24" fill="#f7faf8" stroke="#dce5e3"/>
+<g font-family="system-ui,sans-serif" text-anchor="middle">
+<g fill="#e4f3f1" stroke="#087e80" stroke-width="2"><rect x="55" y="135" width="175" height="112" rx="16"/><rect x="275" y="135" width="175" height="112" rx="16"/><rect x="495" y="135" width="175" height="112" rx="16"/><rect x="715" y="135" width="175" height="112" rx="16"/><rect x="935" y="135" width="210" height="112" rx="16"/></g>
+<g fill="#17343b" font-size="23" font-weight="700"><text x="142" y="179">目标与种子</text><text x="362" y="179">生成器</text><text x="582" y="179">结构校验</text><text x="802" y="179">事实 / 执行验证</text><text x="1040" y="179">去重与覆盖审计</text></g>
+<g fill="#526773" font-size="16"><text x="142" y="210">任务 · 来源 · rubric</text><text x="362" y="210">指令 / 对话 / 轨迹</text><text x="582" y="210">schema · 格式 · 长度</text><text x="802" y="210">答案 · 单测 · 引用</text><text x="1040" y="210">相似度 · 切片 · 人审</text></g>
+<g stroke="#087e80" stroke-width="3" fill="none" marker-end="url(#a21)"><path d="M230 191 H270"/><path d="M450 191 H490"/><path d="M670 191 H710"/><path d="M890 191 H930"/></g>
+<rect x="415" y="318" width="370" height="82" rx="15" fill="#fff0e9" stroke="#c65e42" stroke-width="2"/>
+<text x="600" y="351" fill="#713e2e" font-size="22" font-weight="700">训练与分布监控</text><text x="600" y="379" fill="#713e2e" font-size="16">质量、覆盖、记忆化、下游切片</text>
+<path d="M1040 247 V284 H785" stroke="#087e80" stroke-width="3" fill="none" marker-end="url(#a21)"/>
+<path d="M415 359 H310 V282 H142 V252" stroke="#c65e42" stroke-width="3" fill="none" marker-end="url(#a21)"/>
+<text x="275" y="307" fill="#713e2e" font-size="15">反馈：补充种子 / 调整约束</text>
+<text x="600" y="435" fill="#526773" font-size="15">拒绝样本保留原因码；不可验证的样本不进入 verified 集合</text>
+</g></svg>

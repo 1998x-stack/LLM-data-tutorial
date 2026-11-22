@@ -4,85 +4,76 @@
   "updated": "2026-11-22",
   "claims": [
     {
-      "id": "23-C1",
-      "claim": "DataTrove models processing as a list of reusable pipeline blocks and supports platform-agnostic execution through local, Slurm and Ray executors.",
+      "id": "CH23-C01",
+      "claim": "DataTrove release v0.10.1 declares Python >=3.10 and version 0.10.1 in its project metadata.",
       "kind": "official-doc",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
-      "locator": "Terminology; Pipeline; Executors",
-      "status": "verified",
-      "notes": "Executor availability and optional dependencies depend on the installed DataTrove version."
-    },
-    {
-      "id": "23-C2",
-      "claim": "DataTrove Documents carry text, an identifier and metadata, while PipelineStep.run consumes and yields a document generator with rank and world_size arguments.",
-      "kind": "implementation",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/base.py",
-      "locator": "PipelineStep.run; Document format in README",
-      "status": "verified",
-      "notes": "Reader, filter, stats and writer steps specialize the shared generator contract."
-    },
-    {
-      "id": "23-C3",
-      "claim": "DataTrove distributes input files across logical tasks; its README warns that tasks greater than the number of files leave tasks without data.",
-      "kind": "official-doc",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
-      "locator": "Terminology; task and shard definitions",
-      "status": "verified",
-      "notes": "A task processes a shard of files; DataTrove does not automatically split one large file into arbitrary subfiles."
-    },
-    {
-      "id": "23-C4",
-      "claim": "DataTrove records completed task markers under logging_dir/completions and recommends keeping the total task count unchanged when resuming a failed run.",
-      "kind": "official-doc",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
-      "locator": "Executors; task completion and retry caution",
-      "status": "verified",
-      "notes": "Completion markers do not make arbitrary external side effects exactly-once; output writers still need safe commit behavior."
-    },
-    {
-      "id": "23-C5",
-      "claim": "LocalPipelineExecutor exposes tasks and workers as separate controls: tasks define the logical task count, while workers define how many tasks run concurrently.",
-      "kind": "implementation",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/executor/local.py",
-      "locator": "LocalPipelineExecutor.__init__ arguments and class documentation",
-      "status": "verified",
-      "notes": "Effective throughput also depends on file-size skew, I/O, memory and processing time."
-    },
-    {
-      "id": "23-C6",
-      "claim": "DataTrove BaseFilter keeps a document when filter returns true and drops it when filter returns false; an exclusion_writer can persist dropped documents.",
-      "kind": "implementation",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/src/datatrove/pipeline/filters/base_filter.py",
-      "locator": "BaseFilter.filter; BaseFilter.run",
-      "status": "verified",
-      "notes": "The optional tuple return can also attach a reason for the dropped document."
-    },
-    {
-      "id": "23-C7",
-      "claim": "DataTrove's MinHash example separates deduplication into signature generation, bucket matching, cluster construction and a final filtering pass.",
-      "kind": "implementation",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/examples/minhash_deduplication.py",
-      "locator": "stage1 MinhashDedupSignature; stage2 MinhashDedupBuckets; stage3 MinhashDedupCluster; stage4 MinhashDedupFilter",
-      "status": "verified",
-      "notes": "The final filter must use the same source data and compatible sharding as signature generation."
-    },
-    {
-      "id": "23-C8",
-      "claim": "The current DataTrove pyproject metadata declares version 0.10.1 and requires Python 3.11 or newer.",
-      "kind": "implementation",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/pyproject.toml",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/pyproject.toml",
       "locator": "[project].version and requires-python",
       "status": "verified",
-      "notes": "Main-branch metadata can change; pin a release and dependency lock for reproducible production runs."
+      "notes": "The tutorial pins this release explicitly. Recheck release metadata before upgrading examples to another version."
     },
     {
-      "id": "23-C9",
-      "claim": "The current DataTrove README documents inference-based synthetic generation with rollout functions, chunk checkpoints and a request cache for retry-safe generation.",
+      "id": "CH23-C02",
+      "claim": "The DataTrove Document contract exposes text, id and metadata fields.",
       "kind": "official-doc",
-      "source_url": "https://github.com/huggingface/datatrove/blob/main/README.md",
-      "locator": "Practical guides → Synthetic data generation; Recoverable generation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Pipeline → DataTrove Document",
       "status": "verified",
-      "notes": "Inference extras and server/provider configuration are optional; generation quality still requires independent validation."
+      "notes": "This describes the version-pinned README contract; it is not a claim that all source formats contain complete metadata."
+    },
+    {
+      "id": "CH23-C03",
+      "claim": "DataTrove pipelines are lists of processing blocks and can be run by different executors, including local and Slurm execution.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Pipeline → Full pipeline; Executors",
+      "status": "verified",
+      "notes": "Executor options and dependencies vary by installed extras and environment; the tutorial does not imply that a local machine can run cluster-scale workloads."
+    },
+    {
+      "id": "CH23-C04",
+      "claim": "The official Common Crawl example composes WarcReader, URLFilter, Trafilatura, LanguageFilter, Gopher repetition/quality filters and JsonlWriter.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/process_common_crawl_dump.py",
+      "locator": "Complete pipeline list",
+      "status": "verified",
+      "notes": "The chapter summarizes the official example's sequence; filtering thresholds and resource settings must be tuned for a target corpus."
+    },
+    {
+      "id": "CH23-C05",
+      "claim": "The official MinHash example uses signature, bucket, cluster and final filtering stages, and requires the final filter stage to match the signature stage's input and task distribution.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/examples/minhash_deduplication.py",
+      "locator": "stage1 through stage4 comments and executor definitions",
+      "status": "verified",
+      "notes": "MinHash provides approximate duplicate candidates; it is not a semantic-equivalence proof."
+    },
+    {
+      "id": "CH23-C06",
+      "claim": "The v0.10.1 LocalPipelineExecutor example uses tasks, workers and a logging directory to run a pipeline.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/README.md",
+      "locator": "Executors → LocalPipelineExecutor",
+      "status": "verified",
+      "notes": "The chapter's JSONL example combines documented block patterns; users must install the required I/O and processing extras and test their own input layout."
+    },
+    {
+      "id": "CH23-C07",
+      "claim": "DataTrove v0.10.1 release metadata records publication on 2026-09-30.",
+      "kind": "official-doc",
+      "source_url": "https://github.com/huggingface/datatrove/releases/tag/v0.10.1",
+      "locator": "Release v0.10.1 published_at metadata",
+      "status": "verified",
+      "notes": "Release date is separate from the pyproject version and Python requirement; it does not imply every current main-branch API matches this tag."
+    },
+    {
+      "id": "CH23-C08",
+      "claim": "In DataTrove v0.10.1, GopherQualityFilter defaults include min_doc_words=50, max_doc_words=100000, min_avg_word_length=3, max_avg_word_length=10, min_stop_words=2 and English language.",
+      "kind": "implementation",
+      "source_url": "https://github.com/huggingface/datatrove/blob/v0.10.1/src/datatrove/pipeline/filters/gopher_quality_filter.py",
+      "locator": "GopherQualityFilter.__init__ defaults",
+      "status": "verified",
+      "notes": "These are version-specific implementation defaults, not universal quality thresholds; code, Chinese, multilingual and short-document corpora require separate calibration."
     }
   ]
 }
