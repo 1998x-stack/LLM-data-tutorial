@@ -47,41 +47,37 @@
 }</code></pre>
 <p>示例中的 ID 和 checksum 均为占位符。实际 manifest 应由程序在构建完成后生成，不能把省略号当作可校验值。输入和输出清单最好采用稳定排序与规范化序列化，避免 JSON key 顺序、空格或本地路径导致不必要的身份变化。</p>
 </section>
-<section id="code"><h2>工程实现：稳定序列化与数据集指纹</h2><p>下面只使用 Python 标准库。它演示配置 JSON 的规范化 hash，以及对按路径排序的 shard checksum 清单计算根 digest。生产系统还应校验文件内容本身、schema、行数和 manifest 签名；不能仅信任传入的 checksum 字符串。</p>
-<pre><code>import hashlib
-import json
-from pathlib import PurePosixPath
+<section id="code"><h2>工程实现：稳定序列化与数据集指纹</h2><p>下面直接调用仓库中经过单元测试的标准库实现。配置摘要与 shard 清单摘要共用同一套序列化约定；清单会按相对 POSIX 路径排序，并校验 checksum、行数和路径安全性。</p>
+<pre><code>from scripts.repro_manifest import canonical_json_digest, dataset_root_digest
 
-def sha256_bytes(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
+config = {
+    "source_snapshot": "cc-main-2026-11",
+    "cleaning_rules": "v7",
+}
 
-def canonical_json_digest(value: dict) -> str:
-    encoded = json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-        allow_nan=False,
-    ).encode("utf-8")
-    return sha256_bytes(encoded)
+shards = [
+    {
+        "path": "shards/00000.parquet",
+        "sha256": "a" * 64,  # 示例占位；实际值应从文件内容计算
+        "rows": 50_000,
+    },
+    {
+        "path": "shards/00001.parquet",
+        "sha256": "b" * 64,  # 示例占位；实际值应从文件内容计算
+        "rows": 50_000,
+    },
+]
 
-def dataset_root_digest(shards: list[dict]) -> str:
-    normalized = []
-    for shard in shards:
-        path = str(PurePosixPath(shard["path"]))
-        digest = shard["sha256"].lower()
-        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-            raise ValueError("sha256 must be 64 lowercase hexadecimal characters")
-        normalized.append({"path": path, "sha256": digest, "rows": int(shard["rows"])})
-    normalized.sort(key=lambda item: item["path"])
-    return canonical_json_digest({"shards": normalized})</code></pre>
+print(canonical_json_digest(config))
+print(dataset_root_digest(shards))</code></pre>
+<div class="callout"><strong>哈希规范边界：</strong><code>canonical_json_digest</code> 的名称表示“本项目定义的稳定序列化约定”，不代表它完整实现了 RFC 8785 / JCS。当前约定固定 Python <code>json.dumps</code> 的 key 排序、空白、UTF-8 和 NaN 行为；若要跨语言生成相同签名或身份 ID，应采用共同的规范化标准，并显式统一浮点数、Unicode normalization 与路径规则。</div>
 </section>
 <section id="exercise"><h2>交互实验：只改一个依赖，缓存还能复用吗？</h2><p>一个 stage 的缓存键至少要覆盖所有会影响输出的输入。下面比较两次运行的关键身份字段；只要其中一个不同，就不能把旧输出当作“同一组输入”的结果直接复用。</p>
 <div class="demo-panel"><div class="table-wrap"><table><thead><tr><th>身份字段</th><th>Run A</th><th>Run B（可编辑）</th></tr></thead><tbody><tr><td>Source snapshot</td><td>cc-2026-11</td><td><input id="run-source" value="cc-2026-11" aria-label="Run B source snapshot"></td></tr><tr><td>Code commit</td><td>a1b2c3d</td><td><input id="run-code" value="a1b2c3d" aria-label="Run B code commit"></td></tr><tr><td>Config hash</td><td>cfg-7f31</td><td><input id="run-config" value="cfg-7f31" aria-label="Run B config hash"></td></tr><tr><td>Tokenizer revision</td><td>tok-r12</td><td><input id="run-tokenizer" value="tok-r12" aria-label="Run B tokenizer revision"></td></tr></tbody></table></div><div id="repro-result" class="interactive-output" aria-live="polite">四个身份字段完全一致：缓存身份匹配。仍需确认运行环境与外部依赖也被纳入记录。</div></div>
 </section>
 <section id="failure"><h2>可复现性失败模式</h2><ul><li><strong>只保存 seed：</strong>seed 不能固定输入顺序、硬件 kernel、并发调度、外部模型 revision 和第三方服务响应。</li><li><strong>记录可变 tag：</strong><code>latest</code>、<code>main</code>、<code>stable</code> 不是不可变版本标识。</li><li><strong>manifest 只记路径：</strong>同一路径的对象可以被覆盖；要记录对象版本或内容 checksum。</li><li><strong>hash 规范不统一：</strong>JSON key 顺序、浮点表示、Unicode normalization 和路径分隔符可能改变 digest。</li><li><strong>清理历史快照：</strong>retention policy 若短于研究审计周期，就可能删掉仍被论文或模型引用的输入。</li><li><strong>把可复现等同于正确：</strong>一个有 bug 的 pipeline 也可以被完美复现；还要做质量验收和独立抽样审计。</li></ul>
 </section>
-<section id="references"><h2>参考资料</h2><ol class="references"><li><a href="https://doc.dvc.org/user-guide/pipelines/defining-pipelines">DVC · Defining Pipelines</a>：内容 hash、参数依赖、DAG 与输出追踪。</li><li><a href="https://doc.dvc.org/command-reference/repro">DVC · dvc repro</a>：按 pipeline 状态重建阶段和 run cache。</li><li><a href="https://doc.dvc.org/user-guide/project-structure/dvcyaml-files">DVC · dvc.yaml / dvc.lock</a>：锁文件记录的 stage、依赖、参数和输出元数据。</li><li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Specification</a>：snapshot、manifest 与并发提交。</li><li>Gebru et al. (2021), <a href="https://arxiv.org/abs/1803.09010">Datasheets for Datasets</a>：数据集动机、组成、采集、用途、分发与维护。</li><li>Bender &amp; Friedman (2018), <a href="https://aclanthology.org/Q18-1041/">Data Statements for Natural Language Processing</a>：语言数据来源与适用人群的记录。</li></ol></section>
+<section id="references"><h2>参考资料</h2><ol class="references"><li><a href="https://doc.dvc.org/user-guide/pipelines/defining-pipelines">DVC · Defining Pipelines</a>：内容 hash、参数依赖、DAG 与输出追踪。</li><li><a href="https://doc.dvc.org/command-reference/repro">DVC · dvc repro</a>：按 pipeline 状态重建阶段和 run cache。</li><li><a href="https://doc.dvc.org/user-guide/project-structure/dvcyaml-files">DVC · dvc.yaml / dvc.lock</a>：锁文件记录的 stage、依赖、参数和输出元数据。</li><li><a href="https://iceberg.apache.org/spec/">Apache Iceberg Specification</a>：snapshot、manifest 与并发提交。</li><li>Gebru et al. (2021), <a href="https://arxiv.org/abs/1803.09010">Datasheets for Datasets</a>：数据集动机、组成、采集、用途、分发与维护。</li><li>Bender &amp; Friedman (2018), <a href="https://aclanthology.org/Q18-1041/">Data Statements for Natural Language Processing</a>：语言数据来源与适用人群的记录。</li><li><a href="https://www.rfc-editor.org/rfc/rfc8785">RFC 8785 · JSON Canonicalization Scheme (JCS)</a>：跨实现的 JSON 规范化与确定性序列化标准。</li></ol></section>
 <footer class="article-footer"><a href="16.html">← 上一章</a><a href="index.html">返回课程总览</a><a href="18.html">下一章 →</a></footer>
 </article></main></div></div><script>(() => {
  const fields=[["run-source","cc-2026-11"],["run-code","a1b2c3d"],["run-config","cfg-7f31"],["run-tokenizer","tok-r12"]];
