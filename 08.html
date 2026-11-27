@@ -29,27 +29,27 @@
           <div class="article-meta"><span>核心概念 · 数学机制 · 工程实现</span><span>研究生进阶</span></div>
         </header>
         
-<div class="lead-note"><strong>本章问题</strong><p>两个网页只改了几处标点、标题或广告，SHA-256 就会完全不同。怎样在不做 \(O(N^2)\) 全量两两比较的前提下，快速找到“足够相似”的文档候选？</p></div>
+<div class="lead-note"><strong>本章问题</strong><p>两个网页只改了几处标点、标题或广告，SHA-256 就会完全不同。怎样在不做 <math aria-label="O 乘以 N 的平方"><mi>O</mi><mo>(</mo><msup><mi>N</mi><mn>2</mn></msup><mo>)</mo></math> 全量两两比较的前提下，快速找到“足够相似”的文档候选？</p></div>
 <section id="sets">
 <h2>把文档变成 Shingle 集合</h2>
-<p>近似去重通常先把文本转换为特征集合。对分词序列使用连续 \(q\)-gram（也称 shingle）：例如文本 “data cleaning scales” 的 2-gram 集合为 {“data cleaning”, “cleaning scales”}。若一个文档的集合为 \(A\)，另一个为 \(B\)，Jaccard 相似度定义为交集占并集的比例：</p>
+<p>近似去重通常先把文本转换为特征集合。对分词序列使用连续 <math aria-label="变量 q"><mi>q</mi></math>-gram（也称 shingle）：例如文本 “data cleaning scales” 的 2-gram 集合为 {“data cleaning”, “cleaning scales”}。若一个文档的集合为 <math aria-label="集合 A"><mi>A</mi></math>，另一个为 <math aria-label="集合 B"><mi>B</mi></math>，Jaccard 相似度定义为交集占并集的比例：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="Jaccard 相似度公式，可横向滚动" data-math-scroll><math display="block" aria-label="Jaccard 相似度等于集合交集大小除以集合并集大小"><mrow><mi>J</mi><mo>(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>)</mo><mo>=</mo><mfrac><mrow><mo>|</mo><mi>A</mi><mo>∩</mo><mi>B</mi><mo>|</mo></mrow><mrow><mo>|</mo><mi>A</mi><mo>∪</mo><mi>B</mi><mo>|</mo></mrow></mfrac></mrow></math></div>
 <p>Jaccard 的优点是集合顺序不重要，且重复出现的同一 shingle 不会反复加权。缺点是短文档、不同语言、不同 tokenizer 或大量通用模板词都会影响相似度。选择 word 5-gram、character 7-gram 或段落 shingle，是模型设计的一部分。</p>
 </section>
 <section id="minhash">
 <h2>MinHash：用最小值保留集合相似度</h2>
 <figure class="diagram"><img src="assets/diagrams/ch08-minhash.svg" alt="两个文档被转换成 shingle 集合，使用相同随机哈希排列取最小值，重复多次形成签名"><figcaption>图 1 · 对同一随机排列，两个集合的最小元素相同，当且仅当并集中的最小元素落在交集内；这个事件的概率就是 Jaccard 相似度。</figcaption></figure>
-<p>想象对全集中的 shingle 做一次均匀随机排列。分别取集合 \(A\) 和 \(B\) 中排名最靠前的元素（MinHash）。两个最小值相同的条件，是并集 \(A∪B\) 中排第一的元素同时属于交集 \(A∩B\)。因此：</p>
+<p>想象对全集中的 shingle 做一次均匀随机排列。分别取集合 <math aria-label="集合 A"><mi>A</mi></math> 和 <math aria-label="集合 B"><mi>B</mi></math> 中排名最靠前的元素（MinHash）。两个最小值相同的条件，是并集 <math aria-label="A 并 B"><mi>A</mi><mo>∪</mo><mi>B</mi></math> 中排第一的元素同时属于交集 <math aria-label="A 交 B"><mi>A</mi><mo>∩</mo><mi>B</mi></math>。因此：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="MinHash 相等概率公式，可横向滚动" data-math-scroll><math display="block" aria-label="MinHash 签名相等的概率等于 Jaccard 相似度"><mrow><mi>Pr</mi><mo>[</mo><mi>h</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>=</mo><mi>h</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>]</mo><mo>=</mo><mi>J</mi><mo>(</mo><mi>A</mi><mo>,</mo><mi>B</mi><mo>)</mo></mrow></math></div>
-<p>独立重复 \(H\) 次，得到长度为 \(H\) 的签名。签名相等位置的比例 \(\hat J\) 是 Jaccard 的无偏估计；在理想独立假设下，方差为 \(J(1-J)/H\)。增加哈希数量能降低估计方差，但增加 CPU、存储和比较成本。</p>
+<p>独立重复 <math aria-label="哈希次数 H"><mi>H</mi></math> 次，得到长度为 <math aria-label="哈希次数 H"><mi>H</mi></math> 的签名。签名相等位置的比例 <math aria-label="J 的估计值"><mover><mi>J</mi><mo>^</mo></mover></math> 是 Jaccard 的无偏估计；在理想独立假设下，方差为 <math aria-label="方差等于 J 乘 1 减 J 除以 H"><mi>J</mi><mo>(</mo><mn>1</mn><mo>−</mo><mi>J</mi><mo>)</mo><mo>/</mo><mi>H</mi></math>。增加哈希数量能降低估计方差，但增加 CPU、存储和比较成本。</p>
 </section>
 <section id="lsh">
 <h2>LSH：把签名拆成 Band，避免所有签名两两比较</h2>
-<p>即使签名只有 112 个值，直接比较 \(N\) 个文档仍然需要约 \(N(N-1)/2\) 次比较。Locality-Sensitive Hashing（LSH）将签名分成 \(b\) 个 band，每个 band 有 \(r\) 行。只要任意一个 band 的 \(r\) 个值全部相同，就把文档对放入候选集合。</p>
+<p>即使签名只有 112 个值，直接比较 <math aria-label="文档数 N"><mi>N</mi></math> 个文档仍然需要约 <math aria-label="比较次数等于 N 乘 N 减 1 除以 2"><mi>N</mi><mo>(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo>)</mo><mo>/</mo><mn>2</mn></math> 次比较。Locality-Sensitive Hashing（LSH）将签名分成 <math aria-label="band 数 b"><mi>b</mi></math> 个 band，每个 band 有 <math aria-label="每个 band 的行数 r"><mi>r</mi></math> 行。只要任意一个 band 的 <math aria-label="每个 band 的行数 r"><mi>r</mi></math> 个值全部相同，就把文档对放入候选集合。</p>
 <figure class="diagram"><img src="assets/diagrams/ch08-lsh-bands.svg" alt="一条 MinHash 签名被切分为多个 band，每个 band 内所有行相等才触发候选匹配，任一 band 命中即可进入候选集合"><figcaption>图 2 · LSH 不是最终的“相似度判决器”，而是候选生成器；候选对仍可用精确 Jaccard 或更强规则复核。</figcaption></figure>
-<p>如果真实 Jaccard 相似度为 \(s\)，一个 band 全部相等的概率为 \(s^r\)；一个 band 不命中的概率为 \(1-s^r\)。假设各 band 独立，则至少一个 band 命中的概率为：</p>
+<p>如果真实 Jaccard 相似度为 <math aria-label="真实相似度 s"><mi>s</mi></math>，一个 band 全部相等的概率为 <math aria-label="s 的 r 次方"><msup><mi>s</mi><mi>r</mi></msup></math>；一个 band 不命中的概率为 <math aria-label="一减 s 的 r 次方"><mn>1</mn><mo>−</mo><msup><mi>s</mi><mi>r</mi></msup></math>。假设各 band 独立，则至少一个 band 命中的概率为：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="LSH 候选概率公式，可横向滚动" data-math-scroll><math display="block" aria-label="LSH 候选概率等于一减去一减 s 的 r 次方的 b 次方"><mrow><mi>P</mi><mo>(</mo><mtext>candidate</mtext><mo>|</mo><mi>s</mi><mo>)</mo><mo>=</mo><mn>1</mn><mo>−</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>−</mo><msup><mi>s</mi><mi>r</mi></msup><mo>)</mo></mrow><mi>b</mi></msup></mrow></math></div>
-<p>这里的 \(b,r\) 决定了召回—候选数量的权衡。更多 band 通常提高候选召回，也会增加需要精算的候选对；每个 band 行数更大，则更偏向高相似度才命中。</p>
+<p>这里的 <math aria-label="band 数 b 与行数 r"><mi>b</mi><mo>,</mo><mi>r</mi></math> 决定了召回—候选数量的权衡。更多 band 通常提高候选召回，也会增加需要精算的候选对；每个 band 行数更大，则更偏向高相似度才命中。</p>
 </section>
 <section id="fineweb">
 <h2>FineWeb 的参数：不是“75% 就一定判重”</h2>
@@ -59,7 +59,7 @@
 </section>
 <section id="practice">
 <h2>工程流程与参数选择</h2>
-<ol><li>统一文本规范化和 tokenizer；保存原始文本与规范化版本。</li><li>生成 q-gram 集合或哈希 shingle；明确去重的相似度对象。</li><li>对每个文档生成 H 个 MinHash 值，再按 \(b×r=H\) 拆分 band。</li><li>对相同 band key 分桶，生成候选对；不要全量 \(N^2\) 比较。</li><li>对候选对计算精确 Jaccard 或更严格的相似度，建立重复边。</li><li>做阈值敏感性分析：抽查假阳性、假阴性、短文档和模板文档。</li></ol>
+<ol><li>统一文本规范化和 tokenizer；保存原始文本与规范化版本。</li><li>生成 q-gram 集合或哈希 shingle；明确去重的相似度对象。</li><li>对每个文档生成 H 个 MinHash 值，再按 <math aria-label="b 乘 r 等于 H"><mi>b</mi><mo>×</mo><mi>r</mi><mo>=</mo><mi>H</mi></math> 拆分 band。</li><li>对相同 band key 分桶，生成候选对；不要全量 <math aria-label="N 的平方"><msup><mi>N</mi><mn>2</mn></msup></math> 比较。</li><li>对候选对计算精确 Jaccard 或更严格的相似度，建立重复边。</li><li>做阈值敏感性分析：抽查假阳性、假阴性、短文档和模板文档。</li></ol>
 <div class="callout warning"><strong>常见陷阱：</strong>若没有先处理极常见 shingle（例如“点击这里”“版权所有”），它们会把大量无关文档连成候选；短文本的 shingle 数少，估计方差更高；不同语言混用同一 tokenizer 也会改变特征集合。</div>
 </section>
 <section id="prob-demo">
