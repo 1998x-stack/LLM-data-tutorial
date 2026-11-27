@@ -38,7 +38,7 @@
 <section id="fingerprint">
 <h2>内容指纹：把长文本映射为固定长度键</h2>
 <figure class="diagram"><img src="assets/diagrams/ch07-exact-dedup.svg" alt="文档经过明确的规范化策略后计算 SHA-256 指纹，进入候选集合，再对命中项进行精确校验与保留策略选择"><figcaption>图 1 · 规范化策略是去重定义的一部分。原始内容、规范化内容、指纹和保留决策应分开记录。</figcaption></figure>
-<p>对字节串 \(x\)，哈希函数给出固定长度摘要 \(h(x)\)。实际工程常使用 SHA-256 作为内容指纹。若两个摘要不同，可以确定两个输入不同；若摘要相同，工程上通常视为极高置信度的相同候选，但严格意义上的零碰撞保证仍需要比较原始规范化内容。</p>
+<p>对字节串 <math aria-label="变量 x"><mi>x</mi></math>，哈希函数给出固定长度摘要 <math aria-label="函数 h 作用于 x"><mi>h</mi><mo>(</mo><mi>x</mi><mo>)</mo></math>。实际工程常使用 SHA-256 作为内容指纹。若两个摘要不同，可以确定两个输入不同；若摘要相同，工程上通常视为极高置信度的相同候选，但严格意义上的零碰撞保证仍需要比较原始规范化内容。</p>
 <pre><code>import hashlib
 
 def content_fingerprint(text: str) -&gt; bytes:
@@ -57,14 +57,14 @@ def exact_duplicate(candidate, store):
 </section>
 <section id="bloom">
 <h2>Bloom Filter：先回答“可能见过吗？”</h2>
-<p>Bloom Filter 用一个 \(m\) 位数组和 \(k\) 个哈希位置近似表示一个包含 \(n\) 个元素的集合。插入时把对应位设为 1；查询时只要有一个位为 0，就一定不在集合中；如果所有位都是 1，只能说“可能在集合中”。</p>
+<p>Bloom Filter 用一个 <math aria-label="位数 m"><mi>m</mi></math> 位数组和 <math aria-label="哈希个数 k"><mi>k</mi></math> 个哈希位置近似表示一个包含 <math aria-label="元素个数 n"><mi>n</mi></math> 个元素的集合。插入时把对应位设为 1；查询时只要有一个位为 0，就一定不在集合中；如果所有位都是 1，只能说“可能在集合中”。</p>
 <div class="table-wrap"><table><thead><tr><th>查询结果</th><th>含义</th><th>风险</th></tr></thead><tbody>
 <tr><td>至少一位为 0</td><td>确定未插入</td><td>基本插入型 Bloom Filter 不会产生 false negative</td></tr>
 <tr><td>所有位为 1</td><td>可能已插入</td><td>可能 false positive：一个新元素被误判为“可能存在”</td></tr>
 </tbody></table></div>
-<p>在近似独立、均匀哈希的假设下，插入 \(n\) 个元素后，一个 bit 仍为 0 的概率约为 \(e^{-kn/m}\)。因此，未插入元素被误判为“可能存在”的概率近似为：</p>
+<p>在近似独立、均匀哈希的假设下，插入 <math aria-label="元素个数 n"><mi>n</mi></math> 个元素后，一个 bit 仍为 0 的概率约为 <math aria-label="e 的负 k n 除以 m 次方"><msup><mi>e</mi><mrow><mo>−</mo><mi>k</mi><mi>n</mi><mo>/</mo><mi>m</mi></mrow></msup></math>。因此，未插入元素被误判为“可能存在”的概率近似为：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="Bloom Filter 假阳性概率公式，可横向滚动" data-math-scroll><math display="block" aria-label="假阳性概率约等于一减 exp 负 k n 除以 m 的 k 次方"><mrow><msub><mi>p</mi><mtext>fp</mtext></msub><mo>≈</mo><msup><mrow><mo>(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>kn</mi><mo>/</mo><mi>m</mi></mrow></msup><mo>)</mo></mrow><mi>k</mi></msup></mrow></math></div>
-<p>固定 \(m,n\) 时，最优哈希函数数约为 \(k^*=(m/n)\ln 2\)。若目标假阳性率为 \(p\)，可反推位数组规模 \(m\approx -n\ln p/(\ln2)^2\)。这些是经典近似设计公式；实际误判率还受哈希实现、容量估计、并发插入和数据分布影响。</p>
+<p>固定 <math aria-label="位数 m 与哈希个数 n"><mi>m</mi><mo>,</mo><mi>n</mi></math> 时，最优哈希函数数约为 <math aria-label="k 星号等于 m 除以 n 再乘 ln 2"><msup><mi>k</mi><mo>∗</mo></msup><mo>=</mo><mo>(</mo><mi>m</mi><mo>/</mo><mi>n</mi><mo>)</mo><mi>ln</mi><mn>2</mn></math>。若目标假阳性率为 <math aria-label="假阳性率 p"><mi>p</mi></math>，可反推位数组规模 <math aria-label="m 约等于负 n 乘 ln p 除以 ln 2 的平方"><mi>m</mi><mo>≈</mo><mo>−</mo><mi>n</mi><mi>ln</mi><mi>p</mi><mo>/</mo><msup><mrow><mo>(</mo><mi>ln</mi><mn>2</mn><mo>)</mo></mrow><mn>2</mn></msup></math>。这些是经典近似设计公式；实际误判率还受哈希实现、容量估计、并发插入和数据分布影响。</p>
 <figure class="diagram"><img src="assets/diagrams/ch07-bloom.svg" alt="Bloom Filter 插入时设置多个 bit，查询时任意 bit 为零表示确定不存在，全部为一只表示可能存在"><figcaption>图 2 · Bloom Filter 的语义是“Definitely not”与“Maybe”，不是精确的 yes/no 集合。</figcaption></figure>
 <div class="callout warning"><strong>关键工程边界：</strong>如果把 Bloom Filter 当作最终去重依据，“可能存在”就会直接删除文档，false positive 会造成误删。更安全的结构是 Bloom Filter 作为前置缓存：返回 definitely-not 时跳过昂贵查表；返回 maybe 时再到精确哈希集合或数据库核验。</div>
 </section>
