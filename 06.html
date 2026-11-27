@@ -46,6 +46,7 @@
 <tr><td>query</td><td>只移除已确认的跟踪参数，如 utm_source</td><td>不要默认删除 id、page、lang、q 等业务参数，也不要随意重排</td></tr>
 </tbody></table></div>
 <p>例如 <code>https://EXAMPLE.org/Docs/Intro?lang=zh</code> 与 <code>https://example.org/docs/intro?lang=zh</code> 的 host 等价，但 path 的大小写可能改变资源。规范化应是一个可版本化的策略函数，而不是一条“全部 lower()”的捷径。</p>
+<figure class="diagram"><img src="assets/diagrams/ch06-normalization.svg" alt="保守的 URL 规范化流程：原始 URL 先解析为组件，只对 scheme、host、默认端口和点段做通用语法规范化，path 与 query 的大小写及业务参数需要站点证据，输出保留原始 URL 和策略版本"><figcaption>图 2 · 规范化必须分开处理“通用语法授权改写”与“站点特定等价”：前者可安全自动化，后者需要独立证据并随策略版本一起记录。</figcaption></figure>
 </section>
 <section id="policy">
 <h2>三层规则：域名、完整 URL、路径特征</h2>

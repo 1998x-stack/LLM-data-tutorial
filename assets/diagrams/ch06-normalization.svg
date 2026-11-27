@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+<title id="title">保守的 URL 规范化：哪些组件可以安全改写</title>
+<desc id="desc">原始 URL 先解析为 scheme、host、port、path、query 和 fragment；只对 scheme、host、默认端口和点段做通用语法规范化，path 与 query 的大小写及业务参数需要站点证据；输出保留原始 URL 并记录策略版本。</desc>
+<rect width="1200" height="400" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<text x="600" y="44" text-anchor="middle" font-size="15" fill="#536b75">通用语法只授权部分改写；其余等价性属于可版本化的站点策略</text>
+<rect x="38" y="160" width="180" height="86" rx="14" fill="#e8f0f7" stroke="#91abc0"/><text x="128" y="196" text-anchor="middle" font-size="15" font-weight="700" fill="#284b61">原始 URL</text><text x="128" y="222" text-anchor="middle" font-size="12" fill="#536b75">保持原样存档</text>
+<rect x="270" y="150" width="200" height="106" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="370" y="186" text-anchor="middle" font-size="15" font-weight="700" fill="#665b9a">解析为组件</text><text x="370" y="212" text-anchor="middle" font-size="12" fill="#514780">scheme · host · port</text><text x="370" y="234" text-anchor="middle" font-size="12" fill="#514780">path · query · fragment</text>
+<rect x="528" y="86" width="316" height="118" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="686" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#176d6b">通用语法规范化（可安全）</text><text x="686" y="148" text-anchor="middle" font-size="12.5" fill="#176d6b">scheme / host 转小写 · 移除默认端口</text><text x="686" y="172" text-anchor="middle" font-size="12.5" fill="#176d6b">解析 dot-segment · 请求键移除 fragment</text><text x="686" y="194" text-anchor="middle" font-size="11.5" fill="#536b75">RFC 3986 §6.2.2 语法规范化</text>
+<rect x="528" y="238" width="316" height="118" rx="14" fill="#fff0e9" stroke="#dfab97"/><text x="686" y="272" text-anchor="middle" font-size="14" font-weight="700" fill="#a34d35">站点 / 方案特定（需证据）</text><text x="686" y="300" text-anchor="middle" font-size="12.5" fill="#a34d35">path 大小写敏感 · 保留业务参数</text><text x="686" y="324" text-anchor="middle" font-size="12.5" fill="#a34d35">尾部斜杠等价性取决于站点</text><text x="686" y="346" text-anchor="middle" font-size="11.5" fill="#536b75">不可默认 lower() 或删 query</text>
+<rect x="912" y="150" width="248" height="106" rx="14" fill="#eef3f1" stroke="#9db3ac"/><text x="1036" y="186" text-anchor="middle" font-size="14" font-weight="700" fill="#2f4b47">规范比较键</text><text x="1036" y="212" text-anchor="middle" font-size="12" fill="#536b75">+ 原始 URL</text><text x="1036" y="234" text-anchor="middle" font-size="12" fill="#536b75">+ 策略版本号</text>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M218 203 H258"/><path d="M470 203 C500 203 500 145 516 145"/><path d="M470 203 C500 203 500 297 516 297"/></g>
+<g fill="#6d8790"><path d="M251 195 L267 203 L251 211Z"/><path d="M509 137 L525 145 L509 153Z"/><path d="M509 289 L525 297 L509 305Z"/></g>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M844 145 C878 145 878 203 900 203"/><path d="M844 297 C878 297 878 203 900 203"/></g>
+<g fill="#6d8790"><path d="M893 195 L909 203 L893 211Z"/></g>
+</g></svg>
