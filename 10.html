@@ -32,15 +32,15 @@
 <div class="lead-note"><strong>本章问题</strong><p>如果一段网页文本语法通顺、没有重复，却可能是关键词堆砌或低价值内容，能否用语言模型判断它“像不像”高质量语料？困惑度可以提供一个分布相似度信号，但它不是通用质量分数。</p></div>
 <section id="language-model">
 <h2>从条件概率到平均惊讶度</h2>
-<p>自回归语言模型把一段 token 序列分解为一连串条件概率。对 token 序列 \(w_1,\ldots,w_T\)，联合概率可写成：</p>
+<p>自回归语言模型把一段 token 序列分解为一连串条件概率。对 token 序列 <math aria-label="token 序列 w 下标 1 到 w 下标 T"><msub><mi>w</mi><mn>1</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>w</mi><mi>T</mi></msub></math>，联合概率可写成：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="语言模型链式分解公式，可横向滚动" data-math-scroll><math display="block" aria-label="序列联合概率等于每个 token 在此前 token 条件下概率的乘积"><mrow><mi>P</mi><mo>(</mo><msub><mi>w</mi><mn>1</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>w</mi><mi>T</mi></msub><mo>)</mo><mo>=</mo><munderover><mo>∏</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>T</mi></munderover><mi>P</mi><mo>(</mo><msub><mi>w</mi><mi>t</mi></msub><mo>|</mo><msub><mi>w</mi><mrow><mn>1</mn><mo>…</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>)</mo></mrow></math></div>
 <p>平均负对数似然（cross-entropy）衡量模型对真实 token 的平均“惊讶程度”。使用自然对数时，困惑度是它的指数：</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="Cross entropy 与 Perplexity 公式，可横向滚动" data-math-scroll><math display="block" aria-label="交叉熵等于平均负对数概率，困惑度等于交叉熵的指数"><mrow><mi>H</mi><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>T</mi></munderover><mi>ln</mi><mi>P</mi><mo>(</mo><msub><mi>w</mi><mi>t</mi></msub><mo>|</mo><msub><mi>w</mi><mrow><mn>1</mn><mo>…</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>)</mo><mo>,</mo><mspace width="1em"/><mi>PPL</mi><mo>=</mo><msup><mi>e</mi><mi>H</mi></msup></mrow></math></div>
-<p>如果使用 log base 10，则 \(PPL=10^{-\frac{1}{T}\sum_t \log_{10}P(w_t|w_{&lt;t})}\)。困惑度可以理解为模型每一步面对的“等效平均候选数”：越低，说明该模型越容易预测这段文本。但“容易预测”只相对于特定模型、tokenizer、语言和目标分布而言。</p>
+<p>如果使用 log base 10，则 <math aria-label="困惑度等于 10 的负的 T 分之一乘平均 log10 条件概率次方"><mi>PPL</mi><mo>=</mo><msup><mn>10</mn><mrow><mo>−</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><msub><mo>∑</mo><mi>t</mi></msub><msub><mi>log</mi><mn>10</mn></msub><mi>P</mi><mo>(</mo><msub><mi>w</mi><mi>t</mi></msub><mo>|</mo><msub><mi>w</mi><mrow><mo>&lt;</mo><mi>t</mi></mrow></msub><mo>)</mo></mrow></msup></math>。困惑度可以理解为模型每一步面对的“等效平均候选数”：越低，说明该模型越容易预测这段文本。但“容易预测”只相对于特定模型、tokenizer、语言和目标分布而言。</p>
 </section>
 <section id="ngram">
 <h2>N-gram LM：有限上下文与平滑</h2>
-<p>N-gram 语言模型用前面最多 \(n-1\) 个 token 估计下一个 token 的概率。最简单的最大似然估计会遇到稀疏问题：训练语料里没出现过的 n-gram 会得到零概率，整段文本的 PPL 就可能变成无穷大。Kneser–Ney 平滑通过折扣高频计数，并把折扣质量分配给低阶分布；其 continuation probability 让“在多少种不同上下文中出现过”也影响词的概率，而不只看总频次。</p>
+<p>N-gram 语言模型用前面最多 <math aria-label="n 减 1"><mi>n</mi><mo>−</mo><mn>1</mn></math> 个 token 估计下一个 token 的概率。最简单的最大似然估计会遇到稀疏问题：训练语料里没出现过的 n-gram 会得到零概率，整段文本的 PPL 就可能变成无穷大。Kneser–Ney 平滑通过折扣高频计数，并把折扣质量分配给低阶分布；其 continuation probability 让“在多少种不同上下文中出现过”也影响词的概率，而不只看总频次。</p>
 <p>CCNet 使用每种语言自己的 SentencePiece tokenizer，以及在目标高质量语料（论文示例为 Wikipedia）上训练的 5-gram Kneser–Ney 模型，并通过 KenLM 高效计算段落困惑度。这一设计回答的是“文本与目标语域有多接近”，而不是“文本本身有没有价值”。</p>
 <figure class="diagram"><img src="assets/diagrams/ch10-perplexity.svg" alt="文本先经 SentencePiece 分词，再由目标语域 N-gram 语言模型逐 token 计算条件概率和平均负对数似然，最后转成困惑度并分层"><figcaption>图 1 · 困惑度依赖 tokenizer、语言模型训练语料和文本分段方式；跨模型直接比较数值通常没有意义。</figcaption></figure>
 </section>
