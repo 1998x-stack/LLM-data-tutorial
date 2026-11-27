@@ -53,6 +53,10 @@
     </math>
   </div>
   <p>精确率高，说明输出较少混入模板；召回率高，说明较少漏掉正文。二者往往存在权衡。对于新闻语料，评论区可能是噪声；对于论坛语料，评论和回复本身可能就是主要内容。因此评估集必须代表你的目标数据源。</p>
+  <figure class="diagram">
+    <img src="assets/diagrams/ch03-extraction-failures.svg" alt="同一个网页的三种抽取结果对比：漏抽只保留标题并漏掉正文，过抽把导航、广告和页脚一并保留，均衡结果保留标题与正文并丢弃模板噪声">
+    <figcaption>图 2 · 同一网页的三种抽取结果：漏抽牺牲召回，过抽牺牲精确，均衡保留取决于目标标注集；三栏为示意，不代表某个抽取器的实测结果。</figcaption>
+  </figure>
 </section>
 <section id="trafilatura">
   <h2>Trafilatura：一个可配置的正文抽取基线</h2>
