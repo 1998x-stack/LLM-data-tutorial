@@ -48,6 +48,7 @@
 <h2>CCNet：把 PPL 用作相对分层，而非一刀切</h2>
 <p>CCNet 的目标是构建多语言 Common Crawl 语料。它对每种语言训练目标域语言模型，计算每个段落的 perplexity，然后按每种语言各自的分布切成等量的 head、middle、tail 三部分。head 更接近目标域分布，tail 更远。</p>
 <p>一个非常重要的决定是：CCNet 没有直接删除 tail。作者指出，tail 中既有关键词列表等低质量文本，也可能包含口语化评论、专业论坛和与 Wikipedia 词汇分布差异较大的有效内容。论文认为困惑度是“相对不错”的质量代理，但不同语言的 PPL 分布会受到 Wikipedia 训练数据规模差异影响，因此按语言分别设定分位点。</p>
+<figure class="diagram"><img src="assets/diagrams/ch10-ccnet-buckets.svg" alt="每种语言的段落按自身困惑度分位点切成等量的 head、middle、tail 三段：head 作为目标域候选，middle 结合其他信号采样，tail 进入抽样审计而非直接删除"><figcaption>图 2 · 困惑度分层是语言内的相对排名：相同分位在不同语言对应不同绝对 PPL，CCNet 因此按语言分别设分位点，并把 tail 留给抽样审计。</figcaption></figure>
 <div class="table-wrap"><table><thead><tr><th>分层</th><th>解释</th><th>可能包含</th><th>推荐用法</th></tr></thead><tbody>
 <tr><td>Head</td><td>低 PPL，接近目标语域</td><td>新闻、百科风格、书面说明</td><td>作为目标域相似度高的候选集</td></tr>
 <tr><td>Middle</td><td>中等 PPL</td><td>一般网页、博客、混合风格</td><td>结合其他质量信号采样</td></tr>
