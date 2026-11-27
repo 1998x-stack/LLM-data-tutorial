@@ -14,6 +14,7 @@
 <section id="mixture"><h2>通用与领域语料如何混合？</h2>
 <p>用一个简单目标函数表达继续预训练时的混合思想。这里 <math aria-label="lambda"><mi>λ</mi></math> 是训练 token 暴露比例的设计变量，不是文档数量的简单比例。</p>
 <div class="math-scroll" tabindex="0" role="region" aria-label="通用与领域语言模型目标的加权混合公式，可横向滚动"><math display="block" aria-label="总损失等于一减 lambda 乘通用语料损失，加 lambda 乘领域语料损失"><mrow><mi>ℒ</mi><mo>(</mo><mi>θ</mi><mo>)</mo><mo>=</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo>)</mo><msub><mi>ℒ</mi><mtext>general</mtext></msub><mo>(</mo><mi>θ</mi><mo>)</mo><mo>+</mo><mi>λ</mi><msub><mi>ℒ</mi><mtext>domain</mtext></msub><mo>(</mo><mi>θ</mi><mo>)</mo></mrow></math></div>
+<figure class="diagram"><img src="assets/diagrams/ch22-adaptation-stages.svg" alt="训练日程依次为通用预训练、DAPT、TAPT 与监督微调；继续预训练阶段用 λ 表示领域 token 暴露比例，并在每阶段结束时对领域能力与通用能力做双轨评测"><figcaption>图 2 · DAPT 与 TAPT 处在通用预训练和监督微调之间；λ 在这里作为领域 token 暴露的设计变量，而不是文档数量的比例，且每一步都要双轨评测。</figcaption></figure>
 <p>这个式子是概念化的目标，不是某篇论文规定的通用配方。实际训练中还要说明数据采样、重复曝光、序列打包、截断、损失掩码和不同数据源的 tokenization。按文档数各取一半，不保证最终训练 token 也各占一半。</p>
 <p>可以从小规模对照实验开始：固定模型、tokenizer、总 token budget、训练步数和优化器，比较不同的领域暴露比例或阶段式日程；同时在领域验证集和通用回归集上评估。若领域收益只来自重复记忆或评测污染，必须在数据去重和独立测试上暴露出来。</p></section>
 <section id="forgetting"><h2>如何监控灾难性遗忘</h2>

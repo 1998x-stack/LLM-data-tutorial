@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
+<title id="title">DAPT 与 TAPT 在训练日程中的位置</title>
+<desc id="desc">训练日程依次为通用预训练、领域自适应预训练 DAPT、任务自适应预训练 TAPT 和监督微调；λ 表示继续预训练时领域 token 的暴露比例，每阶段结束都要在领域集与通用回归集上双轨评测。</desc>
+<rect width="1200" height="400" rx="22" fill="#fbfdfb" stroke="#dce5e3"/>
+<g font-family="Inter,Arial,'Microsoft YaHei',sans-serif">
+<text x="600" y="42" text-anchor="middle" font-size="15" fill="#536b75">DAPT 与 TAPT 发生在监督微调之前，是两种不同层次的继续预训练</text>
+<rect x="30" y="86" width="240" height="92" rx="14" fill="#e8f0f7" stroke="#91abc0"/><text x="150" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#284b61">通用预训练</text><text x="150" y="152" text-anchor="middle" font-size="12" fill="#536b75">大规模通用语料</text>
+<rect x="330" y="86" width="240" height="92" rx="14" fill="#e4f3f1" stroke="#86bdb5"/><text x="450" y="118" text-anchor="middle" font-size="15" font-weight="700" fill="#176d6b">DAPT</text><text x="450" y="144" text-anchor="middle" font-size="12" fill="#176d6b">领域未标注语料</text><text x="450" y="164" text-anchor="middle" font-size="11.5" fill="#536b75">Domain-Adaptive</text>
+<rect x="630" y="86" width="240" height="92" rx="14" fill="#f0eef9" stroke="#b0a7d3"/><text x="750" y="118" text-anchor="middle" font-size="15" font-weight="700" fill="#665b9a">TAPT</text><text x="750" y="144" text-anchor="middle" font-size="12" fill="#514780">任务相关未标注语料</text><text x="750" y="164" text-anchor="middle" font-size="11.5" fill="#536b75">Task-Adaptive</text>
+<rect x="930" y="86" width="240" height="92" rx="14" fill="#fff4df" stroke="#dfbf7d"/><text x="1050" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#93641c">监督微调</text><text x="1050" y="152" text-anchor="middle" font-size="12" fill="#76551d">带标签任务数据</text>
+<g stroke="#6d8790" stroke-width="3" fill="none"><path d="M270 132 H320"/><path d="M570 132 H620"/><path d="M870 132 H920"/></g>
+<g fill="#6d8790"><path d="M313 124 L329 132 L313 140Z"/><path d="M613 124 L629 132 L613 140Z"/><path d="M913 124 L929 132 L913 140Z"/></g>
+<rect x="180" y="214" width="440" height="74" rx="12" fill="#eef3f1" stroke="#9db3ac"/><text x="400" y="245" text-anchor="middle" font-size="13" font-weight="700" fill="#2f4b47">λ = 继续预训练时领域 token 暴露比例</text><text x="400" y="270" text-anchor="middle" font-size="12" fill="#536b75">ℒ = (1 − λ)·ℒ_general + λ·ℒ_domain</text>
+<g stroke="#9db3ac" stroke-width="2" fill="none"><path d="M400 178 V208"/></g>
+<rect x="660" y="214" width="450" height="74" rx="12" fill="#fff6df" stroke="#dfbf7d"/><text x="885" y="245" text-anchor="middle" font-size="13" font-weight="700" fill="#93641c">双轨评测</text><text x="885" y="270" text-anchor="middle" font-size="12" fill="#76551d">领域能力提升 与 通用能力回归</text>
+<text x="600" y="336" text-anchor="middle" font-size="12" fill="#536b75">λ 是 token 暴露的设计变量，不是文档数量比例；实际 exposure 需在 tokenizer 后统计</text>
+<text x="600" y="360" text-anchor="middle" font-size="11.5" fill="#819196">该加权目标是本章的概念表达，非某篇论文规定的通用配方</text>
+</g></svg>
